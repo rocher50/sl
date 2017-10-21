@@ -15,6 +15,14 @@ Text Domain: sl-plugin
  
 defined( 'ABSPATH' ) or die;
 
+if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+    require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+}
+
+use Inc\Activate;
+use Inc\Deactivate;
+use Inc\Admin\AdminPages;
+
 class SlPlugin {
 
     protected $slCssPath = '/assets/sl.css';
@@ -38,10 +46,11 @@ class SlPlugin {
     }
 
     public function activate() {
-        flush_rewrite_rules();
+        Activate::activate();
     }
 
     public function deactivate() {
+        Deactivate::deactivate();
     }
 
     public function custom_post_type() {
