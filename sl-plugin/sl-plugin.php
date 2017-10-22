@@ -19,67 +19,25 @@ if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
     require_once dirname( __FILE__ ) . '/vendor/autoload.php';
 }
 
-use Inc\Activate;
-use Inc\Deactivate;
-use Inc\Admin\AdminPages;
+define( 'PLUGIN', plugin_basename( __FILE__ ) );
+define( 'PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-class SlPlugin {
+use Inc\Base\Activate;
+use Inc\Base\Deactivate;
 
-    protected $slCssPath = '/assets/sl.css';
-    protected $slJsPath = '/assets/sl.js';
-    protected $slSlug = 'sl_plugin';
-
-    protected $pluginName;
-
-    function __construct() {
-        $this->pluginName = plugin_basename( __FILE__ );
-    }
-
-    function register() {
-        register_activation_hook( __FILE__, [$this, 'activate'] );
-        register_deactivation_hook( __FILE__, [$this, 'deactivate'] );
-        add_action('init', [$this, 'custom_post_type'] );
-        add_action( 'admin_enqueue_scripts', [$this, 'enqueue'] );
-        add_action( 'admin_menu', [$this, 'add_admin_pages'] );
-
-        add_filter( "plugin_action_links_$this->pluginName", [$this, 'settings_link'] );
-    }
-
-    public function activate() {
-        Activate::activate();
-    }
-
-    public function deactivate() {
-        Deactivate::deactivate();
-    }
-
-    public function custom_post_type() {
-        register_post_type( 'book', ['public' => true, 'label' => 'Vehicules'] );
-    }
-
-    public function add_admin_pages () {
-        add_menu_page( 'SL Plugin', 'SL', 'manage_options', $this->slSlug, [$this, 'admin_index'], 'dashicons-store', 110 );
-    }
-
-    public function admin_index() {
-        require_once plugin_dir_path( __FILE__ ) . 'templates/admin.php';
-    }
-
-    public function settings_link( $links ) {
-        array_push( $links, '<a href="admin.php?page=' . $this->slSlug . '">Settings</a>' );
-        return $links;
-    }
-
-    public function enqueue() {
-        wp_enqueue_style( 'slpluginstyle', plugins_url( $this->slCssPath, __FILE__ ) );
-        wp_enqueue_script( 'slpluginscript', plugins_url( $this->slJsPath, __FILE__ ) );
-    }
+function activate_sl_plugin() {
+    Activate::activate();
 }
 
-
-if( class_exists( 'SlPlugin' ) ) {
-    $slPlugin = new SlPlugin();
-    $slPlugin->register();
+function deactivate_sl_plugin() {
+    Deactivate::deactivate();
 }
 
+register_activation_hook( __FILE__, 'activate_sl_plugin' );
+register_deactivation_hook( __FILE__, 'deactivate_sl_plugin' );
+
+if( class_exists( 'Inc\\Init' ) ) {
+    Inc\Init::register_services();
+}
 
