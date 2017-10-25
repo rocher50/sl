@@ -10,6 +10,8 @@ final class Init {
         return [
             Base\Enqueue::class,
             Base\SettingsLink::class,
+            Base\VehiculeCpt::class,
+
             Pages\Admin::class
         ];
     }
