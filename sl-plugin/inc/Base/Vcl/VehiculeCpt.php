@@ -3,7 +3,7 @@
  * @package SlPlugin
  */
 
-namespace Inc\Base;
+namespace Inc\Base\Vcl;
 
 class VehiculeCpt {
 
@@ -37,11 +37,11 @@ class VehiculeCpt {
             'capability_type'		=> 'post',
             'hierarchical'		=> false,
             'supports'			=> [
-                'title',
-                'editor',
-                'excerpt',
-                'thumbnail',
-                'revisions'
+//                'title',
+//                'editor',
+//                'excerpt',
+                'thumbnail'
+//                'revisions'
             ],
             'taxonomies'		=> [
                 'category',
@@ -51,6 +51,6 @@ class VehiculeCpt {
             'exclude_from_search'	=> false
         ];
         register_post_type( 'vcl', $args );
-        flush_rewrite_rules();
+        //flush_rewrite_rules();
     }
 }

@@ -40,4 +40,3 @@ register_deactivation_hook( __FILE__, 'deactivate_sl_plugin' );
 if( class_exists( 'Inc\\Init' ) ) {
     Inc\Init::register_services();
 }
-
