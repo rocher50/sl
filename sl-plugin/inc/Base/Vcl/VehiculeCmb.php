@@ -7,9 +7,22 @@ namespace Inc\Base\Vcl;
 
 class VehiculeCmb {
 
+    protected $marqueField;
+    protected $modeleField;
+    protected $versionField;
+    protected $fields;
+
+    function __construct() {
+        $this->fields = new CmbFieldSet( 'meta-row' );
+        $this->marqueField = $this->fields->add_field('vcl_marque', 'Marque', 'vcl-row-marque', 'meta-th', 'meta-td');
+        $this->modeleField = $this->fields->add_field('vcl_modele', 'Modèle', 'vcl-row-modele', 'meta-th', 'meta-td');
+        $this->versionField = $this->fields->add_field('vcl_version', 'Version', 'vcl-row-version', 'meta-th', 'meta-td');
+    }
+
     public function register() {
         add_action( 'add_meta_boxes', [$this, 'custom_metabox'] );
         add_action( 'save_post', [$this, 'save'] );
+        add_filter( 'wp_insert_post_data' , [$this, 'modify_title'] , '99', 1 ); // Grabs the inserted post data so you can modify it.
     }
 
     public function custom_metabox() {
@@ -24,50 +37,40 @@ class VehiculeCmb {
         );
     }
 
+    public function modify_title( $data ) {
+        if( $data['post_type'] == 'vcl') {
+            if( isset( $_POST[ $this->marqueField->get_id() ] ) ) {
+                $title = $_POST[  $this->marqueField->get_id() ];
+            }
+            if( isset( $_POST[ $this->modeleField->get_id() ] ) ) {
+                $title = $title . " " . $_POST[  $this->modeleField->get_id() ];
+            }
+            if( isset( $_POST[ $this->versionField->get_id() ] ) ) {
+                $title = $title . " " . $_POST[  $this->versionField->get_id() ];
+            }
+            $data['post_title'] = $title;
+        }
+        return $data;
+    }
+
     public function render_metabox( $post ) {
         wp_nonce_field( basename( __FILE__ ), 'sl_vcl_nonce' );
         $stored_meta = get_post_meta( $post->ID );
         ?>
+
         <div>
             <div class="meta-row">
                 <div class="meta-th">
                     <label for="vcl-title" class="vcl-title">Title</label>
                 </div>
                 <div class="meta-td">
-                    <input type="text" name="vcl-title" id="vcl-title" readonly value="<?php echo $post->post_title; ?>"/>
+                    <input type="text" name="post_title" id="title" readonly value="<?php echo $post->post_title; ?>"/>
                 </div>
             </div>
         </div>
-        <div>
-            <div class="meta-row">
-                <div class="meta-th">
-                    <label for="vcl-marque" class="vcl-row-marque">Marque</label>
-                </div>
-                <div class="meta-td">
-                    <input type="text" name="vcl-marque" id="vcl-marque" value="<?php $this->echo_field( $stored_meta, 'vcl-marque' ); ?>"/>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div class="meta-row">
-                <div class="meta-th">
-                    <label for="vcl-marque" class="vcl-row-modele">Modèle</label>
-                </div>
-                <div class="meta-td">
-                    <input type="text" name="vcl-modele" id="vcl-modele" value=""/>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div class="meta-row">
-                <div class="meta-th">
-                    <label for="vcl-version" class="vcl-row-version">Version</label>
-                </div>
-                <div class="meta-td">
-                    <input type="text" name="vcl-version" id="vcl-version" value=""/>
-                </div>
-            </div>
-        </div>
+
+        <?php $this->fields->echo_fields( $stored_meta ); ?>
+
         <div>
             <div class="meta-row">
                 <div class="meta-th">
@@ -107,24 +110,6 @@ class VehiculeCmb {
             return;
         }
 
-        $this->update_field( $post_id, 'vcl-marque' );
-
-        $title = null;
-        if( isset( $_POST[ 'vcl-marque' ] ) ) {
-            $title = $_POST[ 'vcl-marque' ];
-        }
-//        if( $title != null ) {
-            update_post_meta( $post_id, 'post_title', sanitize_text_field( 'title' ) );
-//        }
-    }
-
-    protected function echo_field( $meta, $field_id ) {
-        if( !empty( $meta[ $field_id ] ) ) echo esc_attr( $meta[ $field_id ][0] );
-    }
-
-    protected function update_field( $post_id, $field_id ) {
-        if( isset( $_POST[ $field_id ] ) ) {
-            update_post_meta( $post_id, $field_id, sanitize_text_field( $_POST[ $field_id ] ) );
-        }
+        $this->fields->save( $post_id );
     }
 }
