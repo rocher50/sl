@@ -5,20 +5,30 @@
 
 namespace Inc\Pages;
 
-class Admin {
+use \Inc\Base\BaseController;
+use \Inc\Api\SettingsApi;
+
+class Admin extends BaseController {
 
     protected $adminTemplatePath = '/templates/admin.php';
 
+    public $settings;
+    public $pages;
+
+    public function __construct() {
+        $this->settings = new SettingsApi();
+        $this->pages = [
+            ['page_title' => 'Sl Plugin',
+            'menu_title' => 'SL',
+            'capability' => 'manage_options',
+            'menu_slug' => 'sl_plugin',
+            'callback' => function() { echo '<h1>Sl Plugin</h1>'; },
+            'icon_url' => 'dashicons-store',
+            'position' => 110]
+        ];
+    }
+
     public function register() {
-        add_action( 'admin_menu', [$this, 'add_admin_pages'] );
-
-    }
-
-    public function add_admin_pages () {
-        add_menu_page( 'SL Plugin', 'SL', 'manage_options', PLUGIN, [$this, 'admin_index'], 'dashicons-store', 110 );
-    }
-
-    public function admin_index() {
-        require_once PLUGIN_PATH . 'templates/admin.php';
+        $this->settings->add_pages( $this->pages )->register();
     }
 }

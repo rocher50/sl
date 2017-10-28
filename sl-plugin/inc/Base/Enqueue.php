@@ -5,7 +5,7 @@
 
 namespace Inc\Base;
 
-class Enqueue {
+class Enqueue extends BaseController {
 
     protected $slCssPath = 'assets/sl.css';
     protected $slJsPath = 'assets/sl.js';
@@ -15,7 +15,7 @@ class Enqueue {
     }
 
     public function enqueue() {
-        wp_enqueue_style( 'slpluginstyle', PLUGIN_URL . $this->slCssPath );
-        wp_enqueue_script( 'slpluginscript', PLUGIN_URL . $this->slJsPath );
+        wp_enqueue_style( 'slpluginstyle', $this->plugin_url . $this->slCssPath );
+        wp_enqueue_script( 'slpluginscript', $this->plugin_url . $this->slJsPath );
     }
 }
