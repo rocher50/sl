@@ -49,7 +49,9 @@ class VehiculeCmb {
             if( isset( $_POST[ $this->versionField->get_id() ] ) ) {
                 $title = $title . " " . $_POST[  $this->versionField->get_id() ];
             }
-            $data['post_title'] = $title;
+            if( $title != null ) {
+                $data['post_title'] = $title;
+            }
         }
         return $data;
     }
