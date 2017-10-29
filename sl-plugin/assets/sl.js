@@ -1,6 +1,7 @@
 jQuery(document).ready(function() {
     jQuery( '.datepicker' ).datepicker({
-      changeMonth: true,
-      changeYear: true
+        changeMonth: true,
+        changeYear: true,
+        showAnim: 'show'
     });
 });
