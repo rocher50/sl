@@ -17,7 +17,7 @@ class VehiculeCmb {
         $this->marqueField = $this->fields->add_field('vcl_marque', 'Marque', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
         $this->modeleField = $this->fields->add_field('vcl_modele', 'Modèle', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
         $this->versionField = $this->fields->add_field('vcl_version', 'Version', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
-        $this->dateImmField = $this->fields->add_field('vcl_date_imm', 'Date d\'immatriculation', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
+        $this->dateImmField = $this->fields->add_field('vcl_date_imm', 'Date d\'immatriculation', 'vcl-row-title', 'meta-th', 'vcl-row-content datepicker', 'meta-td');
     }
 
     public function register() {
