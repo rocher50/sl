@@ -1,0 +1,26 @@
+.meta-row {
+    border-bottom: 1px solid #e9e9e9;
+    padding: 30px;
+}
+.meta-th {
+    display: inline-block;
+    float: left;
+    width: 12%;
+    font-weight: bold;
+}
+.meta-td {
+    display: inline-block;
+    float: right;
+    width: 88%;
+}
+.meta {
+    margin-top: 20px;
+}
+.sl-textarea {
+    height: 100px;
+    width: 75%;
+}
+.vcl-row-content {
+    width: 100%;
+}
+

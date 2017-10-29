@@ -11,13 +11,15 @@ class CmbField {
     protected $label;
     protected $labelClass;
     protected $divLabelClass;
+    protected $inputClass;
     protected $divInputClass;
 
-    function __construct(string $id, $label, $labelClass, $divLabelClass, $divInputClass) {
+    function __construct(string $id, $label, $labelClass, $divLabelClass, $inputClass, $divInputClass) {
         $this->id = $id;
         $this->label = $label;
         $this->labelClass = $labelClass;
         $this->divLabelClass = $divLabelClass;
+        $this->inputClass = $inputClass;
         $this->divInputClass = $divInputClass;
     }
 
@@ -54,7 +56,7 @@ class CmbField {
 
     public function echo_input( $meta ) {
         ?>
-            <input type="text" name="<?php echo $this->id; ?>" id="<?php echo $this->id; ?>" value="<?php $this->echo_field( $meta ); ?>"/>
+            <input type="text" name="<?php echo $this->id; ?>" id="<?php echo $this->id; ?>" class="<?php echo $this->inputClass; ?>" value="<?php $this->echo_field( $meta ); ?>"/>
         <?php
     }
 

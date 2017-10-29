@@ -14,8 +14,8 @@ class CmbFieldSet {
         $this->div_field_class = $div_field_class;
     }
 
-    public function add_field(string $id, $label, $labelClass, $divLabelClass, $divInputClass) {
-        $field = new CmbField( $id, $label, $labelClass, $divLabelClass, $divInputClass );
+    public function add_field(string $id, $label, $labelClass, $divLabelClass, $inputClass, $divInputClass) {
+        $field = new CmbField( $id, $label, $labelClass, $divLabelClass, $inputClass, $divInputClass );
         array_push($this->fields, $field);
         return $field;
     }
@@ -34,11 +34,9 @@ class CmbFieldSet {
 
     protected function echo_field( $field, $meta ) {
         ?>
-        <div>
             <div class="<?php echo $this->div_field_class; ?>">
                 <?php $field->echo_labeled_input( $meta ); ?>
             </div>
-        </div>
         <?php
     }
 }

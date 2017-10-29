@@ -14,9 +14,10 @@ class VehiculeCmb {
 
     function __construct() {
         $this->fields = new CmbFieldSet( 'meta-row' );
-        $this->marqueField = $this->fields->add_field('vcl_marque', 'Marque', 'vcl-row-marque', 'meta-th', 'meta-td');
-        $this->modeleField = $this->fields->add_field('vcl_modele', 'Modèle', 'vcl-row-modele', 'meta-th', 'meta-td');
-        $this->versionField = $this->fields->add_field('vcl_version', 'Version', 'vcl-row-version', 'meta-th', 'meta-td');
+        $this->marqueField = $this->fields->add_field('vcl_marque', 'Marque', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
+        $this->modeleField = $this->fields->add_field('vcl_modele', 'Modèle', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
+        $this->versionField = $this->fields->add_field('vcl_version', 'Version', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
+        $this->dateImmField = $this->fields->add_field('vcl_date_imm', 'Date d\'immatriculation', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
     }
 
     public function register() {
@@ -28,12 +29,12 @@ class VehiculeCmb {
     public function custom_metabox() {
 
         add_meta_box(
-            'vcl_marque',
-            'Marque',
+            'vcl_meta',
+            'Passport de véhicule',
             [$this, 'render_metabox'],
             'vcl',
             'normal',
-            'high'
+            'core'
         );
     }
 
@@ -61,17 +62,15 @@ class VehiculeCmb {
         <div>
             <div class="meta-row">
                 <div class="meta-th">
-                    <label for="vcl-title" class="vcl-title">Title</label>
+                    <label for="post_title" class="vcl-row-title">Titre</label>
                 </div>
                 <div class="meta-td">
-                    <input type="text" name="post_title" id="title" readonly value="<?php echo $post->post_title; ?>"/>
+                    <input type="text" name="post_title" id="title" class="vcl-row-content" readonly value="<?php echo $post->post_title; ?>"/>
                 </div>
             </div>
-        </div>
 
-        <?php $this->fields->echo_fields( $stored_meta ); ?>
-
-        <div>
+            <?php $this->fields->echo_fields( $stored_meta ); ?>
+<!--
             <div class="meta-row">
                 <div class="meta-th">
                     <label for="vcl-date-imm" class="vcl-row-date_imm">Date d'immatriculation</label>
@@ -80,22 +79,23 @@ class VehiculeCmb {
                     <input type="text" name="vcl-date-imm" id="vcl-date-imm" value=""/>
                 </div>
             </div>
-        </div>
-        <div class="meta">
-            <div class="meta-th"/>
-                <span>Remarques</span>
+-->
+            <div class="meta">
+                <div class="meta-th"/>
+                    <span>Remarques</span>
+                </div>
             </div>
-        </div>
-        <div class="meta-editor">
-        <?php
-            $content = get_post_meta( $post->ID, 'remarques', true );
-            $editor = 'remarques';
-            $settings = [
-                'textarea_rows' => 8,
-                'media-buttons' => true
-            ];
-            wp_editor( $content, $editor, $settings );
-        ?>
+            <div class="meta-editor">
+                <?php
+                    $content = get_post_meta( $post->ID, 'vcl_remarques', true );
+                    $editor = 'vcl_remarques';
+                    $settings = [
+                        'textarea_rows' => 8,
+                        'media-buttons' => true
+                    ];
+                    wp_editor( $content, $editor, $settings );
+                ?>
+            </div>
         </div>
         <?php
     }
@@ -111,5 +111,8 @@ class VehiculeCmb {
         }
 
         $this->fields->save( $post_id );
+        if( isset( $_POST['vcl_remarques'] ) ) {
+            update_post_meta( $post_id, 'vcl_remarques', sanitize_text_field( $_POST['vcl_remarques'] ) );
+        }
     }
 }
