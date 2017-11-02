@@ -1,0 +1,46 @@
+.divTable {
+    display:  table;
+    width:auto;
+    background-color:#eee;
+    border:1px solid  #666666;
+    border-spacing:7px;/*cellspacing:poor IE support for  this*/
+    /* border-collapse:separate;*/
+}
+.headRow {
+    display:table-row;
+    width:auto;
+    clear: both;
+    font-weight:bold;
+}
+.divRow {
+    display:table-row;
+    width:auto;
+    clear: both;
+}
+.divCell {
+    float:left;/*fix for  buggy browsers*/
+    display:table-column;
+    width:20px;
+    background-color:#ccc;
+}
+.divEmptyCell {
+    float:left;/*fix for  buggy browsers*/
+    display:table-column;
+    background-color:#ccc;
+    width:20px;
+    margin-bottom:7px;
+}
+
+.container {
+  width: auto;
+  background: #eee;
+  white-space: nowrap;
+}
+
+.container > div {
+  height: auto;
+  width: auto;
+  background: #ccc;
+  display: inline-block;
+  margin: 5px;
+}
