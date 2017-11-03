@@ -7,72 +7,59 @@ namespace Inc\Api;
 
 class Calendar {
 
-    public function renderMonth($tstamp, $month_offset) {
-        echo '<div>';
-        echo '<div class="divTable">';
-        echo '    <div class="container">';
+    public function renderMonth($tstamp, $month_offset, bool $current_day_available) {
+
+        echo '<div class="month">';
+        echo '  <ul>';
 
         if($month_offset  < 1) {
-            echo '    <div><-</div>';
+            echo '  <li class="prev">&#10094;</li>';
         } elseif($month_offset == 1) {
-            echo '    <div><a href="index.php"><-</a></div>';
+            echo '  <li class="prev"><a href="index.php">&#10094;</a></li>';
         } else {
-            echo '    <div><a href="index.php?cal_mo=' . ($month_offset - 1) . '"><-</a></div>';
+            echo '  <li class="prev"><a href="index.php?cal_mo=' . ($month_offset - 1) . '">&#10094;</a></li>';
         }
 
-        echo '        <div>' . date('F', $tstamp) . ', ' . date('Y', $tstamp ) . '</div>';
+        echo '    <li class="next"><a href="index.php?cal_mo=' . ($month_offset + 1) . '">&#10095;</a></li>';
 
-        echo '        <div><a href="index.php?cal_mo=' . ($month_offset + 1) . '">-></a></div>';
+        echo '    <li>' . date('F', $tstamp) . ', <span style="font-size:18px">' . date('Y', $tstamp ) . '</span></li>';
+        echo '  </ul>';
+        echo '</div>';
 
-        echo '    </div>';
-        echo '    <div class="headRow">';
-        echo '        <div class="divCell">L</div>';
-        echo '        <div class="divCell">M</div>';
-        echo '        <div class="divCell">M</div>';
-        echo '        <div class="divCell">J</div>';
-        echo '        <div class="divCell">V</div>';
-        echo '        <div class="divCell">S</div>';
-        echo '        <div class="divCell">D</div>';
+        echo '<ul class="weekdays">';
+        echo '  <li>Lu</li>';
+        echo '  <li>Ma</li>';
+        echo '  <li>Me</li>';
+        echo '  <li>Je</li>';
+        echo '  <li>Ve</li>';
+        echo '  <li>Sa</li>';
+        echo '  <li>Di</li>';
+        echo '</ul>';
 
-        $month_day_start = idate('w', $tstamp);
+        echo '<ul class="days">';
+        $month_day_start = idate('w', mktime(0, 0, 0, idate('m', $tstamp), 1, idate('Y', $tstamp)));
         $i = 0;
         while($i < $month_day_start - 1) {
             $i++;
-            if( $i == 1 ) {
-                echo '</div><div class="divRow">';
-            } elseif( $i == 7 ) {
-                $i = 0;
-            }
-            echo '<div class="divEmptyCell"></div>';
-        }
-        $days_in_month = idate('t', $tstamp);
-/*        $past_days = 0;
-        while($past_days < $days_in_month - $arrlength) {
-            $d++;
-            if( $d == 1 ) {
-                echo '</tr><tr>';
-            } elseif( $d == 7 ) {
-                $d = 0;
-            }
-            $past_days++;
-            echo '<td>' . $past_days . '</td>';
-        }
-*/
-        $d = 0;
-        while($d < $days_in_month) {
-            $i++;
-            if( $i == 1 ) {
-                echo '</div><div class="divRow">';
-            } elseif( $i == 7 ) {
-                $i = 0;
-            }
-            $d++;
-            echo '<div class="divCell">' . $d . '</div>';
+            echo '<li/>';
         }
 
-        echo '    </div>';
-        echo '</div>';
-        echo '</div>';
+        $first_available_day = idate('d', $tstamp);
+        if($current_day_available) {
+            $first_available_day--;
+        }
+        $i = 0;
+        while($i < $first_available_day) {
+            $i++;
+            echo '<li>' . $i . '</li>';
+        }
+
+        $days_in_month = idate('t', $tstamp);
+        while($i < $days_in_month) {
+            $i++;
+            echo '<li><a href="#">' . $i . '</a></li>';
+        }
+        echo '</ul>';
     }
 }
 

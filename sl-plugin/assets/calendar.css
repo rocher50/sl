@@ -1,46 +1,82 @@
-.divTable {
-    display:  table;
-    width:auto;
-    background-color:#eee;
-    border:1px solid  #666666;
-    border-spacing:7px;/*cellspacing:poor IE support for  this*/
-    /* border-collapse:separate;*/
-}
-.headRow {
-    display:table-row;
-    width:auto;
-    clear: both;
-    font-weight:bold;
-}
-.divRow {
-    display:table-row;
-    width:auto;
-    clear: both;
-}
-.divCell {
-    float:left;/*fix for  buggy browsers*/
-    display:table-column;
-    width:20px;
-    background-color:#ccc;
-}
-.divEmptyCell {
-    float:left;/*fix for  buggy browsers*/
-    display:table-column;
-    background-color:#ccc;
-    width:20px;
-    margin-bottom:7px;
+* {box-sizing: border-box;}
+ul {list-style-type: none;}
+body {font-family: Verdana, sans-serif;}
+
+.month {
+    padding: 30px 25px;
+    width: 100%;
+    background: #1abc9c;
+    text-align: center;
 }
 
-.container {
-  width: auto;
-  background: #eee;
-  white-space: nowrap;
+.month ul {
+    margin: 0;
+    padding: 0;
 }
 
-.container > div {
-  height: auto;
-  width: auto;
-  background: #ccc;
-  display: inline-block;
-  margin: 5px;
+.month ul li {
+    color: white;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
 }
+
+.month .prev {
+    float: left;
+    padding-top: 0px;
+}
+
+.month .next {
+    float: right;
+    padding-top: 0px;
+}
+
+.weekdays {
+    margin: 0;
+    padding: 10px 0;
+    background-color: #ddd;
+}
+
+.weekdays li {
+    display: inline-block;
+    width: 12.5%;
+    color: #666;
+    text-align: center;
+}
+
+.days {
+    padding: 10px 0;
+    background: #eee;
+    margin: 0;
+}
+
+.days li {
+    list-style-type: none;
+    display: inline-block;
+    width: 13.6%;
+    text-align: center;
+    margin-bottom: 5px;
+    font-size:12px;
+    color: #777;
+}
+
+.days li .active {
+    padding: 5px;
+    background: #1abc9c;
+    color: white !important
+}
+
+/* Add media queries for smaller screens */
+@media screen and (max-width:720px) {
+    .weekdays li, .days li {width: 13.1%;}
+}
+
+@media screen and (max-width: 420px) {
+    .weekdays li, .days li {width: 12.5%;}
+    .days li .active {padding: 2px;}
+}
+
+@media screen and (max-width: 290px) {
+    .weekdays li, .days li {width: 12.2%;}
+}
+
