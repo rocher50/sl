@@ -57,7 +57,7 @@ class Calendar {
         $days_in_month = idate('t', $tstamp);
         while($i < $days_in_month) {
             $i++;
-            echo '<li><a href="#">' . $i . '</a></li>';
+            echo '<li><span class="na"><a href="#">' . $i . '</span></a></li>';
         }
         echo '</ul>';
     }
