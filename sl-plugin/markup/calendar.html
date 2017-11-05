@@ -3,91 +3,138 @@
 <head>
 
 <style>
-* {box-sizing: border-box;}
-ul {list-style-type: none;}
 
-.month {
+.calendar {
+    border: 1px solid;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    float: left;
+    font-family: Verdana, sans-serif;
+}
+
+.calendar ul {list-style-type: none;}
+.calendar li {
+    box-sizing: border-box;
+    width: 12.28%;
+    border: 1px hidden;
+    border-radius: 5px;
+    margin: 1%;
+    padding: 1%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.calendar .month {
     width: 100%;
     background: #1abc9c;
     text-align: center;
     margin: 0;
     padding: 0;
-    clear: left;
 }
 
-.month ul {
+.calendar .month ul {
     width: 100%;
     margin: 0;
     padding: 0;
     float: left;
-    font-size: 16px;
 }
 
-.month ul li {
+.calendar .month li {
     text-transform: uppercase;
     text-align: center;
-    border: 1px solid;
-    padding: 1%;
-    padding-top: 1.5%;
+    border-style: none;
+    padding-top: 2.4%;
     padding-bottom: 1%;
-    margin: 1%;
     width: 69.44%;
     float: left;
+    color: #555;
+    font-size: 18px;
 }
 
-.month .prev {
+.calendar .month .arrow {
     float: left;
     width: 12.28%;
     margin: 1%;
     padding: 1%;
+    border-style: outset;
+    color: #555;
+    background-color: #eee;
 }
 
-.month .next {
-    float: right;
-    width: 12.28%;
-    margin: 1%;
-    padding: 1%;
+.calendar .month .arrow a:link,
+.calendar .month .arrow a:visited {
+    display: block;
+    text-decoration: none;
+    color: #555;
+}
+.calendar .month .arrow:hover {
+    background-color: #fff;
 }
 
-.weekdays {
+
+.calendar .weekdays {
     width: 100%;
     float: left;
     margin: 0;
     padding: 0;
-    background-color: #ddd;
+    background-color: #fff;
 }
 
-.weekdays li {
+.calendar .weekdays li {
     float: left;
-    width: 12.28%;
-    color: #666;
-    background-color: #ddd;
+    color: #eee;
+    background-color: #999;
     text-align: center;
-    border: 1px solid;
-    margin: 1%;
-    padding: 1%;
 }
 
-.days {
+.calendar .days {
     width: 100%;
     float: left;
     margin: 0;
     padding: 0;
-    background: #eee;
+    background: #fff;
 }
 
-.days li {
+.calendar .days .blank {
     float: left;
-    width: 12.28%;
-    border: 1px solid;
-    margin-right: 0px;
-    padding: 1%;
-    margin: 1%;
     text-align: center;
-    color:#777;
+    color: #fff;
+    background-color: #fff;
+    border-color: #fff;
 }
 
-.after_box {
+.calendar .days .day-av {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #32cd32;
+    border-color: #32cd32;
+}
+
+.calendar .days .day-na {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #ff4500;
+    border-color: #ff4500;
+}
+
+.calendar .days li a:link,
+.calendar .days li a:visited {
+    display: block;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #fff;
+}
+.calendar .days .day-av:hover {
+    text-align: center;
+    background-color: #00ff00;
+    border-color: #00ff00;
+    color: #fff;
+}
+
+.calendar .after_box {
     clear: left;
 }
 
@@ -95,64 +142,66 @@ ul {list-style-type: none;}
 </head>
 <body>
 
-<div style="width: 200px">
+<div style="width: 230px">
 
-<div class="month"> 
-  <ul>
-    <li class="prev">&#10094;</li>
-    <li>August, 2017</li>
-    <li class="next">&#10095;</li>
-  </ul>
+<div class="calendar">
+    <div class="month">
+        <ul>
+            <li class="arrow"><a href="#">&#10094;</a></li>
+            <li>August, 2017</li>
+            <li class="arrow"><a href="#">&#10095;</a></li>
+        </ul>
+    </div>
+
+    <ul class="weekdays">
+        <li>Lu</li>
+        <li>Ma</li>
+        <li>Me</li>
+        <li>Je</li>
+        <li>Ve</li>
+        <li>Sa</li>
+        <li>Di</li>
+    </ul>
+
+    <ul class="days">
+        <li class="blank"/>
+        <li class="blank"/>
+        <li class="day-av"><a href="#">1</a></li>
+        <li class="day-av"><a href="#">2</a></li>
+        <li class="day-av"><a href="#">3</a></li>
+        <li class="day-av"><a href="#">4</a></li>
+        <li class="day-na">5</li>
+        <li class="day-av"><a href="#">6</a></li>
+        <li class="day-na">7</li>
+        <li class="day-na">8</li>
+        <li class="day-av"><a href="#">9</a></li>
+        <li class="day-av"><a href="#">10</a></li>
+        <li class="day-av"><a href="#">11</a></li>
+        <li class="day-av"><a href="#">12</a></li>
+        <li class="day-av"><a href="#">13</a></li>
+        <li class="day-av"><a href="#">14</a></li>
+        <li class="day-av"><a href="#">15</a></li>
+        <li class="day-av"><a href="#">16</a></li>
+        <li class="day-av"><a href="#">17</a></li>
+        <li class="day-av"><a href="#">18</a></li>
+        <li class="day-av"><a href="#">19</a></li>
+        <li class="day-av"><a href="#">20</a></li>
+        <li class="day-av"><a href="#">21</a></li>
+        <li class="day-av"><a href="#">22</a></li>
+        <li class="day-av"><a href="#">23</a></li>
+        <li class="day-av"><a href="#">24</a></li>
+        <li class="day-av"><a href="#">25</a></li>
+        <li class="day-av"><a href="#">26</a></li>
+        <li class="day-av"><a href="#">27</a></li>
+        <li class="day-av"><a href="#">28</a></li>
+        <li class="day-av"><a href="#">29</a></li>
+        <li class="day-av"><a href="#">30</a></li>
+        <li class="day-av"><a href="#">31</a></li>
+    </ul>
+    <div class="after_box"/>
 </div>
-
-<ul class="weekdays">
-  <li>Mo</li>
-  <li>Tu</li>
-  <li>We</li>
-  <li>Th</li>
-  <li>Fr</li>
-  <li>Sa</li>
-  <li>Su</li>
-</ul>
-<div class="after_box"/>
-
-<ul class="days">
-  <li/>
-  <li/>
-  <li>1</li>
-  <li>2</li>
-  <li>3</li>
-  <li>4</li>
-  <li>5</li>
-  <li>6</li>
-  <li>7</li>
-  <li>8</li>
-  <li>9</li>
-  <li>10</li>
-  <li>11</li>
-  <li>12</li>
-  <li>13</li>
-  <li>14</li>
-  <li>15</li>
-  <li>16</li>
-  <li>17</li>
-  <li>18</li>
-  <li>19</li>
-  <li>20</li>
-  <li>21</li>
-  <li>22</li>
-  <li>23</li>
-  <li>24</li>
-  <li>25</li>
-  <li>26</li>
-  <li>27</li>
-  <li>28</li>
-  <li>29</li>
-  <li>30</li>
-  <li>31</li>
-</ul>
-<div class="after_box"/>
 
 </div>
 </body>
 </html>
+

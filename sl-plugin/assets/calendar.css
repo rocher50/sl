@@ -1,86 +1,134 @@
-* {box-sizing: border-box;}
-ul {list-style-type: none;}
-body {font-family: Verdana, sans-serif;}
+.calendar {
+    border: 1px solid;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    float: left;
+    font-family: Verdana, sans-serif;
+}
 
-.month {
-    padding: 15px 15px;
+.calendar ul {list-style-type: none;}
+.calendar li {
+    box-sizing: border-box;
+    width: 12.28%;
+    border: 1px hidden;
+    border-radius: 5px;
+    margin: 1%;
+    padding: 1%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.calendar .month {
     width: 100%;
     background: #1abc9c;
     text-align: center;
-}
-
-.month ul {
     margin: 0;
     padding: 0;
 }
 
-.month ul li {
-    color: white;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-}
-
-.month .prev {
+.calendar .month ul {
+    width: 100%;
+    margin: 0;
+    padding: 0;
     float: left;
-    padding-top: 0px;
 }
 
-.month .next {
-    float: right;
-    padding-top: 0px;
+.calendar .month li {
+    text-transform: uppercase;
+    text-align: center;
+    border-style: none;
+    padding-top: 2.4%;
+    padding-bottom: 1%;
+    width: 69.44%;
+    float: left;
+    color: #555;
+    font-size: 18px;
 }
 
-.weekdays {
+.calendar .month .arrow {
+    float: left;
+    width: 12.28%;
+    margin: 1%;
+    padding: 1%;
+    border-style: outset;
+    color: #555;
+    background-color: #eee;
+}
+
+.calendar .month .arrow a:link,
+.calendar .month .arrow a:visited {
+    display: block;
+    text-decoration: none;
+    color: #555;
+}
+.calendar .month .arrow:hover {
+    background-color: #fff;
+}
+
+
+.calendar .weekdays {
+    width: 100%;
+    float: left;
     margin: 0;
-    padding: 10px 0;
-    background-color: #ddd;
+    padding: 0;
+    background-color: #fff;
 }
 
-.weekdays li {
-    display: inline-block;
-    width: 7%;
-    color: #666;
+.calendar .weekdays li {
+    float: left;
+    color: #eee;
+    background-color: #999;
     text-align: center;
 }
 
-.days {
-    padding: 10px 0;
-    background: #eee;
+.calendar .days {
+    width: 100%;
+    float: left;
     margin: 0;
+    padding: 0;
+    background: #fff;
 }
 
-.days li {
-    list-style-type: none;
-    display: inline-block;
-    width: 8%;
+.calendar .days .blank {
+    float: left;
     text-align: center;
-    margin-bottom: 10px;
-    font-size:12px;
-    color: #777;
+    color: #fff;
+    background-color: #fff;
+    border-color: #fff;
 }
 
-.days li .na {
-    padding: 0px;
+.calendar .days .day-av {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #32cd32;
+    border-color: #32cd32;
 }
 
-.days li .active {
-    padding: 5px;
-    background: #1abc9d;
-    color: white !important
+.calendar .days .day-na {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #ff4500;
+    border-color: #ff4500;
 }
 
-/* Add media queries for smaller screens */
-@media screen and (max-width:720px) {
-    .weekdays li, .days li {width: 13.1%;}
+.calendar .days li a:link,
+.calendar .days li a:visited {
+    display: block;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #fff;
+}
+.calendar .days .day-av:hover {
+    text-align: center;
+    background-color: #00ff00;
+    border-color: #00ff00;
+    color: #fff;
 }
 
-@media screen and (max-width: 420px) {
-    .weekdays li, .days li {width: 12.5%;}
-    .days li .active {padding: 2px;}
-}
-
-@media screen and (max-width: 290px) {
-    .weekdays li, .days li {width: 12.2%;}
+.calendar .after_box {
+    clear: left;
 }
 
