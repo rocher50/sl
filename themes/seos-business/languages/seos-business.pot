@@ -1,0 +1,284 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: Seos Business\n"
+"POT-Creation-Date: 2017-01-31 14:44+0200\n"
+"PO-Revision-Date: 2017-01-31 14:44+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: 404.php:14
+msgid "404 - Page not found"
+msgstr ""
+
+#: 404.php:16
+msgid ""
+"It seems we cannot find what you are looking for? Perhaps try searching."
+msgstr ""
+
+#: Full-width-page.php:18 category.php:17 index.php:13 page.php:13
+#: sidebar-left.php:18 single.php:13 woocommerce.php:15
+msgid "Edit"
+msgstr ""
+
+#: comments.php:11
+msgid "This post is password protected. Enter the password to view comments."
+msgstr ""
+
+#: comments.php:19
+msgid "No Comment"
+msgstr ""
+
+#: comments.php:19
+msgid "One Comment"
+msgstr ""
+
+#: comments.php:19
+msgid "% Comments"
+msgstr ""
+
+#: comments.php:19
+msgid " so far:"
+msgstr ""
+
+#: comments.php:35
+msgid "Comments are closed."
+msgstr ""
+
+#: footer.php:12
+msgid "All rights reserved"
+msgstr ""
+
+#: footer.php:14
+msgid "https://wordpress.org/"
+msgstr ""
+
+#: footer.php:14
+#, php-format
+msgid "Powered by %s"
+msgstr ""
+
+#. Author URI of the plugin/theme
+#: footer.php:20
+msgid "http://seosthemes.com/"
+msgstr ""
+
+#: footer.php:20
+msgid "Seos Business by "
+msgstr ""
+
+#: footer.php:20
+msgid "Seos"
+msgstr ""
+
+#: functions.php:29
+msgid "Menu top"
+msgstr ""
+
+#: functions.php:52
+msgid "Right"
+msgstr ""
+
+#: functions.php:53
+msgid "Display Right sidebar."
+msgstr ""
+
+#: functions.php:58
+msgid "Left"
+msgstr ""
+
+#: functions.php:59
+msgid "Display left sidebar."
+msgstr ""
+
+#: functions.php:76
+msgid "Social Media"
+msgstr ""
+
+#: functions.php:77
+msgid "Social media buttons"
+msgstr ""
+
+#: functions.php:86
+msgid "Enter your Facebook url"
+msgstr ""
+
+#: functions.php:96
+msgid "Enter your Twitter url"
+msgstr ""
+
+#: functions.php:106
+msgid "Enter your Google+ url"
+msgstr ""
+
+#: functions.php:116
+msgid "Enter your Youtube url"
+msgstr ""
+
+#: functions.php:126
+msgid "Enter your Vimeo url"
+msgstr ""
+
+#: functions.php:136
+msgid "Enter your Pinterest url"
+msgstr ""
+
+#: functions.php:146
+msgid "Enter your Linkedin url"
+msgstr ""
+
+#: functions.php:156
+msgid "Enter your RSS url"
+msgstr ""
+
+#: functions.php:173
+msgid " "
+msgstr ""
+
+#: functions.php:175
+msgid "Search"
+msgstr ""
+
+#: functions.php:215
+msgid "Pages:"
+msgstr ""
+
+#: functions.php:221
+msgid "Next page"
+msgstr ""
+
+#: functions.php:222
+msgid "Previous page"
+msgstr ""
+
+#: functions.php:262
+msgid "Upload Logo"
+msgstr ""
+
+#: functions.php:272
+msgid "Logo"
+msgstr ""
+
+#: functions.php:317
+msgid "Hover Color"
+msgstr ""
+
+#: functions.php:334
+msgid "Header Color"
+msgstr ""
+
+#: functions.php:351
+msgid "Nav Hover Color"
+msgstr ""
+
+#: functions.php:391
+msgid "Read More"
+msgstr ""
+
+#: functions.php:437
+msgid "Seos Business Buy"
+msgstr ""
+
+#: functions.php:438 functions.php:467 functions.php:478
+msgid "Seos Business Buy Premium"
+msgstr ""
+
+#: functions.php:468
+msgid "\tLearn more about Seos Business. "
+msgstr ""
+
+#: functions.php:497
+msgid "Home Page Featured IMG"
+msgstr ""
+
+#: functions.php:498
+msgid ""
+"Post your Title, IMG and URL. Featured IMG will appear only on your home "
+"page."
+msgstr ""
+
+#: functions.php:508
+msgid "Activate."
+msgstr ""
+
+#: functions.php:522
+msgid "Read More..."
+msgstr ""
+
+#: functions.php:527
+msgid "Your Title Text:"
+msgstr ""
+
+#: functions.php:543
+msgid "Your IMG Upload:"
+msgstr ""
+
+#: functions.php:554
+msgid "Enter your slide url"
+msgstr ""
+
+#: inc/premium-options.php:29
+msgid "Buy"
+msgstr ""
+
+#: inc/premium-options.php:29
+msgid " Now"
+msgstr ""
+
+#: search.php:27
+msgid "No results found. Try again."
+msgstr ""
+
+#: single.php:19
+msgid "<span class=\"meta-nav\">&larr;</span> previous - "
+msgstr ""
+
+#: single.php:21
+msgid "next <span class=\"meta-nav\">&rarr;</span>"
+msgstr ""
+
+#: single.php:25
+msgid "Posted by:"
+msgstr ""
+
+#: single.php:25
+msgid "on"
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "Seos Business"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+msgid "http://seosthemes.com/seos-business/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Seos Business is the 2015 theme, dark multi-purpose theme with a responsive "
+"2 column layout. Seos Business is 100% responsive built with HTML5 & CSS3, "
+"it’s SEO friendly. The theme is tested for speed there are no mistakes in "
+"the HTML code. We designed it using a mobile-first approach, meaning your "
+"content takes center-stage, regardless of whether your visitors arrive by "
+"smartphone, tablet, laptop, or desktop computer.  Customizer: background "
+"color, header color, nav color, hover color, header image, background image, "
+"social media buttons, upload logo. To learn more about the theme please see "
+"theme homepage."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "SEOS - Tsvetomir Tsvetanov"
+msgstr ""

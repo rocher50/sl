@@ -1,0 +1,89 @@
+/*--------------------------------------------------------------
+ #Animated Elements
+--------------------------------------------------------------- */
+
+.animateblock {
+	opacity: 0;
+	-webkit-transition: all 0.55s linear;
+	-moz-transition: all 0.55s linear;
+	transition: all 0.55s linear; 
+	-webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+	z-index: 99999; 
+}
+
+.animateblock.animated {
+	opacity: 1;
+}
+
+
+/****************** Animateblock zoomIn *************/
+
+.animateblock.zoomIn {
+  -webkit-animation-name: none;
+  animation-name: none;
+}
+  
+  .animateblock.zoomIn.animated  {
+  -webkit-animation-name: zoomIn;
+  animation-name: zoomIn;
+}
+
+/****************** Animateblock zoomInDown *************/
+
+.animateblock.zoomInDown {
+  -webkit-animation-name: none;
+  animation-name: none;
+}
+  
+  .animateblock.zoomInDown.animated  {
+  -webkit-animation-name: zoomInDown;
+  animation-name: zoomInDown;
+}
+
+
+/****************** Animateblock zoomInLeft *************/
+
+.animateblock.zoomInLeft {
+  -webkit-animation-name: none;
+  animation-name: none;
+}
+  
+  .animateblock.zoomInLeft.animated  {
+  -webkit-animation-name: zoomInLeft;
+  animation-name: zoomInLeft;
+}
+
+/****************** Animateblock zoomInRight *************/
+
+.animateblock.zoomInRight {
+  -webkit-animation-name: none;
+  animation-name: none;
+}
+  
+  .animateblock.zoomInRight.animated  {
+  -webkit-animation-name: zoomInRight;
+  animation-name: zoomInRight;
+}
+
+/****************** Animateblock zoomInUp *************/
+
+.animateblock.zoomInUp {
+  -webkit-animation-name: none;
+  animation-name: none;
+}
+  
+  .animateblock.zoomInUp.animated  {
+  -webkit-animation-name: zoomInUp;
+  animation-name: zoomInUp;
+}
+
+
+

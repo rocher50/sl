@@ -35,7 +35,7 @@ class Calendar {
         echo '  <li>Sa</li>';
         echo '  <li>Di</li>';
         echo '</ul>';
-        echo '<div class="after_box"/>';
+//        echo '<div class="after_box"/>';
 
         echo '<ul class="days">';
         $month_day_start = idate('w', mktime(0, 0, 0, idate('m', $tstamp), 1, idate('Y', $tstamp)));
@@ -61,7 +61,7 @@ class Calendar {
             echo '<li class="day-av"><a href="#">' . $i . '</a></li>';
         }
         echo '</ul>';
-        echo '<div class="after_box"/>';
+//        echo '<div class="after_box"/>';
         echo '</div>';
     }
 }
