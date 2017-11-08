@@ -55,15 +55,15 @@
     color: #555;
     background-color: #eee;
 }
+.calendar .month .arrow:hover {
+    background-color: #fff;
+}
 
 .calendar .month .arrow a:link,
 .calendar .month .arrow a:visited {
     display: block;
     text-decoration: none;
     color: #555;
-}
-.calendar .month .arrow:hover {
-    background-color: #fff;
 }
 
 
@@ -112,6 +112,14 @@
     color: #fff;
     background-color: #ff4500;
     border-color: #ff4500;
+}
+
+.calendar .days .day-past {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #eee;
+    border-color: #fff;
 }
 
 .calendar .days li a:link,

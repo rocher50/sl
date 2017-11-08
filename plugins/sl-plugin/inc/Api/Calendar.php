@@ -7,14 +7,14 @@ namespace Inc\Api;
 
 class Calendar {
 
-    public function renderMonth($tstamp, $month_offset, bool $current_day_available) {
+    public function renderMonth($tstamp, bool $current_day_active, array $days_na, $month_offset) {
 
         echo '<div class="calendar">';
         echo '<div class="month">';
         echo '  <ul>';
 
         if($month_offset  < 1) {
-            echo '  <li class="arrow">&#10094;</li>';
+            echo '  <li class="arrow disabled">&#10094;</li>';
         } elseif($month_offset == 1) {
             echo '  <li class="arrow"><a href="index.php">&#10094;</a></li>';
         } else {
@@ -45,24 +45,42 @@ class Calendar {
             echo '<li class="blank"/>';
         }
 
-        $first_available_day = idate('d', $tstamp);
-        if($current_day_available) {
-            $first_available_day--;
+        $first_active_day = idate('d', $tstamp);
+        if($current_day_active) {
+            $first_active_day--;
         }
         $i = 0;
-        while($i < $first_available_day) {
+        while($i < $first_active_day) {
             $i++;
-            echo '<li class="day-na">' . $i . '</li>';
+            echo '<li class="day-past">' . $i . '</li>';
         }
 
         $days_in_month = idate('t', $tstamp);
         while($i < $days_in_month) {
             $i++;
-            echo '<li class="day-av"><a href="#">' . $i . '</a></li>';
+            if($this->is_day_na($days_na, $i)) {
+                echo '<li class="day-na">' . $i . '</li>';
+            } else {
+                echo '<li class="day-av"><a href="#">' . $i . '</a></li>';
+            }
         }
         echo '</ul>';
 //        echo '<div class="after_box"/>';
         echo '</div>';
+    }
+
+    private function is_day_na( array $days_na, $day ) {
+        $i = 0; 
+        $arrlength = count($days_na);
+        while($i < $arrlength) {
+            if($day == $days_na[$i]) {
+                return true;
+            } else if($day < $days_na[$i]) {
+                return false;
+            }
+            $i++;
+        }
+        return false;
     }
 }
 
