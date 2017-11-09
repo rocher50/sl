@@ -105,6 +105,26 @@
     background-color: #32cd32;
     border-color: #32cd32;
 }
+.calendar .days .day-av:hover {
+    text-align: center;
+    background-color: #00ff00;
+    border-color: #00ff00;
+    color: #fff;
+}
+
+.calendar .days .day-pav {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #ff8c00;
+    border-color: #ff8c00;
+}
+.calendar .days .day-pav:hover {
+    text-align: center;
+    background-color: #ffde00;
+    border-color: #ffaa00;
+    color: #fff;
+}
 
 .calendar .days .day-na {
     float: left;
@@ -127,12 +147,6 @@
     display: block;
     box-sizing: border-box;
     text-decoration: none;
-    color: #fff;
-}
-.calendar .days .day-av:hover {
-    text-align: center;
-    background-color: #00ff00;
-    border-color: #00ff00;
     color: #fff;
 }
 

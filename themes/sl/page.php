@@ -20,7 +20,7 @@
                     <h3><?php the_title(); ?></h3>
                     <?php the_post_thumbnail('flotte-thumbnail'); ?>
                 </div>
-                <div style="float: left; width: 30%; padding-top: 50px">
+                <div style="float: left; width: 30%; padding-top: 30px">
                                 <?php
                                     $tstamp = time();
                                     $month_offset = 0;
@@ -34,7 +34,7 @@
                                             $current_day_active = false;
                                         }
                                     }
-                                    $calendar = new Calendar(); $calendar->renderMonth($tstamp, $current_day_active, [3, 17, 20], $month_offset);
+                                    $calendar = new Calendar(); $calendar->renderMonth($tstamp, $current_day_active, [[3, 'day-na', false], [17, 'day-pav', true], [20, 'day-pav', true], [26, 'day-na', false]], $month_offset);
                                 ?>
                 </div>
                 <div style="clear: left"/>

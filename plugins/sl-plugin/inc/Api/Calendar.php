@@ -58,8 +58,17 @@ class Calendar {
         $days_in_month = idate('t', $tstamp);
         while($i < $days_in_month) {
             $i++;
-            if($this->is_day_na($days_na, $i)) {
-                echo '<li class="day-na">' . $i . '</li>';
+            $day_style = $this->get_day_style($days_na, $i);
+            if($day_style != null) {
+                echo '<li class="' . $day_style[1] . '">';
+                if($day_style[2]) {
+                    echo '<a href="#">';
+                }
+                echo $i;
+                if($day_style[2]) {
+                    echo '</a>';
+                }
+                echo '</li>';
             } else {
                 echo '<li class="day-av"><a href="#">' . $i . '</a></li>';
             }
@@ -69,18 +78,18 @@ class Calendar {
         echo '</div>';
     }
 
-    private function is_day_na( array $days_na, $day ) {
+    private function get_day_style( array $days_na, $day ) {
         $i = 0; 
         $arrlength = count($days_na);
         while($i < $arrlength) {
-            if($day == $days_na[$i]) {
-                return true;
-            } else if($day < $days_na[$i]) {
-                return false;
+            if($day == $days_na[$i][0]) {
+                return $days_na[$i];
+            } else if($day < $days_na[$i][0]) {
+                return null;
             }
             $i++;
         }
-        return false;
+        return null;
     }
 }
 
