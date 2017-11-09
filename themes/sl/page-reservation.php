@@ -9,6 +9,10 @@
     ];
     $the_query = new WP_Query($args);
 
+?>
+<h1>Reservation</h1>
+<?php
+
     if($the_query->have_posts()) {
         while($the_query->have_posts()) {
             $the_query->the_post(); ?>
@@ -34,9 +38,7 @@
                                             $current_day_active = false;
                                         }
                                     }
-                                    $day_link = '/reservation?vcl=' . get_the_ID();
-                                    $calendar = new Calendar();
-                                    $calendar->renderMonth([
+                                    $calendar = new Calendar(); $calendar->renderMonth([
                                         'tstamp' => $tstamp,
                                         'current_day_active' => $current_day_active,
                                         'agenda' => [
@@ -45,7 +47,7 @@
                                             [20, 'day-pav', true],
                                             [26, 'day-na', false]],
                                         'month_offset' => $month_offset,
-                                        'day_link' => $day_link
+                                        'day_link' => 'reservation'
                                     ]);
                                 ?>
                 </div>
