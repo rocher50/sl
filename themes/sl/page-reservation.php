@@ -1,63 +1,24 @@
 <?php
 
     get_header();
-
-    use \Inc\Api\Calendar;
-
-    $args = [
-        'post_type' => 'vcl'
-    ];
-    $the_query = new WP_Query($args);
-
 ?>
-<h1>Reservation</h1>
+    <div style="width: 50%; margin: 0 auto;">
+        <form id="reservation">
+            <?php wp_nonce_field( basename(__FILE__), 'user-submitted-reservation' ); ?>
+            <input type="text" id="rsrv-user-name" name="rsrv-user-name" placeholder="Nom" style="width: 100%; margin-bottom: 10px">
+            <input type="text" id="rsrv-user-email" name="rsrv-user-email" placeholder="Email" style="width: 100%; margin-bottom: 10px">
+            <select name="vcl" id="rsrv-vcl" style="width: 100%; margin-bottom: 10px">
+                <option value=""/>
+                <option value="Citroyen">Citroyen</option>
+                <option value="Opel">Opel</option>
+                <option value="Renault">Renault</option>
+            </select>
+            <label for="rsrv-remarques" style="display: block; width: 100%">Remarques:</label>
+            <textarea name="rsrv-remarques" id="rsrv-remarques" cols="30" rows="10" style="width: 100%; margin-bottom: 10px"></textarea>
+            <input type="text" id="xyq" name="<?php echo apply_filters( 'honeypot_name', 'date-submitted' ); ?>" value="" style="display: none">
+            <input type="submit" id="user-submit-button" value="Envoyer">
+        </form>
+    </div>
 <?php
-
-    if($the_query->have_posts()) {
-        while($the_query->have_posts()) {
-            $the_query->the_post(); ?>
-
-            <article class="post">
-
-
-                <div style="float: left; width: 70%">
-                    <h3><?php the_title(); ?></h3>
-                    <?php the_post_thumbnail('flotte-thumbnail'); ?>
-                </div>
-                <div style="float: left; width: 30%; padding-top: 30px">
-                                <?php
-                                    $tstamp = time();
-                                    $month_offset = 0;
-                                    $current_day_active = (12 - idate('H', $tstamp)) >= 2;
-                                    if( isset($_GET['cal_mo']) ) {
-                                        $month_offset = $_GET['cal_mo'];
-                                        if($month_offset > 0) {
-                                            $tstamp = mktime(0, 0, 0, idate('m', $tstamp) + $month_offset, 1, idate('Y', $tstamp));
-                                            $current_day_active = true;
-                                        } elseif( $month_offset < 0 ) {
-                                            $current_day_active = false;
-                                        }
-                                    }
-                                    $calendar = new Calendar(); $calendar->renderMonth([
-                                        'tstamp' => $tstamp,
-                                        'current_day_active' => $current_day_active,
-                                        'agenda' => [
-                                            [3, 'day-na', false],
-                                            [17, 'day-pav', true],
-                                            [20, 'day-pav', true],
-                                            [26, 'day-na', false]],
-                                        'month_offset' => $month_offset,
-                                        'day_link' => 'reservation'
-                                    ]);
-                                ?>
-                </div>
-                <div style="clear: left"/>
-
-            </article>
-        <?php }
-    } else {
-        echo '<p>No content found</p>';
-    }
-
     get_footer();
 ?>

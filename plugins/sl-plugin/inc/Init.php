@@ -14,6 +14,10 @@ final class Init {
             Base\Vcl\VehiculeCpt::class,
             Base\Vcl\VehiculeCmb::class,
 
+            Base\Vcl\ReservationCpt::class,
+            Base\Vcl\ReservationCmb::class,
+            Base\Vcl\ReservationHandler::class,
+
             Pages\Admin::class
         ];
     }
