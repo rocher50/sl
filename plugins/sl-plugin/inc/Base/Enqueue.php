@@ -18,6 +18,7 @@ class Enqueue extends BaseController {
 
     public function enqueue_theme_scripts() {
         wp_enqueue_style( 'slcalendar', $this->plugin_url . $this->slCalCssPath );
+        wp_enqueue_script('slcalscript', $this->plugin_url . 'assets/calendar.js');
     }
 
     public function enqueue_admin_scripts() {

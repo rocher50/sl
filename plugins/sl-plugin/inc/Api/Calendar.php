@@ -23,16 +23,16 @@ class Calendar {
 <?php
         } elseif($month_offset == 1) {
 ?>
-                    <li class="arrow"><a href="<?php get_page_link(); ?>?cal_mo=0">&#10094;</a></li>
+                    <li class="arrow"><a id="month_prev" href="<?php get_page_link(); ?>?cal_mo=0">&#10094;</a></li>
 <?php
         } else {
 ?>
-                    <li class="arrow"><a href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset - 1); ?>">&#10094;</a></li>
+                    <li class="arrow"><a id="month_prev" href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset - 1); ?>">&#10094;</a></li>
 <?php
         }
 ?>
                     <li><?php echo date('F', $tstamp); ?>, <?php echo $year; ?></li>
-                    <li class="arrow"><a href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset + 1); ?>">&#10095;</a></li>
+                    <li class="arrow"><a id="month_next" href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset + 1); ?>">&#10095;</a></li>
                 </ul>
             </div>
 
@@ -73,7 +73,8 @@ class Calendar {
 
         $agenda = $args['agenda'];
         $days_in_month = idate('t', $tstamp);
-        $day_link = $args['day_link'] . ',y=' . $year . ',m=' . date('m', $tstamp) . ',d=';
+        $month = date('m', $tstamp);
+        $day_link = '#';//$args['day_link'] . ',y=' . $year . ',m=' . date('m', $tstamp) . ',d=';
         while($i < $days_in_month) {
             $i++;
             $day_style = $this->get_day_style($agenda, $i);
@@ -83,7 +84,7 @@ class Calendar {
 <?php
                 if($day_style[2]) {
 ?>
-                    <a href=<?php echo ($day_link . $i); ?>>
+                    <a href="#" onclick="calDayHandler(<?php echo $year; ?>, <?php echo $month; ?>, <?php echo $i; ?>)">
 <?php
                 }
                 echo $i;
@@ -97,7 +98,7 @@ class Calendar {
 <?php
             } else {
 ?>
-                <li class="day-av"><a href=<?php echo ($day_link . $i); ?>><?php echo $i; ?></a></li>
+                <li class="day-av"><a href="#" onclick="calDayHandler(<?php echo $year; ?>, <?php echo $month; ?>, <?php echo $i; ?>)"><?php echo $i; ?></a></li>
 <?php
             }
         }

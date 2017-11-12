@@ -20,6 +20,9 @@
                     } else {
                         alert('this failed');
                     }
+                },
+                error: function(response) {
+                    alert('there was an error');
                 }
             });
         };
