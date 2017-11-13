@@ -154,9 +154,21 @@
     clear: left;
 }
 
-.calendar .year-var {
+
+.calendar .args {
     display: none
 }
-.calendar .month-var {
+
+.calendar .args p {
     display: none
 }
+.calendar .args .arg {
+    display: none;
+}
+.calendar .args .arg .arg-name {
+    display: none;
+}
+.calendar .args .arg .arg-value {
+    display: none;
+}
+

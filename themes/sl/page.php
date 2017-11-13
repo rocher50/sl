@@ -34,7 +34,6 @@
                                             $current_day_active = false;
                                         }
                                     }
-                                    $day_link = '/reservation?vcl=' . get_the_ID();
                                     $calendar = new Calendar();
                                     $calendar->renderMonth([
                                         'tstamp' => $tstamp,
@@ -45,7 +44,9 @@
                                             [20, 'day-pav', true],
                                             [26, 'day-na', false]],
                                         'month_offset' => $month_offset,
-                                        'day_link' => $day_link
+                                        'extra_args' => [
+                                            'vcl' => $the_query->post->ID
+                                        ]
                                     ]);
                                 ?>
                 </div>

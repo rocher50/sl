@@ -15,8 +15,27 @@ class Calendar {
         $year = date('Y', $tstamp);
         $month = date('m', $tstamp);
 ?>
-            <p class="year-var"><?php echo $year; ?></p>
-            <p class="month-var"><?php echo $month; ?></p>
+            <div class="args">
+                <div class="arg">
+                    <p class="arg-name">year</p>
+                    <p class="arg-value"><?php echo $year; ?></p>
+                </div>
+                <div class="arg">
+                    <p class="arg-name">month</p>
+                    <p class="arg-value"><?php echo $month; ?></p>
+                </div>
+<?php
+        $extraArgs = $args['extra_args'];
+        if($extraArgs != null) {
+            foreach($extraArgs as $key => $value) {
+                ?><div class="arg">
+                      <p class="arg-name"><?php echo $key; ?></p>
+                      <p class="arg-value"><?php echo $value; ?></p>
+                  </div><?php
+            }
+        }
+?>
+            </div>
 
             <div class="month">
                 <ul>
