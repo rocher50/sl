@@ -154,3 +154,9 @@
     clear: left;
 }
 
+.calendar .year-var {
+    display: none
+}
+.calendar .month-var {
+    display: none
+}

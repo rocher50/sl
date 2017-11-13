@@ -10,11 +10,17 @@ class Calendar {
     public function renderMonth(array $args) {
 ?>
         <div class="calendar">
-            <div class="month">
-                <ul>
 <?php
         $tstamp = $args['tstamp'];
         $year = date('Y', $tstamp);
+        $month = date('m', $tstamp);
+?>
+            <p class="year-var"><?php echo $year; ?></p>
+            <p class="month-var"><?php echo $month; ?></p>
+
+            <div class="month">
+                <ul>
+<?php
         $month_offset = $args['month_offset'];
 
         if($month_offset  < 1) {
@@ -73,32 +79,18 @@ class Calendar {
 
         $agenda = $args['agenda'];
         $days_in_month = idate('t', $tstamp);
-        $month = date('m', $tstamp);
-        $day_link = '#';//$args['day_link'] . ',y=' . $year . ',m=' . date('m', $tstamp) . ',d=';
         while($i < $days_in_month) {
             $i++;
             $day_style = $this->get_day_style($agenda, $i);
             if($day_style != null) {
 ?>
                 <li class="<?php echo $day_style[1]; ?>">
-<?php
-                if($day_style[2]) {
-?>
-                    <a href="#" onclick="calDayHandler(<?php echo $year; ?>, <?php echo $month; ?>, <?php echo $i; ?>)">
-<?php
-                }
-                echo $i;
-                if($day_style[2]) {
-?>
-                    </a>
-<?php
-                }
-?>
+                    <?php if($day_style[2]) { ?><a href="#"><?php } echo $i; if($day_style[2]) { ?></a><?php } ?>
                 </li>
 <?php
             } else {
 ?>
-                <li class="day-av"><a href="#" onclick="calDayHandler(<?php echo $year; ?>, <?php echo $month; ?>, <?php echo $i; ?>)"><?php echo $i; ?></a></li>
+                <li class="day-av"><a href="#"><?php echo $i; ?></a></li>
 <?php
             }
         }
