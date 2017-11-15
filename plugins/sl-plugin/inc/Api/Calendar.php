@@ -17,11 +17,11 @@ class Calendar {
 ?>
             <div class="args">
                 <div class="arg">
-                    <p class="arg-name">year</p>
+                    <p class="arg-name">cal_year</p>
                     <p class="arg-value"><?php echo $year; ?></p>
                 </div>
                 <div class="arg">
-                    <p class="arg-name">month</p>
+                    <p class="arg-name">cal_month</p>
                     <p class="arg-value"><?php echo $month; ?></p>
                 </div>
 <?php

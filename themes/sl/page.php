@@ -45,7 +45,7 @@
                                             [26, 'day-na', false]],
                                         'month_offset' => $month_offset,
                                         'extra_args' => [
-                                            'vcl' => $the_query->post->ID
+                                            'cal_vcl' => $the_query->post->ID
                                         ]
                                     ]);
                                 ?>
