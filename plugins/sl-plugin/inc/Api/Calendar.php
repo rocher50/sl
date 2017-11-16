@@ -46,18 +46,14 @@ class Calendar {
 ?>
                     <li class="arrow disabled">&#10094;</li>
 <?php
-        } elseif($month_offset == 1) {
-?>
-                    <li class="arrow"><a id="month_prev" href="<?php get_page_link(); ?>?cal_mo=0">&#10094;</a></li>
-<?php
         } else {
 ?>
-                    <li class="arrow"><a id="month_prev" href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset - 1); ?>">&#10094;</a></li>
+                    <li class="arrow"><a href="#">&#10094;</a></li>
 <?php
         }
 ?>
                     <li><?php echo date('F', $tstamp); ?>, <?php echo $year; ?></li>
-                    <li class="arrow"><a id="month_next" href="<?php get_page_link(); ?>?cal_mo=<?php echo ($month_offset + 1); ?>">&#10095;</a></li>
+                    <li class="arrow"><a href="#">&#10095;</a></li>
                 </ul>
             </div>
 
