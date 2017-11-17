@@ -11,30 +11,57 @@ class Calendar {
 ?>
         <div class="calendar">
 <?php
-        $year = $this->get_param('cal_year');
-        if($year == null) {
-            $tstamp = time();
-            $year = date('Y', $tstamp);
-            $month = date('m', $tstamp);
+        $currentTstmp = time();
+        $setTstmp;
+
+        $setYear = $this->get_param('cal_year');
+        $setMonth;
+        $setDay;
+        $firstActiveDay;
+        $enablePrevMonth = false;
+        if($setYear == null) {
+            $setTstmp = $currentTstmp;
+            $setYear = date('Y', $setTstmp);
+            $setMonth = date('m', $setTstmp);
+            $setDay = date('d', $setTstmp);
+            $firstActiveDay = $setDay;
+            if(12 - idate('H', $setTstmp) < 2) {
+                $firstActiveDay++;
+            }
         } else {
-            $month = $this->get_param('cal_month');
+            $setMonth = $this->get_param('cal_month');
             $monthChange = $this->get_param('cal_month_change');
             if($monthChange != null) {
-                $month = $month + $monthChange;
+                $setMonth = $setMonth + $monthChange;
             }
-            $tstamp = mktime(0, 0, 0, $month, 1, $year);
+            $setDay = 1;
+            $setTstmp = mktime(0, 0, 0, $setMonth, $setDay, $setYear);
+
+            if($setYear == idate('Y', $currentTstmp) &&
+                    $setMonth == idate('m', $currentTstmp)) {
+                if($setDay <= idate('d', $currentTstmp)) {
+                    $firstActiveDay = idate('d', $currentTstmp);
+                    if(12 - idate('H', $currentTstmp) < 2) {
+                        $firstActiveDay++;
+                    }
+                } else {
+                    $firstActiveDay = $setDay;
+                }
+            } else if($setTstmp > $currentTstmp) {
+                $firstActiveDay = $setDay;
+                $enablePrevMonth = true;
+            }
         }
 
-        $current_day_active = (12 - idate('H', $tstamp)) >= 2;
 ?>
             <div class="args">
                 <div class="arg">
                     <p class="arg-name">cal_year</p>
-                    <p class="arg-value"><?php echo $year; ?></p>
+                    <p class="arg-value"><?php echo $setYear; ?></p>
                 </div>
                 <div class="arg">
                     <p class="arg-name">cal_month</p>
-                    <p class="arg-value"><?php echo $month; ?></p>
+                    <p class="arg-value"><?php echo $setMonth; ?></p>
                 </div>
 <?php
         $extraArgs = $args['extra_args'];
@@ -52,9 +79,7 @@ class Calendar {
             <div class="month">
                 <ul>
 <?php
-        $enable_past = true;
-
-        if($enable_past) {
+        if($enablePrevMonth) {
 ?>
                     <li class="arrow"><a href="#">&#10094;</a></li>
 <?php
@@ -64,7 +89,7 @@ class Calendar {
 <?php
         }
 ?>
-                    <li><?php echo date('F', $tstamp); ?>, <?php echo $year; ?></li>
+                    <li><?php echo date('F', $setTstmp); ?>, <?php echo $setYear; ?></li>
                     <li class="arrow"><a href="#">&#10095;</a></li>
                 </ul>
             </div>
@@ -82,42 +107,43 @@ class Calendar {
 
             <ul class="days">
 <?php
-        $month_day_start = idate('w', mktime(0, 0, 0, idate('m', $tstamp), 1, idate('Y', $tstamp)));
-        $i = 0;
-        while($i < $month_day_start - 1) {
-            $i++;
-?>
-                <li class="blank"/>
-<?php
-        }
-
-        $first_active_day = idate('d', $tstamp);
-        if($current_day_active) {
-            $first_active_day--;
+        $monthFirstDay = idate('w', mktime(0, 0, 0, $setMonth, 1, $setYear));
+        if($monthFirstDay == 0) {
+            $monthFirstDay = 7;
         }
         $i = 0;
-        while($i < $first_active_day) {
+        while($i < $monthFirstDay - 1) {
             $i++;
-?>
-                <li class="day-past"><?php echo $i; ?></li>
-<?php
+            ?><li class="blank"/><?php
         }
 
-        $agenda = $args['agenda'];
-        $days_in_month = idate('t', $tstamp);
-        while($i < $days_in_month) {
-            $i++;
-            $day_style = $this->get_day_style($agenda, $i);
-            if($day_style != null) {
+        $daysInMonth = idate('t', $setTstmp);
+        $i = 0;
+        if(isset($firstActiveDay)) {
+            while($i < $firstActiveDay - 1) {
+                $i++;
+                ?><li class="day-past"><?php echo $i; ?></li><?php
+            }
+            $agenda = $args['agenda'];
+            while($i < $daysInMonth) {
+                $i++;
+                $day_style = $this->get_day_style($agenda, $i);
+                if($day_style != null) {
 ?>
-                <li class="<?php echo $day_style[1]; ?>">
-                    <?php if($day_style[2]) { ?><a href="#"><?php } echo $i; if($day_style[2]) { ?></a><?php } ?>
-                </li>
+                    <li class="<?php echo $day_style[1]; ?>">
+                        <?php if($day_style[2]) { ?><a href="#"><?php } echo $i; if($day_style[2]) { ?></a><?php } ?>
+                    </li>
 <?php
-            } else {
+                } else {
 ?>
-                <li class="day-av"><a href="#"><?php echo $i; ?></a></li>
+                    <li class="day-av"><a href="#"><?php echo $i; ?></a></li>
 <?php
+                }
+            }
+        } else {
+            while($i < $daysInMonth) {
+                $i++;
+                ?><li class="day-past"><?php echo $i; ?></li><?php
             }
         }
 ?>
