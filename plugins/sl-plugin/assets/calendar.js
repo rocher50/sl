@@ -41,7 +41,7 @@
             var calendar = monthArrow.parentElement.parentElement.parentElement.parentElement;
             addCalendarArgs(calendar, form);
             addFormInput(form, 'cal_month_change', action);
-            submitForm(form, "/", "post");
+            submitForm(form, "/agenda", "post");
         };
 
         var handleDayClick = function(day) {

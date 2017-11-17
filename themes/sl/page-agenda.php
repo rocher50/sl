@@ -2,6 +2,8 @@
 
     get_header();
 
+    use \Inc\Api\Calendar;
+
 
     $vclId = get_param('cal_vcl');
     if($vclId) {
@@ -14,7 +16,19 @@
             </div>
             <div style="float: left; width: 30%; padding-top: 30px">
                 <p>Le jour choisi: <?php echo get_param('cal_day') . '.' . get_param('cal_month') . '.' . get_param('cal_year') ?>
-                <p>Action: <?php echo get_param('cal_month_change') ?>
+                    <?php
+                        $calendar = new Calendar();
+                        $calendar->renderMonth([
+                           'agenda' => [
+                               [3, 'day-na', false],
+                               [17, 'day-pav', true],
+                               [20, 'day-pav', true],
+                               [26, 'day-na', false]],
+                           'extra_args' => [
+                               'cal_vcl' => $vclId
+                           ]
+                       ]);
+                    ?>
             </div>
             <div style="clear: left"/>
         </article>

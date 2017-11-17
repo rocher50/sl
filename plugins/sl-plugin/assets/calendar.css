@@ -142,6 +142,14 @@
     border-color: #fff;
 }
 
+.calendar .days .day-picked {
+    float: left;
+    text-align: center;
+    color: #fff;
+    background-color: #6495ED;
+    border-color: #fff;
+}
+
 .calendar .days li a:link,
 .calendar .days li a:visited {
     display: block;

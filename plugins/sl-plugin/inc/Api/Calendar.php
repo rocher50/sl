@@ -34,21 +34,21 @@ class Calendar {
             if($monthChange != null) {
                 $setMonth = $setMonth + $monthChange;
             }
-            $setDay = 1;
-            $setTstmp = mktime(0, 0, 0, $setMonth, $setDay, $setYear);
+            $setDay = $this->get_param('cal_day');
+            if($setDay == null) {
+                $setTstmp = mktime(0, 0, 0, $setMonth, 1, $setYear);
+            } else {
+                $setTstmp = mktime(0, 0, 0, $setMonth, $setDay, $setYear);
+            }
 
             if($setYear == idate('Y', $currentTstmp) &&
                     $setMonth == idate('m', $currentTstmp)) {
-                if($setDay <= idate('d', $currentTstmp)) {
-                    $firstActiveDay = idate('d', $currentTstmp);
-                    if(12 - idate('H', $currentTstmp) < 2) {
-                        $firstActiveDay++;
-                    }
-                } else {
-                    $firstActiveDay = $setDay;
+                $firstActiveDay = idate('d', $currentTstmp);
+                if(12 - idate('H', $currentTstmp) < 2) {
+                    $firstActiveDay++;
                 }
             } else if($setTstmp > $currentTstmp) {
-                $firstActiveDay = $setDay;
+                $firstActiveDay = 1;
                 $enablePrevMonth = true;
             }
         }
@@ -127,6 +127,11 @@ class Calendar {
             $agenda = $args['agenda'];
             while($i < $daysInMonth) {
                 $i++;
+                if($i == $setDay) {
+                    ?><li class="day-picked"><?php echo $i; ?></li><?php
+                    continue;
+                }
+
                 $day_style = $this->get_day_style($agenda, $i);
                 if($day_style != null) {
 ?>

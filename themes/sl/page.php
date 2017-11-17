@@ -21,19 +21,19 @@
                     <?php the_post_thumbnail('flotte-thumbnail'); ?>
                 </div>
                 <div style="float: left; width: 30%; padding-top: 30px">
-                                <?php
-                                    $calendar = new Calendar();
-                                    $calendar->renderMonth([
-                                        'agenda' => [
-                                            [3, 'day-na', false],
-                                            [17, 'day-pav', true],
-                                            [20, 'day-pav', true],
-                                            [26, 'day-na', false]],
-                                        'extra_args' => [
-                                            'cal_vcl' => $the_query->post->ID
-                                        ]
-                                    ]);
-                                ?>
+                    <?php
+                        $calendar = new Calendar();
+                        $calendar->renderMonth([
+                           'agenda' => [
+                               [3, 'day-na', false],
+                               [17, 'day-pav', true],
+                               [20, 'day-pav', true],
+                               [26, 'day-na', false]],
+                           'extra_args' => [
+                               'cal_vcl' => $the_query->post->ID
+                           ]
+                       ]);
+                    ?>
                 </div>
                 <div style="clear: left"/>
 
