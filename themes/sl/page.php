@@ -17,10 +17,11 @@
 
 
                 <div style="float: left; width: 70%">
-                    <h3><?php the_title(); ?></h3>
+                    <h2><?php the_title(); ?></h2>
                     <?php the_post_thumbnail('flotte-thumbnail'); ?>
                 </div>
-                <div style="float: left; width: 30%; padding-top: 30px">
+                <div style="float: left; width: 30%;">
+                    <h2>Départ</h2>
                     <?php
                         $calendar = new Calendar();
                         $calendar->renderMonth([
