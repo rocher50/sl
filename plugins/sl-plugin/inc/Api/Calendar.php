@@ -11,9 +11,21 @@ class Calendar {
 ?>
         <div class="calendar">
 <?php
-        $tstamp = $args['tstamp'];
-        $year = date('Y', $tstamp);
-        $month = date('m', $tstamp);
+        $year = $this->get_param('cal_year');
+        if($year == null) {
+            $tstamp = time();
+            $year = date('Y', $tstamp);
+            $month = date('m', $tstamp);
+        } else {
+            $month = $this->get_param('cal_month');
+            $monthChange = $this->get_param('cal_month_change');
+            if($monthChange != null) {
+                $month = $month + $monthChange;
+            }
+            $tstamp = mktime(0, 0, 0, $month, 1, $year);
+        }
+
+        $current_day_active = (12 - idate('H', $tstamp)) >= 2;
 ?>
             <div class="args">
                 <div class="arg">
@@ -40,15 +52,15 @@ class Calendar {
             <div class="month">
                 <ul>
 <?php
-        $month_offset = $args['month_offset'];
+        $enable_past = true;
 
-        if($month_offset  < 1) {
+        if($enable_past) {
 ?>
-                    <li class="arrow disabled">&#10094;</li>
+                    <li class="arrow"><a href="#">&#10094;</a></li>
 <?php
         } else {
 ?>
-                    <li class="arrow"><a href="#">&#10094;</a></li>
+                    <li class="arrow disabled">&#10094;</li>
 <?php
         }
 ?>
@@ -79,7 +91,6 @@ class Calendar {
 <?php
         }
 
-        $current_day_active = $args['current_day_active'];
         $first_active_day = idate('d', $tstamp);
         if($current_day_active) {
             $first_active_day--;
@@ -126,6 +137,16 @@ class Calendar {
                 return null;
             }
             $i++;
+        }
+        return null;
+    }
+
+    public function get_param($name) {
+        if(isset($_POST[$name])) {
+            return $_POST[$name];
+        }
+        if(isset($_GET[$name])) {
+            return $_GET[$name];
         }
         return null;
     }

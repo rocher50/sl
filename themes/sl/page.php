@@ -22,28 +22,13 @@
                 </div>
                 <div style="float: left; width: 30%; padding-top: 30px">
                                 <?php
-                                    $tstamp = time();
-                                    $month_offset = 0;
-                                    $current_day_active = (12 - idate('H', $tstamp)) >= 2;
-                                    if( isset($_GET['cal_mo']) ) {
-                                        $month_offset = $_GET['cal_mo'];
-                                        if($month_offset > 0) {
-                                            $tstamp = mktime(0, 0, 0, idate('m', $tstamp) + $month_offset, 1, idate('Y', $tstamp));
-                                            $current_day_active = true;
-                                        } elseif( $month_offset < 0 ) {
-                                            $current_day_active = false;
-                                        }
-                                    }
                                     $calendar = new Calendar();
                                     $calendar->renderMonth([
-                                        'tstamp' => $tstamp,
-                                        'current_day_active' => $current_day_active,
                                         'agenda' => [
                                             [3, 'day-na', false],
                                             [17, 'day-pav', true],
                                             [20, 'day-pav', true],
                                             [26, 'day-na', false]],
-                                        'month_offset' => $month_offset,
                                         'extra_args' => [
                                             'cal_vcl' => $the_query->post->ID
                                         ]

@@ -15,11 +15,11 @@
                 var anchor = anchors[i];
                 if(anchor.innerHTML.charCodeAt(0) == 10095) {
                     anchor.addEventListener('click', function(event) {
-                        handleMonthClick(event.target, "next");
+                        handleMonthClick(event.target, 1);
                     });
                 } else if(anchor.innerHTML.charCodeAt(0) == 10094) {
                     anchor.addEventListener('click', function(event) {
-                        handleMonthClick(event.target, "prev");
+                        handleMonthClick(event.target, -1);
                     });
                 }
             }
@@ -40,8 +40,8 @@
             var form = createForm();
             var calendar = monthArrow.parentElement.parentElement.parentElement.parentElement;
             addCalendarArgs(calendar, form);
-            addFormInput(form, 'cal_month_action', action);
-            submitForm(form, "/agenda", "post");
+            addFormInput(form, 'cal_month_change', action);
+            submitForm(form, "/", "post");
         };
 
         var handleDayClick = function(day) {

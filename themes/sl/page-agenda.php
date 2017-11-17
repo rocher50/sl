@@ -14,7 +14,7 @@
             </div>
             <div style="float: left; width: 30%; padding-top: 30px">
                 <p>Le jour choisi: <?php echo get_param('cal_day') . '.' . get_param('cal_month') . '.' . get_param('cal_year') ?>
-                <p>Action: <?php echo get_param('cal_month_action') ?>
+                <p>Action: <?php echo get_param('cal_month_change') ?>
             </div>
             <div style="clear: left"/>
         </article>
