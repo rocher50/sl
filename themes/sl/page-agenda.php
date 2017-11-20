@@ -32,7 +32,6 @@
                    $calDay = get_param('cal_day');
                    if($calDay != null) {
 ?>
-                       <h3>Le jour choisi: <?php echo get_param('cal_day') . '.' . get_param('cal_month') . '.' . get_param('cal_year') ?></h3>
                        <label style="font-size: 18px">L'heure:</label>
                        <select style="font-size: 18px">
                            <option value="8:30">8:30</option>
@@ -43,6 +42,7 @@
 <?php
                    }
                 ?>
+
             </div>
             <div style="clear: left"/>
         </article>

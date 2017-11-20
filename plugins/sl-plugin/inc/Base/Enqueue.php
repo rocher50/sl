@@ -20,6 +20,9 @@ class Enqueue extends BaseController {
         wp_enqueue_script('jquery');
         wp_enqueue_style( 'slcalendar', $this->plugin_url . $this->slCalCssPath );
         wp_enqueue_script('slcalscript', $this->plugin_url . 'assets/calendar.js');
+        wp_localize_script('slcalscript', 'slCal', [
+            'siteURL' => get_site_url()
+        ]);
     }
 
     public function enqueue_admin_scripts() {

@@ -1,7 +1,22 @@
 (function($) {
 
     $(document).ready(function() {
-
+/*
+        var req = new XMLHttpRequest();
+        req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/1');
+        req.onload = function() {
+            if(req.status >= 200 && req.status < 400) {
+                var data = JSON.parse(req.responseText);
+                alert('recevied data ' + data);
+            } else {
+                alert('Server returned an error');
+            }
+        };
+        req.onerror = function() {
+            alert('Connection error');
+        };
+        req.send();
+*/
         var calendars = document.getElementsByClassName("calendar");
         var c;
         for(c = 0; c < calendars.length; c++) {

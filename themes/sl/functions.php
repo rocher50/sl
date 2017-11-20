@@ -30,3 +30,46 @@ function sl_setup() {
     add_image_size('banner-image', 920, 210, true);
 }
 add_action('after_setup_theme', 'sl_setup');
+
+function sl_endpoints() {
+    register_rest_route('slplugin/v1', '/agenda/(?P<id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'vcl_agenda',
+        'agrs' => [
+            'id' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+            ]
+        ]
+    ]);
+}
+add_action('rest_api_init', 'sl_endpoints');
+
+function vcl_agenda($data) {
+/*
+    if(no vcl found) {
+        return WP_Error(
+            'no_vcl'
+            'Invalid vehicle',
+             ['status' => 404]
+        );
+    }
+*/
+    $result = [
+        ['day' => 3,
+        'style' => 'day-na',
+        'available' => false],
+        ['day' => 17,
+        'style' => 'day-pav',
+        'available' => true],
+        ['day' => 20,
+        'style' => 'day-pav',
+        'available' => true],
+        ['day' => 26,
+        'style' => 'day-na',
+        'available' => false]
+    ];
+    return $result;
+}
+
