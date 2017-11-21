@@ -10,6 +10,7 @@ class Calendar {
     public function renderMonth(array $args) {
 ?>
         <div class="calendar">
+            <form>
 <?php
         $currentTstmp = time();
         $setTstmp;
@@ -54,27 +55,17 @@ class Calendar {
         }
 
 ?>
-            <div class="args">
-                <div class="arg">
-                    <p class="arg-name">cal_year</p>
-                    <p class="arg-value"><?php echo $setYear; ?></p>
-                </div>
-                <div class="arg">
-                    <p class="arg-name">cal_month</p>
-                    <p class="arg-value"><?php echo $setMonth; ?></p>
-                </div>
+            <input type="hidden" name="cal_year" value="<?php echo $setYear; ?>"/>
+            <input type="hidden" name="cal_month" value="<?php echo $setMonth; ?>"/>
 <?php
         $extraArgs = $args['extra_args'];
         if($extraArgs != null) {
             foreach($extraArgs as $key => $value) {
-                ?><div class="arg">
-                      <p class="arg-name"><?php echo $key; ?></p>
-                      <p class="arg-value"><?php echo $value; ?></p>
-                  </div><?php
+                ?><input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/><?php
             }
         }
 ?>
-            </div>
+        </form>
 
             <div class="month">
                 <ul>

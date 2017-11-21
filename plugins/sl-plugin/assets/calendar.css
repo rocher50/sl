@@ -162,21 +162,3 @@
     clear: left;
 }
 
-
-.calendar .args {
-    display: none
-}
-
-.calendar .args p {
-    display: none
-}
-.calendar .args .arg {
-    display: none;
-}
-.calendar .args .arg .arg-name {
-    display: none;
-}
-.calendar .args .arg .arg-value {
-    display: none;
-}
-

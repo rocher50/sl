@@ -52,34 +52,17 @@
         }
 
         var handleMonthClick = function(monthArrow, action) {
-            var form = createForm();
             var calendar = monthArrow.parentElement.parentElement.parentElement.parentElement;
-            addCalendarArgs(calendar, form);
+            var form = calendar.getElementsByTagName('form')[0];
             addFormInput(form, 'cal_month_change', action);
             submitForm(form, "/agenda", "post");
         };
 
         var handleDayClick = function(day) {
-            var form = createForm();
-            addCalendarArgs(day.parentElement.parentElement.parentElement, form);
+            var calendar = day.parentElement.parentElement.parentElement
+            var form = calendar.getElementsByTagName('form')[0];
             addFormInput(form, 'cal_day', event.target.innerHTML);
             submitForm(form, "/agenda", "post");
-        };
-
-        var addCalendarArgs = function(calendar, form) {
-            var argsDiv = calendar.getElementsByClassName("args")[0];
-            var argDivs = argsDiv.getElementsByClassName("arg");
-            var i;
-            for(i = 0; i < argDivs.length; i++) {
-                var argDiv = argDivs[i];
-                addFormInput(form, argDiv.getElementsByClassName("arg-name")[0].innerHTML, argDiv.getElementsByClassName("arg-value")[0].innerHTML);
-            }
-        };
-
-        var createForm = function() {
-            var form = document.createElement("FORM");
-            document.body.appendChild(form);
-            return form;
         };
 
         var addFormInput = function(form, name, value) {

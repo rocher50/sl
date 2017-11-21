@@ -9,12 +9,12 @@
     if($vclId) {
         $vcl = get_post($vclId);
 ?>
-        <article class="post">
-            <div style="float: left; width: 70%">
+        <div class="vehicule">
+            <div style="border: 1px solid; grid-column: 1/4; grid-row: 1/3">
                 <h2><?php echo $vcl->post_title; ?></h2>
                 <?php echo get_the_post_thumbnail($vclId, 'flotte-thumbnail'); ?>
             </div>
-            <div style="float: left; width: 30%;">
+            <div style="border: 1px solid">
                 <h2>Départ</h2>
                 <?php
                     $calendar = new Calendar();
@@ -44,8 +44,8 @@
                 ?>
 
             </div>
-            <div style="clear: left"/>
-        </article>
+            <div style="border: 1px solid">Hello</div>
+        </div>
 
 <?php
     } else {

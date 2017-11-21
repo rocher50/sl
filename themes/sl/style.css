@@ -43,14 +43,18 @@ div.container {
     margin: 0 auto; /* to center the div */
 }
 
-/* Content Area */
-article.post {
-    border-bottom: 1px dotted #ddd;
-    margin-bottom: 20px;
+.fleet {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-row-gap: 2em;
 }
 
-article.post:last-of-type {
-    border-bottom: none;
+.vehicule {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repear(4, 1fr);
+    border: 1px none;
+    padding: 0;
 }
 
 .site-header {
@@ -140,14 +144,6 @@ article.post:last-of-type {
 
 .site-footer nav ul li:last-of-type {
     border-right: none;
-}
-
-/* Page Layout */
-article.page h2 {
-    font-size: 225%;
-    margin-bottom: 15px;
-    width: 100%
-    float: left
 }
 
 img {

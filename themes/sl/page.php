@@ -10,17 +10,17 @@
     $the_query = new WP_Query($args);
 
     if($the_query->have_posts()) {
+        ?><div class="fleet"><?php
         while($the_query->have_posts()) {
             $the_query->the_post(); ?>
 
-            <article class="post">
+            <div class="vehicule">
 
-
-                <div style="float: left; width: 70%">
+                <div style="border: 1px solid; grid-column: 1/4; grid-row: 1/3">
                     <h2><?php the_title(); ?></h2>
                     <?php the_post_thumbnail('flotte-thumbnail'); ?>
                 </div>
-                <div style="float: left; width: 30%;">
+                <div style="border: 1px solid">
                     <h2>Départ</h2>
                     <?php
                         $calendar = new Calendar();
@@ -36,10 +36,10 @@
                        ]);
                     ?>
                 </div>
-                <div style="clear: left"/>
-
-            </article>
-        <?php }
+                <div style="border: 1px solid">Hello</div>
+            </div>
+        <?php } ?>
+        </div> <?php
     } else {
         echo '<p>No content found</p>';
     }
