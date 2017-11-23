@@ -30,6 +30,7 @@ class VehiculeCpt {
         $args = [
             'labels'			=> $labels,
             'public'			=> true,
+            'show_in_rest'              => true,
             'has_archive'		=> true,
             'publicly_queryable'	=> true,
             'query_var'			=> true,

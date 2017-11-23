@@ -32,6 +32,11 @@ function sl_setup() {
 add_action('after_setup_theme', 'sl_setup');
 
 function sl_endpoints() {
+    register_rest_route('slplugin/v1', '/fleet', [
+        'methods' => 'GET',
+        'callback' => 'vcl_fleet',
+        'agrs' => []
+    ]);
     register_rest_route('slplugin/v1', '/agenda/(?P<id>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_agenda',
@@ -45,6 +50,25 @@ function sl_endpoints() {
     ]);
 }
 add_action('rest_api_init', 'sl_endpoints');
+
+function vcl_fleet($data) {
+    $result = [];
+    $args = [
+        'post_type' => 'vcl'
+    ];
+    $the_query = new WP_Query(['post_type' => 'vcl']);
+    while($the_query->have_posts()) {
+        $the_query->the_post();
+        $vcl = [
+            'id' => get_the_ID(),
+            'title' => get_the_title(),
+            'thumbnail' => get_the_post_thumbnail(),
+            'agenda' => vcl_agenda(['id' => get_the_ID()])
+        ];
+        array_push($result, $vcl);
+    }
+    return $result;
+}
 
 function vcl_agenda($data) {
 /*

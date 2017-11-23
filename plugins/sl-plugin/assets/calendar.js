@@ -1,22 +1,13 @@
 (function($) {
 
     $(document).ready(function() {
-/*
-        var req = new XMLHttpRequest();
-        req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/1');
-        req.onload = function() {
-            if(req.status >= 200 && req.status < 400) {
-                var data = JSON.parse(req.responseText);
-                alert('recevied data ' + data);
-            } else {
-                alert('Server returned an error');
-            }
-        };
-        req.onerror = function() {
-            alert('Connection error');
-        };
-        req.send();
-*/
+
+        if(window.location.pathname === '/') {
+            displayFleet();
+        } else if(window.location.pathname === '/agenda') {
+            displayVclAgenda();
+        }
+
         var calendars = document.getElementsByClassName("calendar");
         var c;
         for(c = 0; c < calendars.length; c++) {
@@ -51,6 +42,64 @@
             }
         }
 
+        function displayFleet() {
+            var req = new XMLHttpRequest();
+            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/fleet');
+            req.onload = function() {
+                if(req.status >= 200 && req.status < 400) {
+                    var fleet = JSON.parse(req.responseText);
+                    for(var i = 0; i < fleet.length; i++) {
+                        var vcl = fleet[i];
+                        displayVcl(vcl);
+                    }
+                } else {
+                    alert('Server returned an error');
+                }
+            };
+            req.onerror = function() {
+                alert('Connection error');
+            };
+            req.send();
+        }
+
+        function displayVclAgenda() {
+            var req = new XMLHttpRequest();
+            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/1');
+            req.onload = function() {
+                if(req.status >= 200 && req.status < 400) {
+                    var data = JSON.parse(req.responseText);
+                    displayVcl(data);
+                } else {
+                    alert('Server returned an error');
+                }
+            };
+            req.onerror = function() {
+                alert('Connection error');
+            };
+            req.send();
+        }
+
+        function displayVcl(vcl) {
+            var vclBody = document.getElementById("page_content");
+
+            var vehicule = document.createElement("div");
+            vehicule.setAttribute("class", "vehicule");
+            vclBody.appendChild(vehicule);
+
+            var vclInfo = document.createElement("div");
+            vehicule.appendChild(vclInfo);
+            vclInfo.setAttribute("style", "border: 1px solid; grid-column: 1/4; grid-row: 1/3");
+
+            var vclHeader = document.createElement("h2");
+            vclInfo.appendChild(vclHeader);
+            var headerText = document.createTextNode(vcl.title);
+            vclHeader.appendChild(headerText);
+
+            var imageDiv = document.createElement("div");
+            vclInfo.appendChild(imageDiv);
+            imageDiv.innerHTML = vcl.thumbnail;
+        }
+
         var handleMonthClick = function(monthArrow, action) {
             var calendar = monthArrow.parentElement.parentElement.parentElement.parentElement;
             var form = calendar.getElementsByTagName('form')[0];
@@ -79,5 +128,5 @@
             form.submit();
         };
     });
-
 })(jQuery);
+

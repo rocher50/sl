@@ -3,7 +3,11 @@
     get_header();
 
     use \Inc\Api\Calendar;
-
+?>
+    <div id="page_content" class="fleet">
+    </div>
+<?php
+/*
     $args = [
         'post_type' => 'vcl'
     ];
@@ -43,6 +47,6 @@
     } else {
         echo '<p>No content found</p>';
     }
-
+*/
     get_footer();
 ?>
