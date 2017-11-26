@@ -82,22 +82,46 @@
         function displayVcl(vcl) {
             var vclBody = document.getElementById("page_content");
 
-            var vehicule = document.createElement("div");
-            vehicule.setAttribute("class", "vehicule");
-            vclBody.appendChild(vehicule);
+            var vehicule = createDiv(vclBody, "vehicule");
 
-            var vclInfo = document.createElement("div");
-            vehicule.appendChild(vclInfo);
+            var vclInfo = createDiv(vehicule);
             vclInfo.setAttribute("style", "border: 1px solid; grid-column: 1/4; grid-row: 1/3");
 
-            var vclHeader = document.createElement("h2");
-            vclInfo.appendChild(vclHeader);
-            var headerText = document.createTextNode(vcl.title);
-            vclHeader.appendChild(headerText);
+            createHeader(vclInfo, 2, vcl.title);
+            createDiv(vclInfo).innerHTML = vcl.thumbnail;
 
-            var imageDiv = document.createElement("div");
-            vclInfo.appendChild(imageDiv);
-            imageDiv.innerHTML = vcl.thumbnail;
+            var calContainer = createDiv(vehicule);
+            calContainer.setAttribute("style", "border: 1px solid");
+            createHeader(calContainer, 2, "Depart");
+            displayCalendar(calContainer, vcl.agenda);
+        }
+
+        var displayCalendar = function(container, agenda) {
+            var calendar = createDiv(container, "calendar");
+            var form = createForm(calendar);
+
+            var month = createDiv(calendar, "month");
+            var monthUl = createUl(month);
+            var prevMonthLi = createLi(monthUl, "arrow");
+            createAnchor(prevMonthLi, "#", "&#10094;");
+            var monthLi = createLi(monthUl);
+            monthLi.innerHTML = "month, year";
+            var nextMonthLi = createLi(monthUl, "arrow");
+            createAnchor(nextMonthLi, "#", "&#10095;");
+
+            var weekDaysUl = createUl(calendar, "weekdays");
+            createLi(weekDaysUl).innerHTML = "Lu";
+            createLi(weekDaysUl).innerHTML = "Ma";
+            createLi(weekDaysUl).innerHTML = "Me";
+            createLi(weekDaysUl).innerHTML = "Je";
+            createLi(weekDaysUl).innerHTML = "Ve";
+            createLi(weekDaysUl).innerHTML = "Sa";
+            createLi(weekDaysUl).innerHTML = "Di";
+
+            var daysUl = createUl(calendar, "days");
+
+//            alert(agenda);
+
         }
 
         var handleMonthClick = function(monthArrow, action) {
@@ -127,6 +151,45 @@
             form.setAttribute("method", method);
             form.submit();
         };
+
+        var createAnchor = function(parent, href, text, cssClass) {
+            var a = createChild(parent, "a", cssClass);
+            a.setAttribute("href", href);
+            a.innerHTML = text;
+            return a;
+        }
+
+        var createHeader = function(parent, h, text, cssClass) {
+            var header = createChild(parent, "h" + h, cssClass);
+            header.innerHTML = text;
+            return header;
+        }
+
+        var createLi = function(parent, cssClass) {
+            return createChild(parent, "li", cssClass);
+        }
+
+        var createUl = function(parent, cssClass) {
+            return createChild(parent, "ul", cssClass);
+        }
+
+        var createForm = function(parent) {
+            return createChild(parent, "form");
+        }
+
+        var createDiv = function(parent, cssClass) {
+            return createChild(parent, "div", cssClass);
+        }
+
+        var createChild = function(parent, tag, cssClass) {
+            var child = document.createElement(tag);
+            parent.appendChild(child);
+            if(cssClass === undefined) {
+                return child;
+            }
+            child.setAttribute("class", cssClass);
+            return child;
+        }
     });
 })(jQuery);
 
