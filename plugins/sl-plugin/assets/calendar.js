@@ -3,11 +3,12 @@
     $(document).ready(function() {
 
         if(window.location.pathname === '/') {
-            displayFleet();
+            var date = new Date();
+            displayFleet(date.getFullYear(), date.getMonth() + 1, date.getDate());
         } else if(window.location.pathname === '/agenda') {
             displayVclAgenda();
         }
-
+/*
         var calendars = document.getElementsByClassName("calendar");
         var c;
         for(c = 0; c < calendars.length; c++) {
@@ -15,6 +16,7 @@
             var i;
 
             // add month prev/next event listeners
+
             var monthDiv = calendar.getElementsByClassName("month")[0];
             var anchors = monthDiv.getElementsByTagName("a");
             for(i = 0; i < anchors.length; i++) {
@@ -40,11 +42,12 @@
                     handleDayClick(event.target);
                 });
             }
-        }
 
-        function displayFleet() {
+        }
+*/
+        function displayFleet(year, month, day) {
             var req = new XMLHttpRequest();
-            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/fleet');
+            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month + "/day=" + day);
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var fleet = JSON.parse(req.responseText);
@@ -62,13 +65,16 @@
             req.send();
         }
 
-        function displayVclAgenda() {
+        function displayVclAgenda(vcl, year, month, day, calContainer) {
             var req = new XMLHttpRequest();
-            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/1');
+            req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day);
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var data = JSON.parse(req.responseText);
-                    displayVcl(data);
+                    while(calContainer.firstChild) {
+                        calContainer.removeChild(calContainer.firstChild);
+                    }
+                    displayCalendar(calContainer, data);
                 } else {
                     alert('Server returned an error');
                 }
@@ -91,23 +97,63 @@
             createDiv(vclInfo).innerHTML = vcl.thumbnail;
 
             var calContainer = createDiv(vehicule);
+            calContainer.setAttribute("id", "calContainer" + vcl.id);
             calContainer.setAttribute("style", "border: 1px solid");
             createHeader(calContainer, 2, "Depart");
-            displayCalendar(calContainer, vcl.agenda);
+            displayCalendar(createDiv(calContainer, "calendar"), vcl.agenda);
         }
 
-        var displayCalendar = function(container, agenda) {
-            var calendar = createDiv(container, "calendar");
+        var displayCalendar = function(calendar, agenda) {
+
+            var agendaDate = new Date(agenda.year, agenda.month - 1, agenda.day);
+            var curDate = new Date();
+            var firstActiveDay;
+            var enablePrevMonth = false;
+            if(curDate.getFullYear() == agenda.year && curDate.getMonth() == agenda.month - 1) {
+                firstActiveDay = curDate.getDate();
+                if(!isDayAvailable(curDate)) {
+                    firstActiveDay++;
+                }
+            } else if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
+                firstActiveDay = 1;
+                enablePrevMonth = true;
+            }
+
             var form = createForm(calendar);
 
             var month = createDiv(calendar, "month");
             var monthUl = createUl(month);
-            var prevMonthLi = createLi(monthUl, "arrow");
-            createAnchor(prevMonthLi, "#", "&#10094;");
+            var prevMonthLi;
+            if(enablePrevMonth) {
+                prevMonthLi = createLi(monthUl, "arrow");
+                var a = createAnchor(prevMonthLi, "#", "&#10094;");
+                a.addEventListener('click', function(event) {
+                    var prevYear = agenda.year;
+                    var prevMonth = parseInt(agenda.month) - 1;
+                    if(prevMonth < 1) {
+                        prevYear--;
+                        prevMonth = 12;
+                    }
+                    displayVclAgenda(agenda.vcl, prevYear, prevMonth, 1, calendar);
+                });
+
+            } else {
+                prevMonthLi = createLi(monthUl, "arrow disabled").innerHTML = "&#10094;";
+            }
             var monthLi = createLi(monthUl);
-            monthLi.innerHTML = "month, year";
+            monthLi.innerHTML = agenda.month + ", " + agenda.year;
             var nextMonthLi = createLi(monthUl, "arrow");
-            createAnchor(nextMonthLi, "#", "&#10095;");
+            var nextMonthAnchor = createAnchor(nextMonthLi, "#", "&#10095;");
+            nextMonthAnchor.addEventListener('click', function(event) {
+                var nextYear = agenda.year;
+                var nextMonth = parseInt(agenda.month) + 1;
+                if(nextMonth > 12) {
+                    nextYear++;
+                    nextMonth = 1;
+                }
+                displayVclAgenda(agenda.vcl, nextYear, nextMonth, 1, calendar);
+            });
+
 
             var weekDaysUl = createUl(calendar, "weekdays");
             createLi(weekDaysUl).innerHTML = "Lu";
@@ -120,7 +166,19 @@
 
             var daysUl = createUl(calendar, "days");
 
-//            alert(agenda);
+            var firstOfMonth = new Date(agenda.year, agenda.month - 1, 1);
+
+            for(var i = 1; i < firstOfMonth.getDay(); i++) {
+                createLi(daysUl, "blank");
+            }
+            var daysTotal = daysInMonth(agenda.year, agenda.month - 1);
+            var iDay = 1;
+            while(iDay < firstActiveDay && iDay < daysTotal) {
+                createLi(daysUl, "day-past").innerHTML = iDay++;
+            }
+            while(iDay <= daysTotal) {
+                createLi(daysUl, getDayClass(agenda.days, iDay, "day-av")).innerHTML = iDay++;
+            }
 
         }
 
@@ -190,6 +248,26 @@
             child.setAttribute("class", cssClass);
             return child;
         }
+
+        var getDayClass = function(agenda, iDay, defClass) {
+            for(var i = 0; i < agenda.length; i++) {
+                if(iDay === agenda[i].day) {
+                    return agenda[i].style;
+                } if(iDay < agenda[i].day) {
+                    return defClass;
+                }
+            }
+            return defClass;
+        }
+
+        var isDayAvailable = function(date) {
+            return 12*60 - date.getHours()*60 - date.getMinutes() > 120;
+        }
+
+        var daysInMonth = function(year, month) {
+            return 32 - new Date(year, month, 32).getDate();
+        }
     });
+
 })(jQuery);
 

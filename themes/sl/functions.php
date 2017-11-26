@@ -32,20 +32,51 @@ function sl_setup() {
 add_action('after_setup_theme', 'sl_setup');
 
 function sl_endpoints() {
-    register_rest_route('slplugin/v1', '/fleet', [
+    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_fleet',
-        'agrs' => []
-    ]);
-    register_rest_route('slplugin/v1', '/agenda/(?P<id>\d+)', [
-        'methods' => 'GET',
-        'callback' => 'vcl_agenda',
         'agrs' => [
-            'id' => [
+            'year' => [
                 'validate_callback' => function($param, $request, $key) {
                     return is_numeric($param);
                 }
-            ]
+             ],
+            'month' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'day' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ]
+        ]
+    ]);
+    register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'vcl_agenda',
+        'agrs' => [
+            'vcl' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+            ],
+            'year' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'month' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'day' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ]
         ]
     ]);
 }
@@ -63,7 +94,12 @@ function vcl_fleet($data) {
             'id' => get_the_ID(),
             'title' => get_the_title(),
             'thumbnail' => get_the_post_thumbnail(),
-            'agenda' => vcl_agenda(['id' => get_the_ID()])
+            'agenda' => vcl_agenda([
+                'vcl' => get_the_ID(),
+                'year' => $data['year'],
+                'month' => $data['month'],
+                'day' => $data['day']
+            ])
         ];
         array_push($result, $vcl);
     }
@@ -81,18 +117,24 @@ function vcl_agenda($data) {
     }
 */
     $result = [
-        ['day' => 3,
-        'style' => 'day-na',
-        'available' => false],
-        ['day' => 17,
-        'style' => 'day-pav',
-        'available' => true],
-        ['day' => 20,
-        'style' => 'day-pav',
-        'available' => true],
-        ['day' => 26,
-        'style' => 'day-na',
-        'available' => false]
+        'vcl' => $data['vcl'],
+        'year' => $data['year'],
+        'month' => $data['month'],
+        'day' => $data['day'],
+        'days' => [
+            ['day' => 3,
+            'style' => 'day-na',
+            'available' => false],
+            ['day' => 17,
+            'style' => 'day-pav',
+            'available' => true],
+            ['day' => 20,
+            'style' => 'day-pav',
+            'available' => true],
+            ['day' => 26,
+            'style' => 'day-na',
+            'available' => false]
+        ]
     ];
     return $result;
 }
