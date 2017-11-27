@@ -118,15 +118,19 @@
                 firstActiveDay = 1;
                 enablePrevMonth = true;
             }
-
+/*
             var form = createForm(calendar);
-
+            var formYear = addFormInput(form, "calYear", agenda.year);
+            var formMonth = addFormInput(form, "calMonth", agenda.month);
+            var formDay = addFormInput(form, "calDay", agenda.day);
+*/
             var month = createDiv(calendar, "month");
             var monthUl = createUl(month);
             var prevMonthLi;
             if(enablePrevMonth) {
                 prevMonthLi = createLi(monthUl, "arrow");
                 var a = createAnchor(prevMonthLi, "#", "&#10094;");
+                a.setAttribute("onclick", "return false;");
                 a.addEventListener('click', function(event) {
                     var prevYear = agenda.year;
                     var prevMonth = parseInt(agenda.month) - 1;
@@ -144,6 +148,7 @@
             monthLi.innerHTML = agenda.month + ", " + agenda.year;
             var nextMonthLi = createLi(monthUl, "arrow");
             var nextMonthAnchor = createAnchor(nextMonthLi, "#", "&#10095;");
+            nextMonthAnchor.setAttribute("onclick", "return false;");
             nextMonthAnchor.addEventListener('click', function(event) {
                 var nextYear = agenda.year;
                 var nextMonth = parseInt(agenda.month) + 1;
@@ -153,7 +158,6 @@
                 }
                 displayVclAgenda(agenda.vcl, nextYear, nextMonth, 1, calendar);
             });
-
 
             var weekDaysUl = createUl(calendar, "weekdays");
             createLi(weekDaysUl).innerHTML = "Lu";
@@ -177,9 +181,33 @@
                 createLi(daysUl, "day-past").innerHTML = iDay++;
             }
             while(iDay <= daysTotal) {
-                createLi(daysUl, getDayClass(agenda.days, iDay, "day-av")).innerHTML = iDay++;
+                if(agenda.day == iDay) {
+                    var dayLi = createLi(daysUl, "day-picked");
+                    dayLi.innerHTML = iDay;
+                } else {
+                    var dayClass;
+                    var dayAgenda = getDayAgenda(agenda.days, iDay);
+                    var dayClass;
+                    if(dayAgenda === null) {
+                        dayClass = "day-av";
+                    } else if(dayAgenda.available) {
+                        dayClass = "day-pav";
+                    } else {
+                        dayClass = "day-na";
+                    }
+                    var dayLi = createLi(daysUl, dayClass);
+                    if(dayAgenda === null || dayAgenda.available) {
+                        var dayAnchor = createAnchor(dayLi, "#", iDay);
+                        dayAnchor.setAttribute("onclick", "return false;");
+                        dayAnchor.addEventListener('click', function(event) {
+                            displayVclAgenda(agenda.vcl, agenda.year, agenda.month, event.target.innerHTML, calendar);
+                        });
+                    } else {
+                        dayLi.innerHTML = iDay;
+                    }
+                }
+                iDay++;
             }
-
         }
 
         var handleMonthClick = function(monthArrow, action) {
@@ -198,11 +226,16 @@
 
         var addFormInput = function(form, name, value) {
             var arg = document.createElement("INPUT");
+            form.appendChild(arg);
             arg.setAttribute("type", "hidden");
             arg.setAttribute("name", name);
             arg.setAttribute("value", value);
-            form.appendChild(arg);
+            return arg;
         };
+
+        var setFormInput = function(input, value) {
+            input.setAttribute("value", value);
+        }
 
         var submitForm = function(form, action, method) {
             form.setAttribute("action", action);
@@ -241,23 +274,25 @@
 
         var createChild = function(parent, tag, cssClass) {
             var child = document.createElement(tag);
-            parent.appendChild(child);
             if(cssClass === undefined) {
+                parent.appendChild(child);
                 return child;
             }
             child.setAttribute("class", cssClass);
+            parent.appendChild(child);
             return child;
         }
 
-        var getDayClass = function(agenda, iDay, defClass) {
+        var getDayAgenda = function(agenda, iDay) {
             for(var i = 0; i < agenda.length; i++) {
-                if(iDay === agenda[i].day) {
-                    return agenda[i].style;
-                } if(iDay < agenda[i].day) {
-                    return defClass;
+                var dayAgenda = agenda[i];
+                if(iDay === dayAgenda.day) {
+                    return dayAgenda;
+                } if(iDay < dayAgenda.day) {
+                    return null;
                 }
             }
-            return defClass;
+            return null;
         }
 
         var isDayAvailable = function(date) {

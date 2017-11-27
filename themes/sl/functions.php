@@ -122,18 +122,10 @@ function vcl_agenda($data) {
         'month' => $data['month'],
         'day' => $data['day'],
         'days' => [
-            ['day' => 3,
-            'style' => 'day-na',
-            'available' => false],
-            ['day' => 17,
-            'style' => 'day-pav',
-            'available' => true],
-            ['day' => 20,
-            'style' => 'day-pav',
-            'available' => true],
-            ['day' => 26,
-            'style' => 'day-na',
-            'available' => false]
+            ['day' => 3, 'available' => false],
+            ['day' => 17, 'available' => true],
+            ['day' => 20, 'available' => true],
+            ['day' => 26, 'available' => false]
         ]
     ];
     return $result;
