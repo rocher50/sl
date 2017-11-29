@@ -137,11 +137,97 @@
     clear: left;
 }
 
+.timepicker {
+    display: grid;
+    grid-template-rows: 1fr 6fr 1fr;
+    justify-items: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    grid-gap: 1%;
+}
+
+.time-list {
+    display: grid;
+    grid-template-rows: repeat(6 1fr);
+    align-items: center;
+    justify-items: center;
+    height: 100%;
+    width: 100%;
+    grid-gap: 1%;
+    border: 1px hidden;
+    overflow-y: scroll;
+}
+
+.time {
+    border: 1px hidden;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    background-color: #32cd32;
+    border-color: #32cd32;
+    border-radius: 5px;
+}
+.time:hover {
+    background-color: #00ff00;
+    border-color: #00ff00;
+    color: #fff;
+    cursor: pointer;
+}
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 10px solid gray;
+}
+.arrow-up:hover {
+    border-bottom: 10px solid black;
+    cursor: pointer;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 10px solid gray;
+}
+.arrow-down:hover {
+    border-top: 10px solid black;
+    cursor: pointer;
+}
+
+.arrow-left {
+  width: 0;
+  height: 0;
+  border-right: 10px solid gray;
+  border-bottom: 14px solid transparent;
+  border-top: 14px solid transparent;
+}
+.arrow-left:hover {
+    border-right: 10px solid black;
+    cursor: pointer;
+}
+
+.arrow-right {
+  width: 0;
+  height: 0;
+  border-left: 10px solid gray;
+  border-bottom: 14px solid transparent;
+  border-top: 14px solid transparent;
+}
+.arrow-right:hover {
+    border-left: 10px solid black;
+    cursor: pointer;
+}
+
 </style>
 </head>
 <body>
 
-<div style="width: 230px">
+<div style="width: 260px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
 
 <div class="calendar">
     <div class="month">
@@ -197,8 +283,33 @@
         <li class="day-av"><a href="#">30</a></li>
         <li class="day-av"><a href="#">31</a></li>
     </ul>
-    <div class="after_box"/>
+<!--    <div class="after_box"/> -->
 </div>
+
+    <div class="timepicker">
+        <div class="arrow-up" onclick="alert('ok')"></div>
+        <div class="time-list">
+                <div class="time" onclick="alert('ok')">8:30</div>
+                <div class="time" onclick="alert('ok')">9:00</div>
+                <div class="time" onclick="alert('ok')">9:30</div>
+                <div class="time" onclick="alert('ok')">10:00</div>
+                <div class="time" onclick="alert('ok')">10:30</div>
+                <div class="time" onclick="alert('ok')">11:00</div>
+                <div class="time" onclick="alert('ok')">11:30</div>
+                <div class="time" onclick="alert('ok')">12:00</div>
+                <div class="time" onclick="alert('ok')">12:30</div>
+                <div class="time" onclick="alert('ok')">13:00</div>
+                <div class="time" onclick="alert('ok')">13:30</div>
+                <div class="time" onclick="alert('ok')">14:00</div>
+                <div class="time" onclick="alert('ok')">14:30</div>
+                <div class="time" onclick="alert('ok')">15:00</div>
+                <div class="time" onclick="alert('ok')">15:30</div>
+                <div class="time" onclick="alert('ok')">16:00</div>
+                <div class="time" onclick="alert('ok')">16:30</div>
+                <div class="time" onclick="alert('ok')">17:00</div>
+        </div>
+        <div class="arrow-down" onclick="alert('ok')"></div>
+    </div>
 
 </div>
 </body>

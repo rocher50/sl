@@ -8,43 +8,7 @@
         } else if(window.location.pathname === '/agenda') {
             displayVclAgenda();
         }
-/*
-        var calendars = document.getElementsByClassName("calendar");
-        var c;
-        for(c = 0; c < calendars.length; c++) {
-            var calendar = calendars[c];
-            var i;
 
-            // add month prev/next event listeners
-
-            var monthDiv = calendar.getElementsByClassName("month")[0];
-            var anchors = monthDiv.getElementsByTagName("a");
-            for(i = 0; i < anchors.length; i++) {
-                var anchor = anchors[i];
-                if(anchor.innerHTML.charCodeAt(0) == 10095) {
-                    anchor.addEventListener('click', function(event) {
-                        handleMonthClick(event.target, 1);
-                    });
-                } else if(anchor.innerHTML.charCodeAt(0) == 10094) {
-                    anchor.addEventListener('click', function(event) {
-                        handleMonthClick(event.target, -1);
-                    });
-                }
-            }
-
-            // add day event listeners
-            var days = calendar.getElementsByClassName("days")[0];
-            anchors = days.getElementsByTagName("a");
-            var i;
-            for(i = 0; i < anchors.length; i++) {
-                var dayAnchor = anchors[i];
-                dayAnchor.addEventListener('click', function(event) {
-                    handleDayClick(event.target);
-                });
-            }
-
-        }
-*/
         function displayFleet(year, month, day) {
             var req = new XMLHttpRequest();
             req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month + "/day=" + day);
@@ -65,16 +29,16 @@
             req.send();
         }
 
-        function displayVclAgenda(vcl, year, month, day, calContainer) {
+        function displayVclAgenda(vcl, year, month, day, calendar) {
             var req = new XMLHttpRequest();
             req.open('GET', slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day);
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var data = JSON.parse(req.responseText);
-                    while(calContainer.firstChild) {
-                        calContainer.removeChild(calContainer.firstChild);
-                    }
-                    displayCalendar(calContainer, data);
+                    var newCalendar = displayCalendar(data);
+                    var calContainer = calendar.parentElement;
+                    calContainer.removeChild(calendar);
+                    calContainer.appendChild(newCalendar);
                 } else {
                     alert('Server returned an error');
                 }
@@ -100,10 +64,13 @@
             calContainer.setAttribute("id", "calContainer" + vcl.id);
             calContainer.setAttribute("style", "border: 1px solid");
             createHeader(calContainer, 2, "Depart");
-            displayCalendar(createDiv(calContainer, "calendar"), vcl.agenda);
+            calContainer.appendChild(displayCalendar(vcl.agenda));
         }
 
-        var displayCalendar = function(calendar, agenda) {
+        var displayCalendar = function(agenda) {
+
+            var calendar = document.createElement("div");
+            calendar.setAttribute("class", "calendar");
 
             var agendaDate = new Date(agenda.year, agenda.month - 1, agenda.day);
             var curDate = new Date();
@@ -208,21 +175,8 @@
                 }
                 iDay++;
             }
+            return calendar;
         }
-
-        var handleMonthClick = function(monthArrow, action) {
-            var calendar = monthArrow.parentElement.parentElement.parentElement.parentElement;
-            var form = calendar.getElementsByTagName('form')[0];
-            addFormInput(form, 'cal_month_change', action);
-            submitForm(form, "/agenda", "post");
-        };
-
-        var handleDayClick = function(day) {
-            var calendar = day.parentElement.parentElement.parentElement
-            var form = calendar.getElementsByTagName('form')[0];
-            addFormInput(form, 'cal_day', event.target.innerHTML);
-            submitForm(form, "/agenda", "post");
-        };
 
         var addFormInput = function(form, name, value) {
             var arg = document.createElement("INPUT");
