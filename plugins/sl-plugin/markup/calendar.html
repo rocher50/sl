@@ -139,7 +139,7 @@
 
 .timepicker {
     display: grid;
-    grid-template-rows: 1fr 6fr 1fr;
+    grid-template-rows: 2em 9em 2em;
     justify-items: center;
     align-items: center;
     font-size: 18px;
@@ -148,31 +148,58 @@
 }
 
 .time-list {
-    display: grid;
-    grid-template-rows: repeat(6 1fr);
-    align-items: center;
-    justify-items: center;
-    height: 100%;
+    box-sizing: border-box;
     width: 100%;
-    grid-gap: 1%;
+    max-height: 9em;
+    float: left;
+    margin: 0;
+    padding: 0;
+    background: #fff;
     border: 1px hidden;
     overflow-y: scroll;
 }
 
-.time {
+.time-list ul {list-style-type: none;}
+.time-list li {
+    width: 88%;
     border: 1px hidden;
-    width: 100%;
+    border-radius: 5px;
+    margin: 3%;
+    padding: 3%;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.time-list .time {
+    float: left;
     text-align: center;
     color: #fff;
     background-color: #32cd32;
     border-color: #32cd32;
-    border-radius: 5px;
 }
-.time:hover {
+.time-list .time:hover {
+    text-align: center;
     background-color: #00ff00;
     border-color: #00ff00;
     color: #fff;
     cursor: pointer;
+}
+
+#style-4::-webkit-scrollbar-track {
+	background-color: #FFF;
+        border-radius: 5px;
+}
+
+#style-4::-webkit-scrollbar {
+	width: 8px;
+	background-color: #FFF;
+}
+
+#style-4::-webkit-scrollbar-thumb {
+	background-color: #999;
+	border: 2px solid #999;
+        border-radius: 5px;
 }
 
 .arrow-up {
@@ -227,7 +254,7 @@
 </head>
 <body>
 
-<div style="width: 260px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
+<div style="width: 650px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
 
 <div class="calendar">
     <div class="month">
@@ -288,25 +315,29 @@
 
     <div class="timepicker">
         <div class="arrow-up" onclick="alert('ok')"></div>
-        <div class="time-list">
-                <div class="time" onclick="alert('ok')">8:30</div>
-                <div class="time" onclick="alert('ok')">9:00</div>
-                <div class="time" onclick="alert('ok')">9:30</div>
-                <div class="time" onclick="alert('ok')">10:00</div>
-                <div class="time" onclick="alert('ok')">10:30</div>
-                <div class="time" onclick="alert('ok')">11:00</div>
-                <div class="time" onclick="alert('ok')">11:30</div>
-                <div class="time" onclick="alert('ok')">12:00</div>
-                <div class="time" onclick="alert('ok')">12:30</div>
-                <div class="time" onclick="alert('ok')">13:00</div>
-                <div class="time" onclick="alert('ok')">13:30</div>
-                <div class="time" onclick="alert('ok')">14:00</div>
-                <div class="time" onclick="alert('ok')">14:30</div>
-                <div class="time" onclick="alert('ok')">15:00</div>
-                <div class="time" onclick="alert('ok')">15:30</div>
-                <div class="time" onclick="alert('ok')">16:00</div>
-                <div class="time" onclick="alert('ok')">16:30</div>
-                <div class="time" onclick="alert('ok')">17:00</div>
+        <div>
+            <ul class="time-list" id="style-4">
+                <li class="time">8:30</li>
+                <li class="time">9:00<li>
+                <li class="time">9:30</li>
+                <li class="time">10:00</li>
+                <li class="time">10:30</li>
+                <li class="time">11:00</li>
+                <li class="time">11:30</li>
+                <li class="time">12:00</li>
+                <li class="time">13:30</li>
+                <li class="time">14:00</li>
+                <li class="time">14:30</li>
+                <li class="time">15:00</li>
+                <li class="time">15:30</li>
+                <li class="time">16:00</li>
+                <li class="time">16:30</li>
+                <li class="time">17:00</li>
+                <li class="time">17:30</li>
+                <li class="time">18:00</li>
+                <li class="time">18:30</li>
+                <li class="time">19:00</li>
+            </ul>
         </div>
         <div class="arrow-down" onclick="alert('ok')"></div>
     </div>
