@@ -187,7 +187,7 @@
 }
 
 #style-4::-webkit-scrollbar-track {
-	background-color: #FFF;
+	background-color: transparent;
         border-radius: 5px;
 }
 
@@ -251,10 +251,43 @@
 }
 
 </style>
+
+<script>
+
+var scrollStep = 0;
+var mousedownId = -1;
+function mousedown(obj) {
+    if(mousedownId == -1) {
+        mousedownId = setInterval(whilemousedown(obj), 100);
+    }
+}
+function mouseup() {
+    if(mousedownId != -1) {
+        clearInterval(mousedownId);
+        mousedownId = -1;
+    }
+}
+
+function whilemousedown(obj) {
+        obj.scrollTop += scrollStep;
+}
+
+function scrollDown() {
+    var elmnt = document.getElementsByClassName("time-list")[0];
+    scrollStep = 50;
+    mousedown(elmnt);
+}
+function scrollUp() {
+    var elmnt = document.getElementsByClassName("time-list")[0];
+    scrollStep = -50;
+    mousedown(elmnt);
+}
+</script>
+
 </head>
 <body>
 
-<div style="width: 650px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
+<div style="width: 350px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
 
 <div class="calendar">
     <div class="month">
@@ -314,8 +347,8 @@
 </div>
 
     <div class="timepicker">
-        <div class="arrow-up" onclick="alert('ok')"></div>
-        <div>
+        <div class="arrow-up" onmousedown="scrollUp()" onmouseup="mouseup()"></div>
+        <div class="time-list-div">
             <ul class="time-list" id="style-4">
                 <li class="time">8:30</li>
                 <li class="time">9:00<li>
@@ -339,7 +372,7 @@
                 <li class="time">19:00</li>
             </ul>
         </div>
-        <div class="arrow-down" onclick="alert('ok')"></div>
+        <div class="arrow-down" onmousedown="scrollDown()" onmouseup="mouseup()"></div>
     </div>
 
 </div>
