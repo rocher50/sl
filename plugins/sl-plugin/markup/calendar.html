@@ -4,16 +4,29 @@
 
 <style>
 
-.calendar {
+.datetimepicker {
     width: 100%;
     padding: 0;
     margin: 0;
     float: left;
     font-family: Verdana, sans-serif;
+    display: grid;
+    grid-template-columns: 80% 20%;
+    grid-template-rows: 8fr;
+    grid-gap: 0%;
+    border: 1px solid;
 }
 
-.calendar ul {list-style-type: none;}
-.calendar li {
+.datetimepicker ul {list-style-type: none;}
+
+.datetimepicker .calendar {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 1px solid;
+}
+
+.datetimepicker .calendar li {
     box-sizing: border-box;
     width: 12.28%;
     border: 1px hidden;
@@ -24,7 +37,7 @@
     font-weight: bold;
 }
 
-.calendar .month {
+.datetimepicker .calendar .month {
     width: 100%;
     background: #1abc9c;
     text-align: center;
@@ -32,14 +45,14 @@
     padding: 0;
 }
 
-.calendar .month ul {
+.datetimepicker .calendar .month ul {
     width: 100%;
     margin: 0;
     padding: 0;
     float: left;
 }
 
-.calendar .month li {
+.datetimepicker .calendar .month li {
     text-transform: uppercase;
     text-align: center;
     border-style: none;
@@ -51,7 +64,7 @@
     font-size: 18px;
 }
 
-.calendar .month .arrow {
+.datetimepicker .calendar .month .arrow {
     float: left;
     width: 12.28%;
     margin: 1%;
@@ -61,18 +74,18 @@
     background-color: #eee;
 }
 
-.calendar .month .arrow a:link,
-.calendar .month .arrow a:visited {
+.datetimepicker .calendar .month .arrow a:link,
+.datetimepicker .calendar .month .arrow a:visited {
     display: block;
     text-decoration: none;
     color: #555;
 }
-.calendar .month .arrow:hover {
+.datetimepicker .calendar .month .arrow:hover {
     background-color: #fff;
 }
 
 
-.calendar .weekdays {
+.datetimepicker .calendar .weekdays {
     width: 100%;
     float: left;
     margin: 0;
@@ -80,14 +93,14 @@
     background-color: #fff;
 }
 
-.calendar .weekdays li {
+.datetimepicker .calendar .weekdays li {
     float: left;
     color: #eee;
     background-color: #999;
     text-align: center;
 }
 
-.calendar .days {
+.datetimepicker .calendar .days {
     width: 100%;
     float: left;
     margin: 0;
@@ -95,7 +108,7 @@
     background: #fff;
 }
 
-.calendar .days .blank {
+.datetimepicker .calendar .days .blank {
     float: left;
     text-align: center;
     color: #fff;
@@ -103,7 +116,7 @@
     border-color: #fff;
 }
 
-.calendar .days .day-av {
+.datetimepicker .calendar .days .day-av {
     float: left;
     text-align: center;
     color: #fff;
@@ -111,7 +124,7 @@
     border-color: #32cd32;
 }
 
-.calendar .days .day-na {
+.datetimepicker .calendar .days .day-na {
     float: left;
     text-align: center;
     color: #fff;
@@ -119,49 +132,49 @@
     border-color: #ff4500;
 }
 
-.calendar .days li a:link,
-.calendar .days li a:visited {
+.datetimepicker .calendar .days li a:link,
+.datetimepicker .calendar .days li a:visited {
     display: block;
     box-sizing: border-box;
     text-decoration: none;
     color: #fff;
 }
-.calendar .days .day-av:hover {
+.datetimepicker .calendar .days .day-av:hover {
     text-align: center;
     background-color: #00ff00;
     border-color: #00ff00;
     color: #fff;
 }
 
-.calendar .after_box {
+.datetimepicker .after_box {
     clear: left;
 }
 
-.timepicker {
-    display: grid;
-    grid-template-rows: 2em 9em 2em;
-    justify-items: center;
-    align-items: center;
+.datetimepicker .timepicker {
     font-size: 18px;
     font-weight: bold;
-    grid-gap: 1%;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid;
 }
 
-.time-list {
+.datetimepicker .timepicker .time-list {
     box-sizing: border-box;
     width: 100%;
-    max-height: 9em;
-    float: left;
-    margin: 0;
+    max-height: auto;
     padding: 0;
     background: #fff;
-    border: 1px hidden;
     overflow-y: scroll;
+    border: 1px solid;
 }
 
-.time-list ul {list-style-type: none;}
-.time-list li {
+.datetimepicker .timepicker .time-list ul {
+    text-align: center;
+}
+
+.datetimepicker .timepicker .time-list li {
     width: 88%;
+    display: inline-block;
     border: 1px hidden;
     border-radius: 5px;
     margin: 3%;
@@ -171,14 +184,14 @@
     font-weight: bold;
 }
 
-.time-list .time {
+.datetimepicker .timepicker .time-list .time {
     float: left;
     text-align: center;
     color: #fff;
     background-color: #32cd32;
     border-color: #32cd32;
 }
-.time-list .time:hover {
+.datetimepicker .timepicker .time-list .time:hover {
     text-align: center;
     background-color: #00ff00;
     border-color: #00ff00;
@@ -202,50 +215,54 @@
         border-radius: 5px;
 }
 
-.arrow-up {
+.datetimepicker .arrow-up {
   width: 0;
   height: 0;
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-bottom: 10px solid gray;
+  display: inline-block;
+  float: top;
 }
-.arrow-up:hover {
+.datetimepicker .arrow-up:hover {
     border-bottom: 10px solid black;
     cursor: pointer;
 }
 
-.arrow-down {
+.datetimepicker .arrow-down {
   width: 0;
   height: 0;
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-top: 10px solid gray;
+  display: inline-block;
+  float: bottom;
 }
-.arrow-down:hover {
+.datetimepicker .arrow-down:hover {
     border-top: 10px solid black;
     cursor: pointer;
 }
 
-.arrow-left {
+.datetimepicker .arrow-left {
   width: 0;
   height: 0;
   border-right: 10px solid gray;
   border-bottom: 14px solid transparent;
   border-top: 14px solid transparent;
 }
-.arrow-left:hover {
+.datetimepicker .arrow-left:hover {
     border-right: 10px solid black;
     cursor: pointer;
 }
 
-.arrow-right {
+.datetimepicker .arrow-right {
   width: 0;
   height: 0;
   border-left: 10px solid gray;
   border-bottom: 14px solid transparent;
   border-top: 14px solid transparent;
 }
-.arrow-right:hover {
+.datetimepicker .arrow-right:hover {
     border-left: 10px solid black;
     cursor: pointer;
 }
@@ -287,71 +304,77 @@ function scrollUp() {
 </head>
 <body>
 
-<div style="width: 350px; display: grid; grid-template-columns: 7fr 2fr; grid-template-rows: 8fr; grid-gap: 1%; border: 1px solid">
+<div style="width: 650px">
 
-<div class="calendar">
-    <div class="month">
-        <ul>
-            <li class="arrow"><a href="#">&#10094;</a></li>
-            <li>August, 2017</li>
-            <li class="arrow"><a href="#">&#10095;</a></li>
+<div class="datetimepicker">
+
+    <div class="calendar">
+        <div class="month">
+            <ul>
+                <li class="arrow"><a href="#">&#10094;</a></li>
+                <li>August, 2017</li>
+                <li class="arrow"><a href="#">&#10095;</a></li>
+            </ul>
+        </div>
+
+        <ul class="weekdays">
+            <li>Lu</li>
+            <li>Ma</li>
+            <li>Me</li>
+            <li>Je</li>
+            <li>Ve</li>
+            <li>Sa</li>
+            <li>Di</li>
         </ul>
+
+        <ul class="days">
+            <li class="blank"/>
+            <li class="blank"/>
+            <li class="day-av"><a href="#">1</a></li>
+            <li class="day-av"><a href="#">2</a></li>
+            <li class="day-av"><a href="#">3</a></li>
+            <li class="day-av"><a href="#">4</a></li>
+            <li class="day-na">5</li>
+            <li class="day-av"><a href="#">6</a></li>
+            <li class="day-na">7</li>
+            <li class="day-na">8</li>
+            <li class="day-av"><a href="#">9</a></li>
+            <li class="day-av"><a href="#">10</a></li>
+            <li class="day-av"><a href="#">11</a></li>
+            <li class="day-av"><a href="#">12</a></li>
+            <li class="day-av"><a href="#">13</a></li>
+            <li class="day-av"><a href="#">14</a></li>
+            <li class="day-av"><a href="#">15</a></li>
+            <li class="day-av"><a href="#">16</a></li>
+            <li class="day-av"><a href="#">17</a></li>
+            <li class="day-av"><a href="#">18</a></li>
+            <li class="day-av"><a href="#">19</a></li>
+            <li class="day-av"><a href="#">20</a></li>
+            <li class="day-av"><a href="#">21</a></li>
+            <li class="day-av"><a href="#">22</a></li>
+            <li class="day-av"><a href="#">23</a></li>
+            <li class="day-av"><a href="#">24</a></li>
+            <li class="day-av"><a href="#">25</a></li>
+            <li class="day-av"><a href="#">26</a></li>
+            <li class="day-av"><a href="#">27</a></li>
+            <li class="day-av"><a href="#">28</a></li>
+            <li class="day-av"><a href="#">29</a></li>
+            <li class="day-av"><a href="#">30</a></li>
+            <li class="day-av"><a href="#">31</a></li>
+        </ul>
+        <!-- <div class="after_box"/> -->
     </div>
 
-    <ul class="weekdays">
-        <li>Lu</li>
-        <li>Ma</li>
-        <li>Me</li>
-        <li>Je</li>
-        <li>Ve</li>
-        <li>Sa</li>
-        <li>Di</li>
-    </ul>
-
-    <ul class="days">
-        <li class="blank"/>
-        <li class="blank"/>
-        <li class="day-av"><a href="#">1</a></li>
-        <li class="day-av"><a href="#">2</a></li>
-        <li class="day-av"><a href="#">3</a></li>
-        <li class="day-av"><a href="#">4</a></li>
-        <li class="day-na">5</li>
-        <li class="day-av"><a href="#">6</a></li>
-        <li class="day-na">7</li>
-        <li class="day-na">8</li>
-        <li class="day-av"><a href="#">9</a></li>
-        <li class="day-av"><a href="#">10</a></li>
-        <li class="day-av"><a href="#">11</a></li>
-        <li class="day-av"><a href="#">12</a></li>
-        <li class="day-av"><a href="#">13</a></li>
-        <li class="day-av"><a href="#">14</a></li>
-        <li class="day-av"><a href="#">15</a></li>
-        <li class="day-av"><a href="#">16</a></li>
-        <li class="day-av"><a href="#">17</a></li>
-        <li class="day-av"><a href="#">18</a></li>
-        <li class="day-av"><a href="#">19</a></li>
-        <li class="day-av"><a href="#">20</a></li>
-        <li class="day-av"><a href="#">21</a></li>
-        <li class="day-av"><a href="#">22</a></li>
-        <li class="day-av"><a href="#">23</a></li>
-        <li class="day-av"><a href="#">24</a></li>
-        <li class="day-av"><a href="#">25</a></li>
-        <li class="day-av"><a href="#">26</a></li>
-        <li class="day-av"><a href="#">27</a></li>
-        <li class="day-av"><a href="#">28</a></li>
-        <li class="day-av"><a href="#">29</a></li>
-        <li class="day-av"><a href="#">30</a></li>
-        <li class="day-av"><a href="#">31</a></li>
-    </ul>
-<!--    <div class="after_box"/> -->
-</div>
-
     <div class="timepicker">
-        <div class="arrow-up" onmousedown="scrollUp()" onmouseup="mouseup()"></div>
-        <div class="time-list-div">
+        <div style="width: 100%">
+            <div class="arrow-up" onmousedown="scrollUp()" onmouseup="mouseup()"></div>
+        </div>
+        <div style="width: 100%">
+            <div class="arrow-down" onmousedown="scrollDown()" onmouseup="mouseup()"></div>
+        </div>
             <ul class="time-list" id="style-4">
                 <li class="time">8:30</li>
-                <li class="time">9:00<li>
+                <li class="time">9:00</li>
                 <li class="time">9:30</li>
                 <li class="time">10:00</li>
                 <li class="time">10:30</li>
@@ -371,11 +394,10 @@ function scrollUp() {
                 <li class="time">18:30</li>
                 <li class="time">19:00</li>
             </ul>
-        </div>
-        <div class="arrow-down" onmousedown="scrollDown()" onmouseup="mouseup()"></div>
     </div>
-
 </div>
+</div>
+
 </body>
 </html>
 
