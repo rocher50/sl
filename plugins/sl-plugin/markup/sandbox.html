@@ -10,8 +10,7 @@
 .sandbox {
     font-size: 15px;
     border: 1px solid;
-    width: 30em;
-    height: 30em;
+    width: 300px;
 }
 
 .box1 {
@@ -25,10 +24,14 @@
 }
 
 .sandbox .box1 .clicky {
+    vertical-align: top;
     width: 12.28%;
+    height: 14.67%
 }
 .sandbox .box1 .clicky-ph {
+    vertical-align: top;
     width: 12.28%;
+    height: 14.67%
 }
 
 .box2 {
@@ -40,6 +43,26 @@
     border: 1px solid;
     margin-left: 0px;
     font-size: 16px;
+    overflow-y: scroll;
+    
+}
+
+.box2::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 5px;
+}
+.box2::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+}
+.box2::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border: 1px solid;
+    border-radius: 5px;
+}
+.box2::-webkit-scrollbar-thumb:hover {
+    background-color: #eee;
+    cursor: pointer;
 }
 
 .sandbox .box2 .clicky {
@@ -86,7 +109,6 @@
 
 </head>
 <body>
-
     <div class="sandbox">
         <div class="box1"
             ><div class="clicky-ph"></div
@@ -127,7 +149,6 @@
             ><div class="clicky" onclick="alert('ok');">31</div
         ></div
         ><div class="box2"
-
             ><div class="clicky" onclick="alert('ok');">8:30</div
             ><div class="clicky" onclick="alert('ok');">9:00</div
             ><div class="clicky" onclick="alert('ok');">9:30</div
@@ -151,7 +172,6 @@
             ><div class="clicky" onclick="alert('ok');">18:30</div
             ><div class="clicky" onclick="alert('ok');">19:00</div
             ><div class="clicky" onclick="alert('ok');">19:30</div
-
         ></div>
     </div>
 
