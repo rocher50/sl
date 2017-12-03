@@ -2,15 +2,100 @@
 <html>
 <head>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
+$(function() {
+
+    var sandbox = createDiv($("body"), "sandbox");
+    var box1 = addDayPicker(sandbox, 5, 31);
+    addTimePicker(sandbox, box1.clientHeight);
+
+    sandbox = createDiv($("body"), "sandbox");
+    box1 = addDayPicker(sandbox, 0, 28);
+    addTimePicker(sandbox, box1.clientHeight);
+
+    function addDayTimePicker(parent) {
+        var sandbox = createDiv(parent, "sandbox");
+        var box1 = addDayPicker(sandbox);
+        addTimePicker(sandbox, box1.clientHeight);
+    }
+
+    function addDayPicker(sandbox, startsOnDay, totalDays) {
+        var box1 = createDiv(sandbox, "box1");
+        createDiv(box1, "day-name").append('Lu');
+        createDiv(box1, "day-name").append('Ma');
+        createDiv(box1, "day-name").append('Me');
+        createDiv(box1, "day-name").append('Je');
+        createDiv(box1, "day-name").append('Ve');
+        createDiv(box1, "day-name").append('Sa');
+        createDiv(box1, "day-name").append('Di');
+        for(var i = 0; i < startsOnDay; i++) {
+            createDiv(box1, "clicky-ph");
+        }
+        for(var i = 1; i <= totalDays; i++) {
+            createDiv(box1, "clicky").append(i);
+        }
+        return box1;
+    }
+
+    function addTimePicker(sandbox, height) {
+        var box2 = createDiv(sandbox, "box2");
+        box2.style.height = height + 'px';
+        for(var i = 8; i <= 19; i++) {
+            createDiv(box2, "clicky").append(i + ':00');
+            createDiv(box2, "clicky").append(i + ':30');
+        }
+        return box1;
+    }
+
+    function createDiv(parent, cssClass) {
+        return createChild(parent, "div", cssClass);
+    }
+
+    function createChild(parent, tag, cssClass) {
+        var child = document.createElement(tag);
+        if(cssClass === undefined) {
+            parent.append(child);
+            return child;
+        }
+        child.setAttribute("class", cssClass);
+        parent.append(child);
+        return child;
+    }
+});
 </script>
 
 <style>
 
 .sandbox {
-    font-size: 15px;
+    font-size: 18px;
     border: 1px solid;
-    width: 300px;
+    width: 350px;
+}
+
+.sandbox .clicky {
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1% 1% 1% 1%;
+    margin: 1% 1% 1% 1%;
+    text-align: center;
+}
+.sandbox .clicky:hover {
+    background: #eee;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.sandbox .clicky-ph {
+    display: inline-block;
+    border: 1px transparent;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1% 1% 1% 1%;
+    margin: 1% 1% 1% 1%;
+    text-align: center;
 }
 
 .box1 {
@@ -23,15 +108,25 @@
     margin-right: 0px;
 }
 
+.sandbox .day-name {
+    display: inline-block;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1% 1% 1% 1%;
+    margin: 1% 1% 1% 1%;
+    text-align: center;
+    width: 12.28%;
+    font-weight: bold;
+}
+
 .sandbox .box1 .clicky {
     vertical-align: top;
     width: 12.28%;
-    height: 14.67%
 }
 .sandbox .box1 .clicky-ph {
     vertical-align: top;
     width: 12.28%;
-    height: 14.67%
 }
 
 .box2 {
@@ -43,26 +138,7 @@
     border: 1px solid;
     margin-left: 0px;
     font-size: 16px;
-    overflow-y: scroll;
-    
-}
-
-.box2::-webkit-scrollbar-track {
-    background-color: transparent;
-    border-radius: 5px;
-}
-.box2::-webkit-scrollbar {
-    width: 8px;
-    background-color: transparent;
-}
-.box2::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border: 1px solid;
-    border-radius: 5px;
-}
-.box2::-webkit-scrollbar-thumb:hover {
-    background-color: #eee;
-    cursor: pointer;
+    overflow-y: scroll;    
 }
 
 .sandbox .box2 .clicky {
@@ -72,27 +148,22 @@
     width: 98%;
 }
 
-.sandbox .clicky {
-    display: inline-block;
+.box2::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 5px;
+}
+.box2::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+}
+.box2::-webkit-scrollbar-thumb {
+    background-color: #ccc;
     border: 1px solid;
-    box-sizing: border-box;
-    background: #ccc;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
-    text-align: center;
+    border-radius: 5px;
 }
-.sandbox .clicky:hover {
-    background: #eee;
+.box2::-webkit-scrollbar:hover, .box2::-webkit-scrollbar-thumb:hover {
+    background-color: #eee;
     cursor: pointer;
-}
-.sandbox .clicky-ph {
-    display: inline-block;
-    border: 1px transparent;
-    box-sizing: border-box;
-    background: transparent;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
-    text-align: center;
 }
 
 .basic {
@@ -109,8 +180,9 @@
 
 </head>
 <body>
+<!--
     <div class="sandbox">
-        <div class="box1"
+        <div class="box1" id="box1"
             ><div class="clicky-ph"></div
             ><div class="clicky-ph"></div
             ><div class="clicky-ph"></div
@@ -148,7 +220,7 @@
             ><div class="clicky" onclick="alert('ok');">30</div
             ><div class="clicky" onclick="alert('ok');">31</div
         ></div
-        ><div class="box2"
+        ><div class="box2" id="box2"
             ><div class="clicky" onclick="alert('ok');">8:30</div
             ><div class="clicky" onclick="alert('ok');">9:00</div
             ><div class="clicky" onclick="alert('ok');">9:30</div
@@ -174,7 +246,7 @@
             ><div class="clicky" onclick="alert('ok');">19:30</div
         ></div>
     </div>
-
+-->
 </body>
 </html>
 
