@@ -6,46 +6,57 @@
 <script>
 $(function() {
 
-    var sandbox = createDiv($("body"), "sandbox");
-    var box1 = addDayPicker(sandbox, 5, 31);
-    addTimePicker(sandbox, box1.clientHeight);
+    var body = $("body");
+    addDayTimePicker(body, 0, 28);
 
-    sandbox = createDiv($("body"), "sandbox");
-    box1 = addDayPicker(sandbox, 0, 28);
-    addTimePicker(sandbox, box1.clientHeight);
+    function addDayTimePicker(parent, startsOnDay, totalDays) {
+        var daytimepicker = createDiv(parent, "daytimepicker");
 
-    function addDayTimePicker(parent) {
-        var sandbox = createDiv(parent, "sandbox");
-        var box1 = addDayPicker(sandbox);
-        addTimePicker(sandbox, box1.clientHeight);
+        var yearmonth = createDiv(daytimepicker, "yearmonth");
+        yearmonth.innerHTML = "Decembre 2017";
+
+        var yearMonthArrows = createDiv(daytimepicker, "timepickerarrows");
+        var leftArrow = createDiv(yearMonthArrows, "half-width");
+        createDiv(leftArrow, "left");
+        var rightArrow = createDiv(yearMonthArrows, "half-width");
+        createDiv(rightArrow, "right");
+
+        var timeArrows = createDiv(daytimepicker, "timepickerarrows");
+        var upArrow = createDiv(timeArrows, "half-height");
+        createDiv(upArrow, "up");
+        var downArrow = createDiv(timeArrows, "half-height");
+        createDiv(downArrow, "down");
+
+        var daypicker = addDayPicker(daytimepicker, startsOnDay, totalDays);
+        addTimePicker(daytimepicker, daypicker.clientHeight);
     }
 
-    function addDayPicker(sandbox, startsOnDay, totalDays) {
-        var box1 = createDiv(sandbox, "box1");
-        createDiv(box1, "day-name").append('Lu');
-        createDiv(box1, "day-name").append('Ma');
-        createDiv(box1, "day-name").append('Me');
-        createDiv(box1, "day-name").append('Je');
-        createDiv(box1, "day-name").append('Ve');
-        createDiv(box1, "day-name").append('Sa');
-        createDiv(box1, "day-name").append('Di');
+    function addDayPicker(daytimepicker, startsOnDay, totalDays) {
+        var daypicker = createDiv(daytimepicker, "daypicker");
+        createDiv(daypicker, "day-name").append('Lu');
+        createDiv(daypicker, "day-name").append('Ma');
+        createDiv(daypicker, "day-name").append('Me');
+        createDiv(daypicker, "day-name").append('Je');
+        createDiv(daypicker, "day-name").append('Ve');
+        createDiv(daypicker, "day-name").append('Sa');
+        createDiv(daypicker, "day-name").append('Di');
         for(var i = 0; i < startsOnDay; i++) {
-            createDiv(box1, "clicky-ph");
+            createDiv(daypicker, "clicky-ph");
         }
         for(var i = 1; i <= totalDays; i++) {
-            createDiv(box1, "clicky").append(i);
+            createDiv(daypicker, "clicky").append(i);
         }
-        return box1;
+        return daypicker;
     }
 
-    function addTimePicker(sandbox, height) {
-        var box2 = createDiv(sandbox, "box2");
-        box2.style.height = height + 'px';
+    function addTimePicker(daytimepicker, height) {
+        var timepicker = createDiv(daytimepicker, "timepicker");
+        timepicker.style.height = height + 'px';
         for(var i = 8; i <= 19; i++) {
-            createDiv(box2, "clicky").append(i + ':00');
-            createDiv(box2, "clicky").append(i + ':30');
+            createDiv(timepicker, "clicky").append(i + ':00');
+            createDiv(timepicker, "clicky").append(i + ':30');
         }
-        return box1;
+        return timepicker;
     }
 
     function createDiv(parent, cssClass) {
@@ -67,113 +78,210 @@ $(function() {
 
 <style>
 
-.sandbox {
+.daytimepicker {
     font-size: 18px;
+    border: 1px hidden;
+    width: 300px;
     border: 1px solid;
-    width: 350px;
 }
 
-.sandbox .clicky {
+.daytimepicker .clicky {
     display: inline-block;
     border: 1px solid transparent;
     border-radius: 5px;
     box-sizing: border-box;
     background: transparent;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
+    padding: 1%;
+    margin: 0;
     text-align: center;
 }
-.sandbox .clicky:hover {
+.daytimepicker .clicky:hover {
     background: #eee;
     border: 1px solid transparent;
     cursor: pointer;
 }
-.sandbox .clicky-ph {
+.daytimepicker .clicky-ph {
     display: inline-block;
     border: 1px transparent;
     box-sizing: border-box;
     background: transparent;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
+    padding: 1%;
+    margin: 0;
     text-align: center;
 }
 
-.box1 {
+.daytimepicker .yearmonth {
     display: inline-block;
+    border: 1px transparent;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: right;
+    width: 70%;
+    float: top;
+}
+
+.daypicker {
+    display: inline-block;
+    border: 1px hidden;
     box-sizing: border-box;
     vertical-align: top;
-    width: 80%;
+    width: 85%;
     height: 100%;
-    border: 1px solid;
     margin-right: 0px;
 }
 
-.sandbox .day-name {
+.daytimepicker .day-name {
     display: inline-block;
     border: 1px solid transparent;
     box-sizing: border-box;
     background: transparent;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
+    padding: 1%;
+    margin: 0;
     text-align: center;
-    width: 12.28%;
+    width: 14.28%;
     font-weight: bold;
 }
 
-.sandbox .box1 .clicky {
+.daytimepicker .daypicker .clicky {
     vertical-align: top;
-    width: 12.28%;
+    width: 14.28%;
 }
-.sandbox .box1 .clicky-ph {
+.daytimepicker .daypicker .clicky-ph {
     vertical-align: top;
-    width: 12.28%;
+    width: 14.28%;
 }
 
-.box2 {
+.daytimepicker .timepickerarrows {
     display: inline-block;
+    border: 1px;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+    width: 15%;
+}
+
+.timepicker {
+    display: inline-block;
+    border: 1px hidden;
     box-sizing: border-box;
     vertical-align: top;
-    width: 20%;
+    width: 15%;
     height: 100%;
-    border: 1px solid;
     margin-left: 0px;
     font-size: 16px;
     overflow-y: scroll;    
 }
 
-.sandbox .box2 .clicky {
+.daytimepicker .timepicker .clicky {
     width: 98%;
 }
-.sandbox .box2 .clicky-ph {
+.daytimepicker .timepicker .clicky-ph {
     width: 98%;
 }
 
-.box2::-webkit-scrollbar-track {
+.timepicker::-webkit-scrollbar-track {
     background-color: transparent;
     border-radius: 5px;
 }
-.box2::-webkit-scrollbar {
+.timepicker::-webkit-scrollbar {
     width: 6px;
     background-color: transparent;
 }
-.box2::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border: 1px solid;
+.timepicker::-webkit-scrollbar:hover{
+    cursor: pointer;
+}
+.timepicker::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border: 1px transparent;
     border-radius: 5px;
 }
-.box2::-webkit-scrollbar:hover, .box2::-webkit-scrollbar-thumb:hover {
-    background-color: #eee;
+.timepicker::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
     cursor: pointer;
 }
 
-.basic {
-    border: 1px solid;
-    padding: 1% 1% 1% 1%;
-    margin: 1% 1% 1% 1%;
-    width: 1em;
-    height: 1em;
+.daytimepicker .half-height {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 50%;
     text-align: center;
-    vertical-align: middle;
+    border: 1px transparent;
+    margin: 0;
+}
+
+.daytimepicker .half-width {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    border: 1px transparent;
+    margin: 0;
+}
+
+.daytimepicker .right {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .right:hover {
+    border-left: 10px solid #999;
+    cursor: pointer;
+}
+
+.daytimepicker .left {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .left:hover {
+    border-right: 10px solid #999;
+    cursor: pointer;
+}
+
+.daytimepicker .up {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .up:hover {
+    border-bottom: 10px solid #999;
+    cursor: pointer;
+}
+
+.daytimepicker .down {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .down:hover {
+    border-top: 10px solid #999;
+    cursor: pointer;
 }
 
 </style>
@@ -181,8 +289,8 @@ $(function() {
 </head>
 <body>
 <!--
-    <div class="sandbox">
-        <div class="box1" id="box1"
+    <div class="daytimepicker">
+        <div class="daypicker" id="daypicker"
             ><div class="clicky-ph"></div
             ><div class="clicky-ph"></div
             ><div class="clicky-ph"></div
@@ -220,7 +328,7 @@ $(function() {
             ><div class="clicky" onclick="alert('ok');">30</div
             ><div class="clicky" onclick="alert('ok');">31</div
         ></div
-        ><div class="box2" id="box2"
+        ><div class="timepicker" id="timepicker"
             ><div class="clicky" onclick="alert('ok');">8:30</div
             ><div class="clicky" onclick="alert('ok');">9:00</div
             ><div class="clicky" onclick="alert('ok');">9:30</div
