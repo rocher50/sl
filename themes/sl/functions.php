@@ -32,7 +32,7 @@ function sl_setup() {
 add_action('after_setup_theme', 'sl_setup');
 
 function sl_endpoints() {
-    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
+    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_fleet',
         'agrs' => [
@@ -46,11 +46,6 @@ function sl_endpoints() {
                     return is_numeric($param);
                 }
              ],
-            'day' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ]
         ]
     ]);
     register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [

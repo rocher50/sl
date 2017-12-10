@@ -46,13 +46,14 @@ div.container {
 .fleet {
     display: grid;
     grid-template-columns: 1fr;
-    grid-row-gap: 2em;
+    grid-row-gap: 1em;
 }
 
 .vehicule {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repear(4, 1fr);
+    grid-template-columns: 60% 40%;
+    grid-template-rows: repeat(1, 1fr);
+    grid-column-gap: 1em;
     border: 1px none;
     padding: 0;
 }
