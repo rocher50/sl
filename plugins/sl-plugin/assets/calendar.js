@@ -117,16 +117,35 @@
 
             var timeArrows = createDiv(daytimepicker, "arrows");
             var upArrow = createDiv(timeArrows, "half-height");
-            createDiv(upArrow, "disabled-up");
+            var timeScrollUp = createDiv(upArrow, "disabled-up");
             var downArrow = createDiv(timeArrows, "half-height");
-            createDiv(downArrow, "down");
+            var timeScrollDown = createDiv(downArrow, "down");
+            var lastScrollTop = 0;
 
             var firstOfMonth = new Date(agenda.year, agenda.month - 1, 1);
             var daysTotal = daysInMonth(agenda.year, agenda.month - 1);
 
             var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), firstActiveDay, daysTotal, agenda);
             container.appendChild(daytimepicker);
-            addTimePicker(daytimepicker, daypicker.clientHeight);
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight);
+            timepicker.addEventListener('scroll', function(event) {
+                if(timepicker.scrollTop == 0) {
+                    upArrow.removeChild(timeScrollUp);
+                    timeScrollUp = createDiv(upArrow, "disabled-up");
+                } else if(lastScrollTop == 0) {
+                    upArrow.removeChild(timeScrollUp);
+                    timeScrollUp = createDiv(upArrow, "up");
+                    timeScrollUp.addEventListener('click', function(event) {
+                        timepicker.scrollTop = timepicker.scrollTop - 20;
+                        clearSelection();
+                    });
+                }
+                lastScrollTop = timepicker.scrollTop;
+            });
+            timeScrollDown.addEventListener('click', function(event) {
+                timepicker.scrollTop = timepicker.scrollTop + 20;
+                clearSelection();
+            });
             return daytimepicker;
         }
 
@@ -185,6 +204,7 @@
             createDiv(timepicker, getTimeClass(i, 0, agenda, "clicky")).append(i + ':00');
             createDiv(timepicker, getTimeClass(i, 30, agenda, "clicky")).append(i + ':30');
         }
+
         return timepicker;
     }
 
@@ -255,6 +275,15 @@
 
         var daysInMonth = function(year, month) {
             return 32 - new Date(year, month, 32).getDate();
+        }
+
+        function clearSelection() {
+            if(document.selection && document.selection.empty) {
+                document.selection.empty();
+            } else if(window.getSelection) {
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+            }
         }
     });
 
