@@ -127,7 +127,7 @@
 
             var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), firstActiveDay, daysTotal, agenda);
             container.appendChild(daytimepicker);
-            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight);
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, getDayAgenda(parseInt(agenda.day), agenda.days));
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
@@ -177,70 +177,88 @@
                 if(agenda.day == i) {
                     dayDiv = createDiv(daypicker, "selected-clicky");
                 } else {
-                    var dayClass = getDayClass(i, agenda, "clicky");
+                    var dayAgenda = getDayAgenda(i, agenda.days);
+                    var dayClass;
+                    if(dayAgenda == null) {
+                        dayClass = "clicky";
+                    } else if(dayAgenda.available) {
+                        dayClass = "bordered-clicky";
+                    } else {
+                        dayClass = "disabled-clicky";
+                    }
                     dayDiv = createDiv(daypicker, dayClass);
-                    dayDiv.addEventListener('click', function(event) {
-                        displayVclAgenda(agenda.vcl, agenda.year, agenda.month, event.target.innerHTML, daytimepicker);
-                    });
+                    if(dayAgenda == null || dayAgenda.available) {
+                        dayDiv.addEventListener('click', function(event) {
+                            displayVclAgenda(agenda.vcl, agenda.year, agenda.month, event.target.innerHTML, daytimepicker);
+                        });
+                    }
                 }
                 dayDiv.append(i++);
             }
             return daypicker;
         }
 
-    function addTimePicker(daytimepicker, height) {
-        var timepicker = createDiv(daytimepicker, "timepicker");
-        if(height > 0) {
-            timepicker.style.height = height + 'px';
-        }
-        var agenda = [{hour:9, min:30, class:"disabled-clicky"},
-                      {hour:11, min:0, class:"bordered-clicky"},
-                      {hour:11, min:30, class:"disabled-clicky"},
-                      {hour:13, min:0, class:"bordered-clicky"},
-                      {hour:13, min:30, class:"bordered-clicky"},
-                      {hour:14, min:0, class:"bordered-clicky"},
-                      {hour:16, min:30, class:"disabled-clicky"}];
-        for(var i = 8; i <= 19; i++) {
-            createDiv(timepicker, getTimeClass(i, 0, agenda, "clicky")).append(i + ':00');
-            createDiv(timepicker, getTimeClass(i, 30, agenda, "clicky")).append(i + ':30');
+        function addTimePicker(daytimepicker, height, dayAgenda) {
+            var timepicker = createDiv(daytimepicker, "timepicker");
+            if(height > 0) {
+                timepicker.style.height = height + 'px';
+            }
+            var addedTime = false;
+            for(var i = 8; i <= 19; i++) {
+                addedTime = addTime(timepicker, dayAgenda, i, i + ':00', addedTime);
+                addedTime = addTime(timepicker, dayAgenda, i + 0.5, i + ':30', addedTime);
+            }
+
+            return timepicker;
         }
 
-        return timepicker;
-    }
-
-    function getDayClass(day, agenda, defClass) {
-        for(var i = 0; i < agenda.days.length; i++) {
-            var dayAgenda = agenda.days[i];
-            if(day < dayAgenda.day) {
-                return defClass;
-            }
-            if(day === dayAgenda.day) {
-                if(dayAgenda.available) {
-                    return "bordered-clicky";
+        addTime = function(timepicker, dayAgenda, time, text, prevTimeAdded) {
+            if(!isTimeAvailable(time, dayAgenda)) {
+                if(prevTimeAdded) {
+                    var timeClicky = createDiv(timepicker, "clicky-ph");
                 }
-                return "disabled-clicky";
+                return false;
             }
+            var timeClicky = createDiv(timepicker, "clicky");
+            timeClicky.append(text);
+            timeClicky.addEventListener('click', function(event) {
+                alert(event.target.innerHTML);
+            });
+            return true;
         }
-        return defClass;
-    }
 
-    function getTimeClass(hour, min, agenda, defClass) {
-        for(var i = 0; i < agenda.length; i++) {
-            var timeAgenda = agenda[i];
-            if(hour < timeAgenda.hour) {
-                return defClass;
-            }
-            if(hour === timeAgenda.hour) {
-                if(min < timeAgenda.min) {
-                    return defClass;
+        getDayAgenda = function(day, days) {
+            for(var i = 0; i < days.length; i++) {
+                var dayAgenda = days[i];
+                if(day < dayAgenda.day) {
+                    return null;
                 }
-                if(min === timeAgenda.min) {
-                    return timeAgenda.class;
+                if(day === dayAgenda.day) {
+                    return dayAgenda;
                 }
             }
+            return null;
         }
-        return defClass;
-    }
+
+        isTimeAvailable = function(time, dayAgenda) {
+            if(dayAgenda == null) {
+                return true;
+            }
+            var bookings = dayAgenda.bookings;
+            for(var i = 0; i < bookings.length; i += 2) {
+                var bookingStart = bookings[i];
+                if(time < bookingStart) {
+                    return true;
+                }
+                if(time === bookingStart) {
+                    return false;
+                }
+                if(time < bookingStart + bookings[i+1]) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         var createDiv = function(parent, cssClass) {
             return createChild(parent, "div", cssClass);
@@ -255,18 +273,6 @@
             child.setAttribute("class", cssClass);
             parent.appendChild(child);
             return child;
-        }
-
-        var getDayAgenda = function(agenda, iDay) {
-            for(var i = 0; i < agenda.length; i++) {
-                var dayAgenda = agenda[i];
-                if(iDay === dayAgenda.day) {
-                    return dayAgenda;
-                } if(iDay < dayAgenda.day) {
-                    return null;
-                }
-            }
-            return null;
         }
 
         var isDayAvailable = function(date) {

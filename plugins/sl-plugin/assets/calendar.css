@@ -156,9 +156,6 @@
 .daytimepicker .timepicker .disabled-clicky {
     width: 98%;
 }
-.daytimepicker .timepicker .bordered-clicky {
-    width: 98%;
-}
 
 .timepicker::-webkit-scrollbar-track {
     background-color: transparent;
