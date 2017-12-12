@@ -51,8 +51,8 @@ div.container {
 
 .vehicule {
     display: grid;
-    grid-template-columns: 60% 40%;
-    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: 70% 30%;
+    grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 1em;
     border: 1px none;
     padding: 0;

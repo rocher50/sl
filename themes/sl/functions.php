@@ -74,6 +74,43 @@ function sl_endpoints() {
              ]
         ]
     ]);
+
+    register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)/hour=(?P<hour>\d+)/min=(?P<min>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'vcl_agenda',
+        'agrs' => [
+            'vcl' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+            ],
+            'year' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'month' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'day' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'hour' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'min' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ]
+        ]
+    ]);
 }
 add_action('rest_api_init', 'sl_endpoints');
 
@@ -93,7 +130,9 @@ function vcl_fleet($data) {
                 'vcl' => get_the_ID(),
                 'year' => $data['year'],
                 'month' => $data['month'],
-                'day' => $data['day']
+                'day' => $data['day'],
+                'hour' => $data['hour'],
+                'min' => $data['min']
             ])
         ];
         array_push($result, $vcl);
@@ -116,6 +155,8 @@ function vcl_agenda($data) {
         'year' => $data['year'],
         'month' => $data['month'],
         'day' => $data['day'],
+        'hour' => $data['hour'],
+        'min' => $data['min'],
         'days' => [
             ['day' => 3,
             'available' => false],
