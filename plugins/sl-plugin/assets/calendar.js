@@ -28,7 +28,7 @@
             req.send();
         }
 
-        function updateDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
+        function refreshDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
             var req = new XMLHttpRequest();
             var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day;
             if(hour != null) {
@@ -42,9 +42,7 @@
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var data = JSON.parse(req.responseText);
-                    var container = daytimepicker.parentElement;
-                    container.removeChild(daytimepicker);
-                    addDayTimePicker(container, data);
+                    replaceDayTimePicker(daytimepicker, data);
                 } else {
                     alert('Server returned an error');
                 }
@@ -56,17 +54,28 @@
         }
 
         function setDepartureMonth(daytimepicker, vcl, year, month) {
-            updateDayTimePicker(daytimepicker, vcl, year, month, 0);
+            clearReservation(daytimepicker.parentElement, daytimepicker);
+            refreshDayTimePicker(daytimepicker, vcl, year, month, 0);
         }
 
         function setDepartureDay(daytimepicker, vcl, year, month, day) {
-            updateDayTimePicker(daytimepicker, vcl, year, month, day);
+            clearReservation(daytimepicker.parentElement, daytimepicker);
+            refreshDayTimePicker(daytimepicker, vcl, year, month, day);
+        }
+
+        function clearReservation(reservation, except) {
+            var reservationElements = reservation.children;
+            for(var i = 0; i < reservationElements.length; i++) {
+                if(!reservationElements[i].isSameNode(except)) {
+                    reservation.removeChild(reservationElements[i]);
+                }
+            }
         }
 
         function setDepartureTime(daytimepicker, agenda, hour, mins) {
-            updateDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
-
-            //addDayTimePicker(daytimepicker.parentElement, agenda);
+            var returnPh = daytimepicker.parentElement.appendChild(document.createElement("div"));
+            refreshDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
+            replaceDayTimePicker(returnPh, agenda);
         }
 
         function displayVcl(vcl) {
@@ -80,44 +89,19 @@
             createHeader(vclInfo, 2, vcl.title);
             createDiv(vclInfo).innerHTML = vcl.thumbnail;
 
-            var dtPickerContainer = createDiv(vehicule);
-            dtPickerContainer.setAttribute("id", "calContainer" + vcl.id);
-            dtPickerContainer.setAttribute("style", "border: 1px none");
-            addDayTimePicker(dtPickerContainer, vcl.agenda);
+            var reservation = createDiv(vehicule);
+            reservation.setAttribute("id", "reservation" + vcl.id);
+            reservation.setAttribute("style", "border: 1px none");
+            replaceDayTimePicker(createDiv(reservation), vcl.agenda);
         }
 
-        var addDayTimePicker = function(container, agenda) {
+        var replaceDayTimePicker = function(ph, agenda) {
 
             var daytimepicker = document.createElement("div");
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            var selected = '';
-            if(agenda.day != null && agenda.day > 0) {
-                if(agenda.day <= 9) {
-                    selected += '0';
-                }
-                selected += agenda.day + '.';
-            } else {
-                selected += '__.';
-            }
-            if(agenda.month <= 9) {
-                selected += '0';
-            }
-            selected += agenda.month + '.' + agenda.year + ' ';
-            if(agenda.hour != null) {
-                if(agenda.hour <= 9) {
-                    selected += '0';
-                }
-                selected += agenda.hour + ':';
-                if(agenda.min <= 9) {
-                    selected += '0';
-                }
-                selected += agenda.min;
-            } else {
-                selected += '__:__';
-            }
-            yearmonth.innerHTML = selected;
+            yearmonth.innerHTML = getSelectedDayTime(agenda);
 
             var agendaDate = new Date(agenda.year, agenda.month - 1, agenda.day);
             var curDate = new Date();
@@ -143,7 +127,7 @@
                         prevYear--;
                         prevMonth = 12;
                     }
-                    setDepartureMonth(daytimepicker, agenda.vcl, prevYear, prevMonth);
+                    setDepartureMonth(getParent(event.target, 3), agenda.vcl, prevYear, prevMonth);
                 });
             } else {
                 createDiv(leftArrow, "disabled-left");
@@ -157,7 +141,7 @@
                     nextYear++;
                     nextMonth = 1;
                 }
-                setDepartureMonth(daytimepicker, agenda.vcl, nextYear, nextMonth);
+                setDepartureMonth(getParent(event.target, 3), agenda.vcl, nextYear, nextMonth);
             });
 
             var timeArrows = createDiv(daytimepicker, "arrows");
@@ -171,7 +155,7 @@
             var daysTotal = daysInMonth(agenda.year, agenda.month - 1);
 
             var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), firstActiveDay, daysTotal, agenda);
-            container.appendChild(daytimepicker);
+            ph.parentElement.replaceChild(daytimepicker, ph);
             var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, agenda, getDayAgenda(parseInt(agenda.day), agenda.days));
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
@@ -191,6 +175,35 @@
                 timepicker.scrollTop = timepicker.scrollTop + 20;
                 clearSelection();
             });
+        }
+
+        function getSelectedDayTime(agenda) {
+            var selected = '';
+            if(agenda.day != null && agenda.day > 0) {
+                if(agenda.day <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.day + '.';
+            } else {
+                selected += '__.';
+            }
+            if(agenda.month <= 9) {
+                selected += '0';
+            }
+            selected += agenda.month + '.' + agenda.year + ' ';
+            if(agenda.hour != null) {
+                if(agenda.hour <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.hour + ':';
+                if(agenda.min <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.min;
+            } else {
+                selected += '__:__';
+            }
+            return selected;
         }
 
         var createHeader = function(parent, h, text, cssClass) {
@@ -233,7 +246,7 @@
                     dayDiv = createDiv(daypicker, dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
                         dayDiv.addEventListener('click', function(event) {
-                            setDepartureDay(daytimepicker, agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
+                            setDepartureDay(getParent(event.target, 2), agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
                         });
                     }
                 }
@@ -294,7 +307,7 @@
             timeClicky.addEventListener('click', function(event) {
                 var text = event.target.innerHTML;
                 var colon = text.indexOf(':');
-                setDepartureTime(timepicker.parentElement, agenda, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
+                setDepartureTime(getParent(event.target, 2), agenda, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
             });
             return true;
         }
@@ -334,6 +347,14 @@
                 }
             }
             return true;
+        }
+
+        function getParent(element, level) {
+            var parent = element.parentElement;
+            for(var i = 1; i < level; ++i) {
+                parent = parent.parentElement;
+            }
+            return parent;
         }
 
         var createDiv = function(parent, cssClass) {
