@@ -28,6 +28,23 @@
             req.send();
         }
 
+        function displayVcl(vcl) {
+            var vclBody = document.getElementById("page_content");
+
+            var vehicule = createDiv(vclBody, "vehicule");
+
+            var vclInfo = createDiv(vehicule);
+            vclInfo.setAttribute("style", "border: 1px none; grid-row: 1/3;");
+
+            createHeader(vclInfo, 2, vcl.title);
+            createDiv(vclInfo).innerHTML = vcl.thumbnail;
+
+            var reservation = createDiv(vehicule);
+            reservation.setAttribute("id", "reservation" + vcl.id);
+            reservation.setAttribute("style", "border: 1px none");
+            replaceDayTimePicker(createDiv(reservation), vcl.agenda);
+        }
+
         function refreshDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
             var req = new XMLHttpRequest();
             var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day;
@@ -76,23 +93,6 @@
             var returnPh = daytimepicker.parentElement.appendChild(document.createElement("div"));
             refreshDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
             replaceDayTimePicker(returnPh, agenda);
-        }
-
-        function displayVcl(vcl) {
-            var vclBody = document.getElementById("page_content");
-
-            var vehicule = createDiv(vclBody, "vehicule");
-
-            var vclInfo = createDiv(vehicule);
-            vclInfo.setAttribute("style", "border: 1px none; grid-row: 1/3;");
-
-            createHeader(vclInfo, 2, vcl.title);
-            createDiv(vclInfo).innerHTML = vcl.thumbnail;
-
-            var reservation = createDiv(vehicule);
-            reservation.setAttribute("id", "reservation" + vcl.id);
-            reservation.setAttribute("style", "border: 1px none");
-            replaceDayTimePicker(createDiv(reservation), vcl.agenda);
         }
 
         var replaceDayTimePicker = function(ph, agenda) {
@@ -161,11 +161,21 @@
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
                     timeScrollUp = createDiv(upArrow, "disabled-up");
+                } else if(timepicker.scrollTop == timepicker.scrollHeight - timepicker.clientHeight) {
+                    downArrow.removeChild(timeScrollDown);
+                    timeScrollDown = createDiv(downArrow, "disabled-down");
                 } else if(lastScrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
                     timeScrollUp = createDiv(upArrow, "up");
                     timeScrollUp.addEventListener('click', function(event) {
                         timepicker.scrollTop = timepicker.scrollTop - 20;
+                        clearSelection();
+                    });
+                } else if(lastScrollTop == timepicker.scrollHeight - timepicker.clientHeight) {
+                    downArrow.removeChild(timeScrollDown);
+                    timeScrollDown = createDiv(downArrow, "down");
+                    timeScrollDown.addEventListener('click', function(event) {
+                        timepicker.scrollTop = timepicker.scrollTop + 20;
                         clearSelection();
                     });
                 }
