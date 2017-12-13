@@ -28,7 +28,7 @@
             req.send();
         }
 
-        function displayVclAgenda(daytimepicker, vcl, year, month, day, hour, mins) {
+        function updateDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
             var req = new XMLHttpRequest();
             var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day;
             if(hour != null) {
@@ -55,6 +55,20 @@
             req.send();
         }
 
+        function setDepartureMonth(daytimepicker, vcl, year, month) {
+            updateDayTimePicker(daytimepicker, vcl, year, month, 0);
+        }
+
+        function setDepartureDay(daytimepicker, vcl, year, month, day) {
+            updateDayTimePicker(daytimepicker, vcl, year, month, day);
+        }
+
+        function setDepartureTime(daytimepicker, agenda, hour, mins) {
+            updateDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
+
+            //addDayTimePicker(daytimepicker.parentElement, agenda);
+        }
+
         function displayVcl(vcl) {
             var vclBody = document.getElementById("page_content");
 
@@ -78,7 +92,32 @@
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            yearmonth.innerHTML = agenda.month + ' ' + agenda.year;
+            var selected = '';
+            if(agenda.day != null && agenda.day > 0) {
+                if(agenda.day <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.day + '.';
+            } else {
+                selected += '__.';
+            }
+            if(agenda.month <= 9) {
+                selected += '0';
+            }
+            selected += agenda.month + '.' + agenda.year + ' ';
+            if(agenda.hour != null) {
+                if(agenda.hour <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.hour + ':';
+                if(agenda.min <= 9) {
+                    selected += '0';
+                }
+                selected += agenda.min;
+            } else {
+                selected += '__:__';
+            }
+            yearmonth.innerHTML = selected;
 
             var agendaDate = new Date(agenda.year, agenda.month - 1, agenda.day);
             var curDate = new Date();
@@ -104,7 +143,7 @@
                         prevYear--;
                         prevMonth = 12;
                     }
-                    displayVclAgenda(daytimepicker, agenda.vcl, prevYear, prevMonth, 0);
+                    setDepartureMonth(daytimepicker, agenda.vcl, prevYear, prevMonth);
                 });
             } else {
                 createDiv(leftArrow, "disabled-left");
@@ -118,7 +157,7 @@
                     nextYear++;
                     nextMonth = 1;
                 }
-                displayVclAgenda(daytimepicker, agenda.vcl, nextYear, nextMonth, 0);
+                setDepartureMonth(daytimepicker, agenda.vcl, nextYear, nextMonth);
             });
 
             var timeArrows = createDiv(daytimepicker, "arrows");
@@ -194,7 +233,7 @@
                     dayDiv = createDiv(daypicker, dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
                         dayDiv.addEventListener('click', function(event) {
-                            displayVclAgenda(daytimepicker, agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
+                            setDepartureDay(daytimepicker, agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
                         });
                     }
                 }
@@ -255,7 +294,7 @@
             timeClicky.addEventListener('click', function(event) {
                 var text = event.target.innerHTML;
                 var colon = text.indexOf(':');
-                displayVclAgenda(timepicker.parentElement, agenda.vcl, agenda.year, agenda.month, agenda.day, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
+                setDepartureTime(timepicker.parentElement, agenda, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
             });
             return true;
         }
