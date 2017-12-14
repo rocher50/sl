@@ -42,7 +42,7 @@
             var reservation = createDiv(vehicule);
             reservation.setAttribute("id", "reservation" + vcl.id);
             reservation.setAttribute("style", "border: 1px none");
-            replaceDayTimePicker(createDiv(reservation), vcl.agenda);
+            replaceDepartureDayTimePicker(createDiv(reservation), vcl.agenda);
         }
 
         function refreshDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
@@ -59,7 +59,7 @@
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var data = JSON.parse(req.responseText);
-                    replaceDayTimePicker(daytimepicker, data);
+                    replaceDepartureDayTimePicker(daytimepicker, data);
                 } else {
                     alert('Server returned an error');
                 }
@@ -89,13 +89,58 @@
             }
         }
 
+        function replaceDepartureDayTimePicker(daytimepicker, data) {
+            replaceDayTimePicker(daytimepicker, data, isDeparturePrevMonthEnabled, isDepartureNextMonthEnabled, getDepartureFirstActiveDay, addDaysToDepartureCalendar);
+        }
+
+        function replaceReturnDayTimePicker(daytimepicker, data) {
+            replaceDayTimePicker(daytimepicker, data, isReturnPrevMonthEnabled, isReturnNextMonthEnabled, getReturnFirstActiveDay, addDaysToReturnCalendar);
+        }
+
         function setDepartureTime(daytimepicker, agenda, hour, mins) {
             var returnPh = daytimepicker.parentElement.appendChild(document.createElement("div"));
             refreshDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
-            replaceDayTimePicker(returnPh, agenda);
+            replaceReturnDayTimePicker(returnPh, agenda);
         }
 
-        var replaceDayTimePicker = function(ph, agenda) {
+        var getDepartureFirstActiveDay = function(agenda) {
+            var curDate = new Date();
+            if(curDate.getFullYear() == agenda.year && curDate.getMonth() == agenda.month - 1) {
+                var firstActiveDay = curDate.getDate();
+                if(!isDayAvailable(curDate)) {
+                    firstActiveDay++;
+                }
+                return firstActiveDay;
+            }
+            if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
+                return 1;
+            }
+            return 100;
+        };
+
+        var isDeparturePrevMonthEnabled = function(agenda) {
+            var curDate = new Date();
+            if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
+                return true;
+            }
+            return false;
+        };
+
+        var isDepartureNextMonthEnabled = function(agenda) {
+            return true;
+        }
+
+        var getReturnFirstActiveDay = function(agenda) {
+            return agenda.day;
+        };
+        var isReturnPrevMonthEnabled = function(agenda) {
+            return false;
+        };
+        var isReturnNextMonthEnabled = function(agenda) {
+            return false;
+        }
+
+        var replaceDayTimePicker = function(ph, agenda, isPrevMonthAvailable, isNextMonthAvailable, getFirstActiveDay, addDaysToCalendar) {
 
             var daytimepicker = document.createElement("div");
             daytimepicker.setAttribute("class", "daytimepicker");
@@ -103,23 +148,9 @@
             var yearmonth = createDiv(daytimepicker, "yearmonth");
             yearmonth.innerHTML = getSelectedDayTime(agenda);
 
-            var agendaDate = new Date(agenda.year, agenda.month - 1, agenda.day);
-            var curDate = new Date();
-            var firstActiveDay;
-            var enablePrevMonth = false;
-            if(curDate.getFullYear() == agenda.year && curDate.getMonth() == agenda.month - 1) {
-                firstActiveDay = curDate.getDate();
-                if(!isDayAvailable(curDate)) {
-                    firstActiveDay++;
-                }
-            } else if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
-                firstActiveDay = 1;
-                enablePrevMonth = true;
-            }
-
             var yearMonthArrows = createDiv(daytimepicker, "month-arrows");
             var leftArrow = createDiv(yearMonthArrows, "half-width");
-            if(enablePrevMonth) {
+            if(isPrevMonthAvailable(agenda)) {
                 createDiv(leftArrow, "left").addEventListener('click', function(event) {
                     var prevYear = agenda.year;
                     var prevMonth = parseInt(agenda.month) - 1;
@@ -134,15 +165,19 @@
             }
 
             var rightArrow = createDiv(yearMonthArrows, "half-width");
-            createDiv(rightArrow, "right").addEventListener('click', function(event) {
-                var nextYear = agenda.year;
-                var nextMonth = parseInt(agenda.month) + 1;
-                if(nextMonth > 12) {
-                    nextYear++;
-                    nextMonth = 1;
-                }
-                setDepartureMonth(getParent(event.target, 3), agenda.vcl, nextYear, nextMonth);
-            });
+            if(isNextMonthAvailable(agenda)) {
+                createDiv(rightArrow, "right").addEventListener('click', function(event) {
+                    var nextYear = agenda.year;
+                    var nextMonth = parseInt(agenda.month) + 1;
+                    if(nextMonth > 12) {
+                        nextYear++;
+                        nextMonth = 1;
+                    }
+                    setDepartureMonth(getParent(event.target, 3), agenda.vcl, nextYear, nextMonth);
+                });
+            } else {
+                createDiv(rightArrow, "disabled-right");
+            }
 
             var timeArrows = createDiv(daytimepicker, "arrows");
             var upArrow = createDiv(timeArrows, "half-height");
@@ -152,9 +187,9 @@
             var lastScrollTop = 0;
 
             var firstOfMonth = new Date(agenda.year, agenda.month - 1, 1);
-            var daysTotal = daysInMonth(agenda.year, agenda.month - 1);
+            var totalDays = daysInMonth(agenda.year, agenda.month - 1);
 
-            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), firstActiveDay, daysTotal, agenda);
+            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), getFirstActiveDay(agenda), totalDays, agenda, addDaysToCalendar);
             ph.parentElement.replaceChild(daytimepicker, ph);
             var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, agenda, getDayAgenda(parseInt(agenda.day), agenda.days));
             timepicker.addEventListener('scroll', function(event) {
@@ -222,7 +257,7 @@
             return header;
         }
 
-        var addDayPicker = function(daytimepicker, startsOnDay, firstActiveDay, totalDays, agenda) {
+        var addDayPicker = function(daytimepicker, startsOnDay, firstActiveDay, daysTotal, agenda, addDaysToCalendar) {
             var daypicker = createDiv(daytimepicker, "daypicker");
             createDiv(daypicker, "day-name").append('Lu');
             createDiv(daypicker, "day-name").append('Ma');
@@ -238,8 +273,12 @@
             while(i < firstActiveDay) {
                 createDiv(daypicker, "disabled-clicky").append(i++);
             }
+            addDaysToCalendar(daypicker, agenda, i, daysTotal);
+            return daypicker;
+        }
 
-            while(i <= totalDays) {
+        var addDaysToDepartureCalendar = function(daypicker, agenda, firstActiveDay, daysTotal) {
+            for(var i = firstActiveDay; i <= daysTotal; i++) {
                 var dayDiv;
                 if(agenda.day == i) {
                     dayDiv = createDiv(daypicker, "selected-clicky");
@@ -260,10 +299,41 @@
                         });
                     }
                 }
-                dayDiv.append(i++);
+                dayDiv.append(i);
             }
-            return daypicker;
-        }
+        };
+
+        var addDaysToReturnCalendar = function(daypicker, agenda, firstActiveDay, daysTotal) {
+            var i = firstActiveDay;
+            while(i < agenda.day) {
+                createDiv(daypicker, "disabled-clicky").append(i++);
+            }
+            createDiv(daypicker, "selected-clicky").append(i++);
+            while(i <= daysTotal) {
+                var dayAgenda = getDayAgenda(i, agenda.days);
+                var dayClass;
+                if(dayAgenda == null) {
+                    dayClass = "clicky";
+                } else if(dayAgenda.available) {
+                    dayClass = "bordered-clicky";
+                } else {
+                    dayClass = "disabled-clicky";
+                }
+                dayDiv = createDiv(daypicker, dayClass);
+                dayDiv.append(i++);
+                if(dayAgenda == null || dayAgenda.available) {
+                    dayDiv.addEventListener('click', function(event) {
+                        setDepartureDay(getParent(event.target, 2), agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
+                    });
+                }
+                if(dayAgenda != null) {
+                    while(i <= daysTotal) {
+                        createDiv(daypicker, "disabled-clicky").append(i++);
+                    }
+                    break;
+                }
+            }
+        };
 
         function addTimePicker(daytimepicker, height, agenda, dayAgenda) {
             var timepicker = createDiv(daytimepicker, "timepicker");
@@ -286,7 +356,7 @@
             return timepicker;
         }
 
-        addTime = function(timepicker, agenda, dayAgenda, hour, mins, prevTimeAdded) {
+        var addTime = function(timepicker, agenda, dayAgenda, hour, mins, prevTimeAdded) {
             var timeClicky = createDiv(timepicker);
             var text = '';
             if(hour < 10) {
@@ -320,9 +390,9 @@
                 setDepartureTime(getParent(event.target, 2), agenda, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
             });
             return true;
-        }
+        };
 
-        getDayAgenda = function(day, days) {
+        var getDayAgenda = function(day, days) {
             for(var i = 0; i < days.length; i++) {
                 var dayAgenda = days[i];
                 if(day < dayAgenda.day) {
@@ -333,9 +403,9 @@
                 }
             }
             return null;
-        }
+        };
 
-        isTimeAvailable = function(hour, mins, dayAgenda) {
+        var isTimeAvailable = function(hour, mins, dayAgenda) {
             if(dayAgenda == null) {
                 return true;
             }
@@ -357,7 +427,7 @@
                 }
             }
             return true;
-        }
+        };
 
         function getParent(element, level) {
             var parent = element.parentElement;

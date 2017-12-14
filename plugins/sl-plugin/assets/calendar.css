@@ -231,6 +231,16 @@
     border-left: 10px solid #999;
     cursor: pointer;
 }
+.daytimepicker .month-arrows .disabled-right {
+  width: 0;
+  height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-left: 9px solid #efefef;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
 
 .daytimepicker .month-arrows .left {
   width: 0;
