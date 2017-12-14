@@ -90,7 +90,35 @@
         }
 
         function replaceDepartureDayTimePicker(daytimepicker, data) {
-            replaceDayTimePicker(daytimepicker, data, isDeparturePrevMonthEnabled, isDepartureNextMonthEnabled, getDepartureFirstActiveDay, addDaysToDepartureCalendar);
+            var departDayTimeRenderer = {
+                data: data,
+                isPrevMonthAvailable: function() {
+                    var curDate = new Date();
+                    if(curDate.getFullYear() < data.year || curDate.getMonth() < data.month - 1) {
+                        return true;
+                    }
+                    return false;
+                },
+                isNextMonthAvailable: function() {
+                    return true;
+                },
+                getFirstActiveDay: function() {
+                    var curDate = new Date();
+                    if(curDate.getFullYear() == data.year && curDate.getMonth() == data.month - 1) {
+                        var firstActiveDay = curDate.getDate();
+                        if(!isDayAvailable(curDate)) {
+                            firstActiveDay++;
+                        }
+                        return firstActiveDay;
+                    }
+                    if(curDate.getFullYear() < data.year || curDate.getMonth() < data.month - 1) {
+                        return 1;
+                    }
+                    return 100;
+                },
+                addDaysToCalendar: addDaysToDepartureCalendar
+            };
+            replaceDayTimePicker(daytimepicker, departDayTimeRenderer);
         }
 
         function replaceReturnDayTimePicker(daytimepicker, data) {
@@ -103,33 +131,6 @@
             replaceReturnDayTimePicker(returnPh, agenda);
         }
 
-        var getDepartureFirstActiveDay = function(agenda) {
-            var curDate = new Date();
-            if(curDate.getFullYear() == agenda.year && curDate.getMonth() == agenda.month - 1) {
-                var firstActiveDay = curDate.getDate();
-                if(!isDayAvailable(curDate)) {
-                    firstActiveDay++;
-                }
-                return firstActiveDay;
-            }
-            if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
-                return 1;
-            }
-            return 100;
-        };
-
-        var isDeparturePrevMonthEnabled = function(agenda) {
-            var curDate = new Date();
-            if(curDate.getFullYear() < agenda.year || curDate.getMonth() < agenda.month - 1) {
-                return true;
-            }
-            return false;
-        };
-
-        var isDepartureNextMonthEnabled = function(agenda) {
-            return true;
-        }
-
         var getReturnFirstActiveDay = function(agenda) {
             return agenda.day;
         };
@@ -140,40 +141,40 @@
             return false;
         }
 
-        var replaceDayTimePicker = function(ph, agenda, isPrevMonthAvailable, isNextMonthAvailable, getFirstActiveDay, addDaysToCalendar) {
+        var replaceDayTimePicker = function(ph, renderer) {
 
             var daytimepicker = document.createElement("div");
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            yearmonth.innerHTML = getSelectedDayTime(agenda);
+            yearmonth.innerHTML = getSelectedDayTime(renderer.data);
 
             var yearMonthArrows = createDiv(daytimepicker, "month-arrows");
             var leftArrow = createDiv(yearMonthArrows, "half-width");
-            if(isPrevMonthAvailable(agenda)) {
+            if(renderer.isPrevMonthAvailable()) {
                 createDiv(leftArrow, "left").addEventListener('click', function(event) {
-                    var prevYear = agenda.year;
-                    var prevMonth = parseInt(agenda.month) - 1;
+                    var prevYear = renderer.data.year;
+                    var prevMonth = parseInt(renderer.data.month) - 1;
                     if(prevMonth < 1) {
                         prevYear--;
                         prevMonth = 12;
                     }
-                    setDepartureMonth(getParent(event.target, 3), agenda.vcl, prevYear, prevMonth);
+                    setDepartureMonth(getParent(event.target, 3), renderer.data.vcl, prevYear, prevMonth);
                 });
             } else {
                 createDiv(leftArrow, "disabled-left");
             }
 
             var rightArrow = createDiv(yearMonthArrows, "half-width");
-            if(isNextMonthAvailable(agenda)) {
+            if(renderer.isNextMonthAvailable()) {
                 createDiv(rightArrow, "right").addEventListener('click', function(event) {
-                    var nextYear = agenda.year;
-                    var nextMonth = parseInt(agenda.month) + 1;
+                    var nextYear = renderer.data.year;
+                    var nextMonth = parseInt(renderer.data.month) + 1;
                     if(nextMonth > 12) {
                         nextYear++;
                         nextMonth = 1;
                     }
-                    setDepartureMonth(getParent(event.target, 3), agenda.vcl, nextYear, nextMonth);
+                    setDepartureMonth(getParent(event.target, 3), renderer.data.vcl, nextYear, nextMonth);
                 });
             } else {
                 createDiv(rightArrow, "disabled-right");
@@ -186,12 +187,12 @@
             var timeScrollDown = createDiv(downArrow, "down");
             var lastScrollTop = 0;
 
-            var firstOfMonth = new Date(agenda.year, agenda.month - 1, 1);
-            var totalDays = daysInMonth(agenda.year, agenda.month - 1);
+            var firstOfMonth = new Date(renderer.data.year, renderer.data.month - 1, 1);
+            var totalDays = daysInMonth(renderer.data.year, renderer.data.month - 1);
 
-            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), getFirstActiveDay(agenda), totalDays, agenda, addDaysToCalendar);
+            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), renderer.getFirstActiveDay(), totalDays, renderer.data, renderer.addDaysToCalendar);
             ph.parentElement.replaceChild(daytimepicker, ph);
-            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, agenda, getDayAgenda(parseInt(agenda.day), agenda.days));
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer.data, getDayAgenda(parseInt(renderer.data.day), renderer.data.days));
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
