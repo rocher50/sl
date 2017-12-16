@@ -7,15 +7,80 @@
             displayFleet(date.getFullYear(), date.getMonth() + 1);
         }
 
+        var fleet = {
+            vclList: [],
+
+            getVcl: function(id) {
+                var vcl;
+                if(this.vclList.length == 0) {
+                    vcl = this.createVcl(id);
+                    this.vclList.push(vcl);
+                    return vcl;
+                }
+                for(var i = 0; i < this.vclList.length; i++) {
+                    if(this.vclList[i].id == id) {
+                        return this.vclList[i];
+                    }
+                }
+                vcl = this.createVcl(id);
+                this.vclList.push(vcl);
+                return vcl;
+            },
+
+            createVcl: function(id) {
+                return {
+                    id: id,
+                    title: null,
+                    thumbnail: null,
+                    depYear: null,
+                    depMonth: null,
+                    depDay: null,
+                    depHour: null,
+                    depMin: null,
+                    retYear: null,
+                    retMonth: null,
+                    retDay: null,
+                    retHour: null,
+                    retMin: null,
+                    agenda: null,
+
+                    depDayTimePicker: null,
+                    replaceDepDayTimePicker: function(newDayTimePicker) {
+                        this.depDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.depDayTimePicker);
+                        this.depDayTimePicker = newDayTimePicker;
+                    },
+
+                    clearReturn: function() {
+                        var reservation = this.depDayTimePicker.parentElement;
+                        var reservationElements = reservation.children;
+                        for(var i = 0; i < reservationElements.length; i++) {
+                            if(!reservationElements[i].isSameNode(this.depDayTimePicker)) {
+                                reservation.removeChild(reservationElements[i]);
+                            }
+                        }
+                    }
+                };
+            }
+        };
+
         function displayFleet(year, month) {
             var req = new XMLHttpRequest();
             var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month;
             req.open('GET', url);
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
-                    var fleet = JSON.parse(req.responseText);
-                    for(var i = 0; i < fleet.length; i++) {
-                        var vcl = fleet[i];
+                    var fleetInfo = JSON.parse(req.responseText);
+                    for(var i = 0; i < fleetInfo.length; i++) {
+                        var vclInfo = fleetInfo[i];
+                        var vcl = fleet.getVcl(vclInfo.id);
+                        vcl.title = vclInfo.title;
+                        vcl.thumbnail = vclInfo.thumbnail;
+                        vcl.depYear = parseInt(vclInfo.agenda.year);
+                        vcl.depMonth = parseInt(vclInfo.agenda.month);
+                        vcl.depDay = parseInt(vclInfo.agenda.day);
+                        vcl.depHour = parseInt(vclInfo.agenda.hour);
+                        vcl.depMin = parseInt(vclInfo.agenda.min);
+                        vcl.agenda = vclInfo.agenda.days;
                         displayVcl(vcl);
                     }
                 } else {
@@ -42,24 +107,25 @@
             var reservation = createDiv(vehicule);
             reservation.setAttribute("id", "reservation" + vcl.id);
             reservation.setAttribute("style", "border: 1px none");
-            replaceDepartureDayTimePicker(createDiv(reservation), vcl.agenda);
+            vcl.depDayTimePicker = createDiv(reservation);
+            replaceDepartureDayTimePicker(vcl);
         }
 
-        function refreshDayTimePicker(daytimepicker, vcl, year, month, day, hour, mins) {
+        function refreshDayTimePicker(renderer) {
             var req = new XMLHttpRequest();
-            var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + vcl + "/year=" + year + "/month=" + month + "/day=" + day;
-            if(hour != null) {
-                url += '/hour=' + hour;
+            var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.getYear() + "/month=" + renderer.getMonth() + "/day=" + renderer.getDay();
+            if(renderer.getHour()) {
+                url += '/hour=' + renderer.getHour();
             }
-            if(mins != null) {
-                url += '/min=' + mins;
+            if(renderer.getMin()) {
+                url += '/min=' + renderer.getMin();
             }
 
             req.open('GET', url);
             req.onload = function() {
                 if(req.status >= 200 && req.status < 400) {
                     var data = JSON.parse(req.responseText);
-                    replaceDepartureDayTimePicker(daytimepicker, data);
+                    replaceDayTimePicker(renderer);
                 } else {
                     alert('Server returned an error');
                 }
@@ -70,31 +136,27 @@
             req.send();
         }
 
-        function setDepartureMonth(daytimepicker, vcl, year, month) {
-            clearReservation(daytimepicker.parentElement, daytimepicker);
-            refreshDayTimePicker(daytimepicker, vcl, year, month, 0);
-        }
-
-        function setDepartureDay(daytimepicker, vcl, year, month, day) {
-            clearReservation(daytimepicker.parentElement, daytimepicker);
-            refreshDayTimePicker(daytimepicker, vcl, year, month, day);
-        }
-
-        function clearReservation(reservation, except) {
-            var reservationElements = reservation.children;
-            for(var i = 0; i < reservationElements.length; i++) {
-                if(!reservationElements[i].isSameNode(except)) {
-                    reservation.removeChild(reservationElements[i]);
-                }
-            }
-        }
-
-        function replaceDepartureDayTimePicker(daytimepicker, data) {
+        function replaceDepartureDayTimePicker(vcl) {
             var departDayTimeRenderer = {
-                data: data,
+                vcl: vcl,
+                getYear: function() {
+                    return this.vcl.depYear;
+                },
+                getMonth: function() {
+                    return this.vcl.depMonth;
+                },
+                getDay: function() {
+                    return this.vcl.depDay;
+                },
+                getHour: function() {
+                    return this.vcl.depHour;
+                },
+                getMin: function() {
+                    return this.vcl.depMin;
+                },
                 isPrevMonthAvailable: function() {
                     var curDate = new Date();
-                    if(curDate.getFullYear() < data.year || curDate.getMonth() < data.month - 1) {
+                    if(curDate.getFullYear() < this.getYear() || curDate.getMonth() < this.getMonth() - 1) {
                         return true;
                     }
                     return false;
@@ -104,21 +166,37 @@
                 },
                 getFirstActiveDay: function() {
                     var curDate = new Date();
-                    if(curDate.getFullYear() == data.year && curDate.getMonth() == data.month - 1) {
+                    if(curDate.getFullYear() == this.getYear() && curDate.getMonth() == this.getMonth() - 1) {
                         var firstActiveDay = curDate.getDate();
                         if(!isDayAvailable(curDate)) {
                             firstActiveDay++;
                         }
                         return firstActiveDay;
                     }
-                    if(curDate.getFullYear() < data.year || curDate.getMonth() < data.month - 1) {
+                    if(curDate.getFullYear() < this.getYear() || curDate.getMonth() < this.getMonth() - 1) {
                         return 1;
                     }
                     return 100;
                 },
-                addDaysToCalendar: addDaysToDepartureCalendar
+                addDaysToCalendar: addDaysToDepartureCalendar,
+                replaceDayTimePicker: function(newDayTimePicker) {
+                    this.vcl.replaceDepDayTimePicker(newDayTimePicker);
+                },
+                setMonth: function(year, month) {
+                    this.vcl.depYear = parseInt(year);
+                    this.vcl.depMonth = parseInt(month);
+                    this.vcl.depDay = 0;
+                    this.vcl.clearReturn();
+                    refreshDayTimePicker(this);
+                },
+                setDay: function(day) {
+                    this.vcl.depDay = parseInt(day);
+                    this.vcl.clearReturn();
+                    refreshDayTimePicker(this);
+                }
+
             };
-            replaceDayTimePicker(daytimepicker, departDayTimeRenderer);
+            replaceDayTimePicker(departDayTimeRenderer);
         }
 
         function replaceReturnDayTimePicker(daytimepicker, data) {
@@ -141,25 +219,25 @@
             return false;
         }
 
-        var replaceDayTimePicker = function(ph, renderer) {
+        var replaceDayTimePicker = function(renderer) {
 
             var daytimepicker = document.createElement("div");
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            yearmonth.innerHTML = getSelectedDayTime(renderer.data);
+            yearmonth.innerHTML = getSelectedDayTime(renderer);
 
             var yearMonthArrows = createDiv(daytimepicker, "month-arrows");
             var leftArrow = createDiv(yearMonthArrows, "half-width");
             if(renderer.isPrevMonthAvailable()) {
                 createDiv(leftArrow, "left").addEventListener('click', function(event) {
-                    var prevYear = renderer.data.year;
-                    var prevMonth = parseInt(renderer.data.month) - 1;
+                    var prevYear = renderer.getYear();
+                    var prevMonth = renderer.getMonth() - 1;
                     if(prevMonth < 1) {
                         prevYear--;
                         prevMonth = 12;
                     }
-                    setDepartureMonth(getParent(event.target, 3), renderer.data.vcl, prevYear, prevMonth);
+                    renderer.setMonth(prevYear, prevMonth);
                 });
             } else {
                 createDiv(leftArrow, "disabled-left");
@@ -168,13 +246,13 @@
             var rightArrow = createDiv(yearMonthArrows, "half-width");
             if(renderer.isNextMonthAvailable()) {
                 createDiv(rightArrow, "right").addEventListener('click', function(event) {
-                    var nextYear = renderer.data.year;
-                    var nextMonth = parseInt(renderer.data.month) + 1;
+                    var nextYear = renderer.getYear();
+                    var nextMonth = renderer.getMonth() + 1;
                     if(nextMonth > 12) {
                         nextYear++;
                         nextMonth = 1;
                     }
-                    setDepartureMonth(getParent(event.target, 3), renderer.data.vcl, nextYear, nextMonth);
+                    renderer.setMonth(nextYear, nextMonth);
                 });
             } else {
                 createDiv(rightArrow, "disabled-right");
@@ -187,12 +265,12 @@
             var timeScrollDown = createDiv(downArrow, "down");
             var lastScrollTop = 0;
 
-            var firstOfMonth = new Date(renderer.data.year, renderer.data.month - 1, 1);
-            var totalDays = daysInMonth(renderer.data.year, renderer.data.month - 1);
+            var firstOfMonth = new Date(renderer.getYear(), renderer.getMonth() - 1, 1);
+            var totalDays = daysInMonth(renderer.getYear(), renderer.getMonth() - 1);
 
-            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), renderer.getFirstActiveDay(), totalDays, renderer.data, renderer.addDaysToCalendar);
-            ph.parentElement.replaceChild(daytimepicker, ph);
-            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer.data, getDayAgenda(parseInt(renderer.data.day), renderer.data.days));
+            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), renderer.getFirstActiveDay(), totalDays, renderer, renderer.addDaysToCalendar);
+            renderer.replaceDayTimePicker(daytimepicker);
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer.vcl.agenda, getDayAgenda(parseInt(renderer.getDay()), renderer.vcl.agenda));
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
@@ -223,29 +301,33 @@
             });
         }
 
-        function getSelectedDayTime(agenda) {
+        function getSelectedDayTime(renderer) {
             var selected = '';
-            if(agenda.day != null && agenda.day > 0) {
-                if(agenda.day <= 9) {
+            var day = renderer.getDay();
+            if(day && day > 0) {
+                if(day <= 9) {
                     selected += '0';
                 }
-                selected += agenda.day + '.';
+                selected += day + '.';
             } else {
                 selected += '__.';
             }
-            if(agenda.month <= 9) {
+            var month = renderer.getMonth();
+            if(month <= 9) {
                 selected += '0';
             }
-            selected += agenda.month + '.' + agenda.year + ' ';
-            if(agenda.hour != null) {
-                if(agenda.hour <= 9) {
+            selected += month + '.' + renderer.getYear() + ' ';
+            var hour = renderer.getHour();
+            if(hour) {
+                if(hour <= 9) {
                     selected += '0';
                 }
-                selected += agenda.hour + ':';
-                if(agenda.min <= 9) {
+                selected += hour + ':';
+                var min = renderer.getMin();
+                if(min <= 9) {
                     selected += '0';
                 }
-                selected += agenda.min;
+                selected += min;
             } else {
                 selected += '__:__';
             }
@@ -258,7 +340,7 @@
             return header;
         }
 
-        var addDayPicker = function(daytimepicker, startsOnDay, firstActiveDay, daysTotal, agenda, addDaysToCalendar) {
+        var addDayPicker = function(daytimepicker, startsOnDay, firstActiveDay, daysTotal, renderer, addDaysToCalendar) {
             var daypicker = createDiv(daytimepicker, "daypicker");
             createDiv(daypicker, "day-name").append('Lu');
             createDiv(daypicker, "day-name").append('Ma');
@@ -274,17 +356,17 @@
             while(i < firstActiveDay) {
                 createDiv(daypicker, "disabled-clicky").append(i++);
             }
-            addDaysToCalendar(daypicker, agenda, i, daysTotal);
+            addDaysToCalendar(daypicker, renderer, i, daysTotal);
             return daypicker;
         }
 
-        var addDaysToDepartureCalendar = function(daypicker, agenda, firstActiveDay, daysTotal) {
+        var addDaysToDepartureCalendar = function(daypicker, renderer, firstActiveDay, daysTotal) {
             for(var i = firstActiveDay; i <= daysTotal; i++) {
                 var dayDiv;
-                if(agenda.day == i) {
+                if(renderer.getDay() == i) {
                     dayDiv = createDiv(daypicker, "selected-clicky");
                 } else {
-                    var dayAgenda = getDayAgenda(i, agenda.days);
+                    var dayAgenda = getDayAgenda(i, renderer.vcl.agenda);
                     var dayClass;
                     if(dayAgenda == null) {
                         dayClass = "clicky";
@@ -296,7 +378,7 @@
                     dayDiv = createDiv(daypicker, dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
                         dayDiv.addEventListener('click', function(event) {
-                            setDepartureDay(getParent(event.target, 2), agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
+                            renderer.setDay(event.target.innerHTML);
                         });
                     }
                 }
