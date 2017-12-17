@@ -108,16 +108,16 @@
             reservation.setAttribute("id", "reservation" + vcl.id);
             reservation.setAttribute("style", "border: 1px none");
             vcl.depDayTimePicker = createDiv(reservation);
-            replaceDepartureDayTimePicker(vcl);
+            replaceDayTimePicker(getDepDayTimePickerRenderer(vcl));
         }
 
         function refreshDayTimePicker(renderer) {
             var req = new XMLHttpRequest();
             var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.getYear() + "/month=" + renderer.getMonth() + "/day=" + renderer.getDay();
-            if(renderer.getHour()) {
+            if(!isNaN(renderer.getHour())) {
                 url += '/hour=' + renderer.getHour();
             }
-            if(renderer.getMin()) {
+            if(!isNaN(renderer.getMin())) {
                 url += '/min=' + renderer.getMin();
             }
 
@@ -136,7 +136,7 @@
             req.send();
         }
 
-        function replaceDepartureDayTimePicker(vcl) {
+        function getDepDayTimePickerRenderer(vcl) {
             var departDayTimeRenderer = {
                 vcl: vcl,
                 getYear: function() {
@@ -178,7 +178,66 @@
                     }
                     return 100;
                 },
-                addDaysToCalendar: addDaysToDepartureCalendar,
+                newDayElement: function(i) {
+                    var dayDiv = document.createElement("div");
+                    dayDiv.append(i);
+                    if(this.getDay() == i) {
+                        dayDiv.setAttribute("class", "selected-clicky");
+                    } else {
+                        var dayAgenda = getDayAgenda(i, this.vcl.agenda);
+                        var dayClass;
+                        if(dayAgenda == null) {
+                            dayClass = "clicky";
+                        } else if(dayAgenda.available) {
+                            dayClass = "bordered-clicky";
+                        } else {
+                            dayClass = "disabled-clicky";
+                        }
+                        dayDiv.setAttribute("class", dayClass);
+                        if(dayAgenda == null || dayAgenda.available) {
+                            dayDiv.addEventListener('click', function(event) {
+                                departDayTimeRenderer.setDay(event.target.innerHTML);
+                            });
+                        }
+                    }
+                    return dayDiv;
+                },
+                newTimeElement: function(timepicker, hour, mins, prevTimeAdded) {
+                    var timeClicky = createDiv(timepicker);
+                    var text = '';
+                    if(hour < 10) {
+                        text += '0';
+                    }
+                    text += hour + ':' + mins;
+                    if(mins == 0) {
+                        text += '0';
+                    }
+                    timeClicky.append(text);
+                    if(!this.getDay()) {
+                        timeClicky.setAttribute("class", "disabled-clicky");
+                        return true;
+                    }
+                    var dayAgenda = getDayAgenda(this.getDay(), this.vcl.agenda);
+                    if(!isTimeAvailable(hour, mins, dayAgenda)) {
+                        if(prevTimeAdded) {
+                            timeClicky.setAttribute("class", "disabled-clicky");
+                        } else {
+                            timepicker.removeChild(timeClicky);
+                        }
+                       return false;
+                    }
+                    if(hour == this.getHour() && mins == this.getMin()) {
+                        timeClicky.setAttribute("class", "selected-clicky");
+                        return true;
+                    }
+                    timeClicky.setAttribute("class", "clicky");
+                    timeClicky.addEventListener('click', function(event) {
+                        var text = event.target.innerHTML;
+                        var colon = text.indexOf(':');
+                        departDayTimeRenderer.setTime(text.substring(0, colon), text.substring(colon + 1));
+                    });
+                    return true;
+                },
                 replaceDayTimePicker: function(newDayTimePicker) {
                     this.vcl.replaceDepDayTimePicker(newDayTimePicker);
                 },
@@ -186,6 +245,8 @@
                     this.vcl.depYear = parseInt(year);
                     this.vcl.depMonth = parseInt(month);
                     this.vcl.depDay = 0;
+                    this.vcl.depHour = NaN;
+                    this.vcl.depMin = NaN;
                     this.vcl.clearReturn();
                     refreshDayTimePicker(this);
                 },
@@ -193,30 +254,15 @@
                     this.vcl.depDay = parseInt(day);
                     this.vcl.clearReturn();
                     refreshDayTimePicker(this);
+                },
+                setTime: function(hour, min) {
+                    this.vcl.depHour = parseInt(hour);
+                    this.vcl.depMin = parseInt(min);
+                    this.vcl.clearReturn();
+                    refreshDayTimePicker(this);
                 }
-
             };
-            replaceDayTimePicker(departDayTimeRenderer);
-        }
-
-        function replaceReturnDayTimePicker(daytimepicker, data) {
-            replaceDayTimePicker(daytimepicker, data, isReturnPrevMonthEnabled, isReturnNextMonthEnabled, getReturnFirstActiveDay, addDaysToReturnCalendar);
-        }
-
-        function setDepartureTime(daytimepicker, agenda, hour, mins) {
-            var returnPh = daytimepicker.parentElement.appendChild(document.createElement("div"));
-            refreshDayTimePicker(daytimepicker, agenda.vcl, agenda.year, agenda.month, agenda.day, hour, mins);
-            replaceReturnDayTimePicker(returnPh, agenda);
-        }
-
-        var getReturnFirstActiveDay = function(agenda) {
-            return agenda.day;
-        };
-        var isReturnPrevMonthEnabled = function(agenda) {
-            return false;
-        };
-        var isReturnNextMonthEnabled = function(agenda) {
-            return false;
+            return departDayTimeRenderer;
         }
 
         var replaceDayTimePicker = function(renderer) {
@@ -268,9 +314,9 @@
             var firstOfMonth = new Date(renderer.getYear(), renderer.getMonth() - 1, 1);
             var totalDays = daysInMonth(renderer.getYear(), renderer.getMonth() - 1);
 
-            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), renderer.getFirstActiveDay(), totalDays, renderer, renderer.addDaysToCalendar);
+            var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), totalDays, renderer);
             renderer.replaceDayTimePicker(daytimepicker);
-            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer.vcl.agenda, getDayAgenda(parseInt(renderer.getDay()), renderer.vcl.agenda));
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer);
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);
@@ -340,7 +386,7 @@
             return header;
         }
 
-        var addDayPicker = function(daytimepicker, startsOnDay, firstActiveDay, daysTotal, renderer, addDaysToCalendar) {
+        var addDayPicker = function(daytimepicker, startsOnDay, daysTotal, renderer) {
             var daypicker = createDiv(daytimepicker, "daypicker");
             createDiv(daypicker, "day-name").append('Lu');
             createDiv(daypicker, "day-name").append('Ma');
@@ -353,72 +399,16 @@
                 createDiv(daypicker, "clicky-ph");
             }
             var i = 1;
-            while(i < firstActiveDay) {
+            while(i < renderer.getFirstActiveDay()) {
                 createDiv(daypicker, "disabled-clicky").append(i++);
             }
-            addDaysToCalendar(daypicker, renderer, i, daysTotal);
+            while(i <= daysTotal) {
+                daypicker.appendChild(renderer.newDayElement(i++));
+            }
             return daypicker;
         }
 
-        var addDaysToDepartureCalendar = function(daypicker, renderer, firstActiveDay, daysTotal) {
-            for(var i = firstActiveDay; i <= daysTotal; i++) {
-                var dayDiv;
-                if(renderer.getDay() == i) {
-                    dayDiv = createDiv(daypicker, "selected-clicky");
-                } else {
-                    var dayAgenda = getDayAgenda(i, renderer.vcl.agenda);
-                    var dayClass;
-                    if(dayAgenda == null) {
-                        dayClass = "clicky";
-                    } else if(dayAgenda.available) {
-                        dayClass = "bordered-clicky";
-                    } else {
-                        dayClass = "disabled-clicky";
-                    }
-                    dayDiv = createDiv(daypicker, dayClass);
-                    if(dayAgenda == null || dayAgenda.available) {
-                        dayDiv.addEventListener('click', function(event) {
-                            renderer.setDay(event.target.innerHTML);
-                        });
-                    }
-                }
-                dayDiv.append(i);
-            }
-        };
-
-        var addDaysToReturnCalendar = function(daypicker, agenda, firstActiveDay, daysTotal) {
-            var i = firstActiveDay;
-            while(i < agenda.day) {
-                createDiv(daypicker, "disabled-clicky").append(i++);
-            }
-            createDiv(daypicker, "selected-clicky").append(i++);
-            while(i <= daysTotal) {
-                var dayAgenda = getDayAgenda(i, agenda.days);
-                var dayClass;
-                if(dayAgenda == null) {
-                    dayClass = "clicky";
-                } else if(dayAgenda.available) {
-                    dayClass = "bordered-clicky";
-                } else {
-                    dayClass = "disabled-clicky";
-                }
-                dayDiv = createDiv(daypicker, dayClass);
-                dayDiv.append(i++);
-                if(dayAgenda == null || dayAgenda.available) {
-                    dayDiv.addEventListener('click', function(event) {
-                        setDepartureDay(getParent(event.target, 2), agenda.vcl, agenda.year, agenda.month, event.target.innerHTML);
-                    });
-                }
-                if(dayAgenda != null) {
-                    while(i <= daysTotal) {
-                        createDiv(daypicker, "disabled-clicky").append(i++);
-                    }
-                    break;
-                }
-            }
-        };
-
-        function addTimePicker(daytimepicker, height, agenda, dayAgenda) {
+        function addTimePicker(daytimepicker, height, renderer) {
             var timepicker = createDiv(daytimepicker, "timepicker");
             if(height > 0) {
                 timepicker.style.height = height + 'px';
@@ -427,7 +417,7 @@
             var hour = 8;
             var mins = 0;
             while(hour <= 19) {
-                addedTime = addTime(timepicker, agenda, dayAgenda, hour, mins, addedTime);
+                addedTime = renderer.newTimeElement(timepicker, hour, mins, addedTime);
                 if(mins == 30) {
                     hour++;
                     mins = 0;
@@ -435,45 +425,8 @@
                     mins = 30;
                 }
             }
-
             return timepicker;
         }
-
-        var addTime = function(timepicker, agenda, dayAgenda, hour, mins, prevTimeAdded) {
-            var timeClicky = createDiv(timepicker);
-            var text = '';
-            if(hour < 10) {
-                text += '0';
-            }
-            text += hour + ':' + mins;
-            if(mins == 0) {
-                text += '0';
-            }
-            timeClicky.append(text);
-            if(agenda.day == null || agenda.day == 0) {
-                timeClicky.setAttribute("class", "disabled-clicky");
-                return true;
-            }
-            if(!isTimeAvailable(hour, mins, dayAgenda)) {
-                if(prevTimeAdded) {
-                    timeClicky.setAttribute("class", "disabled-clicky");
-                } else {
-                    timepicker.removeChild(timeClicky);
-                }
-                return false;
-            }
-            if(hour == agenda.hour && mins == agenda.min) {
-                timeClicky.setAttribute("class", "selected-clicky");
-                return true;
-            }
-            timeClicky.setAttribute("class", "clicky");
-            timeClicky.addEventListener('click', function(event) {
-                var text = event.target.innerHTML;
-                var colon = text.indexOf(':');
-                setDepartureTime(getParent(event.target, 2), agenda, parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
-            });
-            return true;
-        };
 
         var getDayAgenda = function(day, days) {
             for(var i = 0; i < days.length; i++) {
@@ -511,14 +464,6 @@
             }
             return true;
         };
-
-        function getParent(element, level) {
-            var parent = element.parentElement;
-            for(var i = 1; i < level; ++i) {
-                parent = parent.parentElement;
-            }
-            return parent;
-        }
 
         var createDiv = function(parent, cssClass) {
             return createChild(parent, "div", cssClass);
