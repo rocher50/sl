@@ -7,6 +7,8 @@
             displayFleet(date.getFullYear(), date.getMonth() + 1);
         }
 
+        var months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
         var fleet = {
             vclList: [],
 
@@ -296,7 +298,7 @@
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            yearmonth.innerHTML = toTwoChars(renderer.getMonth()) + '.' + renderer.getYear();
+            yearmonth.innerHTML = months[renderer.getMonth() - 1] + ' ' + renderer.getYear();
 
             var yearMonthArrows = createDiv(daytimepicker, "month-arrows");
             var leftArrow = createDiv(yearMonthArrows, "half-width");
