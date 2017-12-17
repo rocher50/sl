@@ -48,6 +48,27 @@ function sl_endpoints() {
              ],
         ]
     ]);
+    register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'vcl_agenda',
+        'agrs' => [
+            'vcl' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+            ],
+            'year' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ],
+            'month' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ]
+        ]
+    ]);
     register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_agenda',

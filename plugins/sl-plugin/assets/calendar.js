@@ -49,15 +49,13 @@
                         this.depDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.depDayTimePicker);
                         this.depDayTimePicker = newDayTimePicker;
                     },
-
-                    clearReturn: function() {
-                        var reservation = this.depDayTimePicker.parentElement;
-                        var reservationElements = reservation.children;
-                        for(var i = 0; i < reservationElements.length; i++) {
-                            if(!reservationElements[i].isSameNode(this.depDayTimePicker)) {
-                                reservation.removeChild(reservationElements[i]);
-                            }
-                        }
+                    depValue: null,
+                    replaceDepValue: function(renderer) {
+                        var newDepValue = document.createElement('div');
+                        newDepValue.setAttribute('class', 'value');
+                        newDepValue.append(getSelectedDayTime(renderer));
+                        this.depValue.parentElement.replaceChild(newDepValue, this.depValue);
+                        this.depValue = newDepValue;
                     }
                 };
             }
@@ -104,16 +102,22 @@
             createHeader(vclInfo, 2, vcl.title);
             createDiv(vclInfo).innerHTML = vcl.thumbnail;
 
-            var reservation = createDiv(vehicule);
+            var reservation = createDiv(vehicule, 'reservation');
             reservation.setAttribute("id", "reservation" + vcl.id);
-            reservation.setAttribute("style", "border: 1px none");
+            var departure = createDiv(reservation, "labelvalue");
+            var depLabel = createDiv(departure, "label");
+            depLabel.append('Départ:');
+            vcl.depValue = createDiv(departure, "value");
             vcl.depDayTimePicker = createDiv(reservation);
             replaceDayTimePicker(getDepDayTimePickerRenderer(vcl));
         }
 
         function refreshDayTimePicker(renderer) {
             var req = new XMLHttpRequest();
-            var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.getYear() + "/month=" + renderer.getMonth() + "/day=" + renderer.getDay();
+            var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.getYear() + "/month=" + renderer.getMonth();
+            if(!isNaN(renderer.getDay())) {
+                url += '/day=' + renderer.getDay();
+            }
             if(!isNaN(renderer.getHour())) {
                 url += '/hour=' + renderer.getHour();
             }
@@ -139,20 +143,25 @@
         function getDepDayTimePickerRenderer(vcl) {
             var departDayTimeRenderer = {
                 vcl: vcl,
+                year: vcl.depYear,
+                month: vcl.depMonth,
+                day: vcl.depDay,
+                hour: vcl.depHour,
+                min: vcl.depMin,
                 getYear: function() {
-                    return this.vcl.depYear;
+                    return this.year;
                 },
                 getMonth: function() {
-                    return this.vcl.depMonth;
+                    return this.month;
                 },
                 getDay: function() {
-                    return this.vcl.depDay;
+                    return this.day;
                 },
                 getHour: function() {
-                    return this.vcl.depHour;
+                    return this.hour;
                 },
                 getMin: function() {
-                    return this.vcl.depMin;
+                    return this.min;
                 },
                 isPrevMonthAvailable: function() {
                     var curDate = new Date();
@@ -242,24 +251,40 @@
                     this.vcl.replaceDepDayTimePicker(newDayTimePicker);
                 },
                 setMonth: function(year, month) {
-                    this.vcl.depYear = parseInt(year);
-                    this.vcl.depMonth = parseInt(month);
-                    this.vcl.depDay = 0;
-                    this.vcl.depHour = NaN;
-                    this.vcl.depMin = NaN;
-                    this.vcl.clearReturn();
+                    this.year = parseInt(year);
+                    this.month = parseInt(month);
+                    if(this.vcl.depMonth == this.month) {
+                        this.day = this.vcl.depDay;
+                        this.hour = this.vcl.depHour;
+                        this.min = this.vcl.depMin;
+                    } else {
+                        this.day = NaN;
+                        this.hour = NaN;
+                        this.min = NaN;
+                    }
                     refreshDayTimePicker(this);
                 },
                 setDay: function(day) {
-                    this.vcl.depDay = parseInt(day);
-                    this.vcl.clearReturn();
+                    this.day = parseInt(day);
+                    this.hour = NaN;
+                    this.min = NaN;
+                    this.updateVcl();
                     refreshDayTimePicker(this);
+                    this.vcl.replaceDepValue(this);
                 },
                 setTime: function(hour, min) {
-                    this.vcl.depHour = parseInt(hour);
-                    this.vcl.depMin = parseInt(min);
-                    this.vcl.clearReturn();
+                    this.hour = parseInt(hour);
+                    this.min = parseInt(min);
+                    this.updateVcl();
                     refreshDayTimePicker(this);
+                    this.vcl.replaceDepValue(this);
+                },
+                updateVcl: function() {
+                    this.vcl.depYear = this.year;
+                    this.vcl.depMonth = this.month;
+                    this.vcl.depDay = this.day;
+                    this.vcl.depHour = this.hour;
+                    this.vcl.depMin = this.min;
                 }
             };
             return departDayTimeRenderer;
@@ -271,7 +296,7 @@
             daytimepicker.setAttribute("class", "daytimepicker");
 
             var yearmonth = createDiv(daytimepicker, "yearmonth");
-            yearmonth.innerHTML = getSelectedDayTime(renderer);
+            yearmonth.innerHTML = toTwoChars(renderer.getMonth()) + '.' + renderer.getYear();
 
             var yearMonthArrows = createDiv(daytimepicker, "month-arrows");
             var leftArrow = createDiv(yearMonthArrows, "half-width");
@@ -348,16 +373,8 @@
         }
 
         function getSelectedDayTime(renderer) {
-            var selected = '';
-            var day = renderer.getDay();
-            if(day && day > 0) {
-                if(day <= 9) {
-                    selected += '0';
-                }
-                selected += day + '.';
-            } else {
-                selected += '__.';
-            }
+            var selected = toTwoChars(renderer.getDay()) + '.';
+
             var month = renderer.getMonth();
             if(month <= 9) {
                 selected += '0';
@@ -378,6 +395,16 @@
                 selected += '__:__';
             }
             return selected;
+        }
+
+        function toTwoChars(i) {
+            if(isNaN(i)) {
+                return '__';
+            }
+            if(i <= 9) {
+                return '0' + i;
+            }
+            return i;
         }
 
         var createHeader = function(parent, h, text, cssClass) {

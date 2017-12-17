@@ -58,6 +58,27 @@ div.container {
     padding: 0;
 }
 
+.vehicule .reservation {
+    border: 1px transparent;
+    width: 100%;
+    font-size: 20px;
+}
+
+.vehicule .reservation .labelvalue {
+    width: 100%;
+}
+
+.vehicule .reservation .label {
+    border: 1px transparent;
+    display: inline-block;
+}
+
+.vehicule .reservation .value {
+    border: 1px transparent;
+    display: inline-block;
+    float: right;
+}
+
 .site-header {
     border-bottom: 1px solid #ddd;
     margin-bottom: 20px;
