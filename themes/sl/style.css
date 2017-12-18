@@ -71,12 +71,27 @@ div.container {
 .vehicule .reservation .label {
     border: 1px transparent;
     display: inline-block;
+    padding: 1%;
+    border-radius: 5px;    
 }
 
 .vehicule .reservation .value {
     border: 1px transparent;
     display: inline-block;
     float: right;
+    padding: 1%;
+    border-radius: 5px;
+}
+.vehicule .reservation .value:hover {
+    background: #ddd;
+    cursor: pointer;
+}
+.vehicule .reservation .non-clickable-value {
+    border: 1px transparent;
+    border-radius: 5px;
+    display: inline-block;
+    float: right;
+    padding: 1%;
 }
 
 .site-header {

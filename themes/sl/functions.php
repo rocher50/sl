@@ -4,6 +4,7 @@ function sl_resources() {
     wp_enqueue_style('style', get_stylesheet_uri());
 
     wp_enqueue_script('jquery', get_theme_file_uri('/js/jquery-3.2.1.min.js'));
+    wp_enqueue_script('carreta', get_theme_file_uri('/js/carreta-1.0.0.js'));
 
     if(basename(get_permalink()) == 'reservation') {
         wp_enqueue_script('functions', get_theme_file_uri('js/functions.js'));
