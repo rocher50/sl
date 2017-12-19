@@ -51,7 +51,6 @@
                 retMin: null,
                 agenda: null,
 
-                resevationDiv: null,
                 display: function() {
                     var vclBody = document.getElementById("page_content");
                     var vehicule = createDiv(vclBody, "vehicule");
@@ -61,48 +60,62 @@
                     createHeader(vclInfo, 2, this.title);
                     createDiv(vclInfo).innerHTML = this.thumbnail;
 
-                    this.reservationDiv = createDiv(vehicule, 'reservation');
-                    this.reservationDiv.setAttribute("id", "reservation" + vcl.id);
-                    var departure = createDiv(this.reservationDiv, "labelvalue");
+                    var reservationDiv = createDiv(vehicule, 'reservation');
+                    reservationDiv.setAttribute("id", "reservation" + vcl.id);
+
+                    var departure = createDiv(reservationDiv, "labelvalue");
                     var depLabel = createDiv(departure, "label");
                     depLabel.append(voc.labelDepart);
                     this.depValue = createDiv(departure, "value");
-                    this.depDayTimePicker = createDiv(this.reservationDiv);
-                    replaceDayTimePicker(getDepDayTimePickerRenderer(vcl));
+                    this.depDayTimePicker = createDiv(reservationDiv);
+                    replaceDayTimePicker(newDeparturePickerRenderer(this));
 
-                    this.returnDiv = document.createElement('div');
-                    this.returnDiv.setAttribute('class', 'labelvalue');
-                    var retLabel = createDiv(this.returnDiv, 'label');
+                    this.returnDiv = createDiv(reservationDiv, "labelvalue");
+                    this.returnDiv.style.display = 'none';
+                    var retLabel = createDiv(this.returnDiv, "label");
                     retLabel.append(voc.labelReturn);
-                    this.retValue = createDiv(this.returnDiv, 'value');
+                    this.retValue = createDiv(this.returnDiv, "value");
+                    this.retDayTimePicker = createDiv(reservationDiv);
+                },
+
+                departureDaySet: function(renderer) {
+                    this.displayDepartureValue(renderer, false);
+                },
+                departureTimeSet: function(renderer) {
+                    this.displayDepartureValue(renderer, true);
+                    this.replaceDeparturePicker(document.createElement('div'));
+                    if(this.returnDiv.style.display === 'none') {
+                        this.returnDiv.style.display = 'initial';
+                    }
+                    this.replaceReturnValue();
                 },
 
                 depDayTimePicker: null,
-                replaceDepDayTimePicker: function(newDayTimePicker) {
+                replaceDeparturePicker: function(newDayTimePicker) {
                     this.depDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.depDayTimePicker);
                     this.depDayTimePicker = newDayTimePicker;
                 },
                 depValue: null,
-                replaceDepValue: function(renderer, clicky) {
-                    var newDepValue = document.createElement('div');
-                    if(clicky) {
-                        newDepValue.setAttribute('class', 'value');
-                        newDepValue.addEventListener('click', function(event) {
-                            vcl.replaceDepValue(renderer, false);
+                displayDepartureValue: function(renderer, clickable) {
+                    if(clickable) {
+                        this.depValue.setAttribute('class', 'value');
+                        var handler = function(event) {
+                            vcl.displayDepartureValue(renderer, false);
                             replaceDayTimePicker(renderer);
-                        });
+                            event.target.removeEventListener(event.type, handler);
+                        };
+                        this.depValue.addEventListener('click', handler);
                     } else {
-                        newDepValue.setAttribute('class', 'non-clickable-value');
+                        this.depValue.setAttribute('class', 'non-clickable-value');
                     }
-                    newDepValue.append(getSelectedDayTime(renderer));
-                    this.depValue.parentElement.replaceChild(newDepValue, this.depValue);
-                    this.depValue = newDepValue;
+                    this.depValue.innerHTML = getSelectedDayTime(renderer);
+                    this.depValue.parentElement.replaceChild(this.depValue, this.depValue);
                 },
 
                 returnDiv: null,
                 retValue: null,
                 replaceReturnValue: function() {
-                    this.reservationDiv.appendChild(this.returnDiv);
+                    this.returnDiv.parentElement.replaceChild(this.returnDiv, this.returnDiv);
                 }
             };
             return vcl;
@@ -167,7 +180,7 @@
         req.send();
     }
 
-    function getDepDayTimePickerRenderer(vcl) {
+    function newDeparturePickerRenderer(vcl) {
         var departDayTimeRenderer = {
             vcl: vcl,
             year: vcl.depYear,
@@ -277,7 +290,7 @@
                 return true;
             },
             replaceDayTimePicker: function(newDayTimePicker) {
-                this.vcl.replaceDepDayTimePicker(newDayTimePicker);
+                this.vcl.replaceDeparturePicker(newDayTimePicker);
             },
             setMonth: function(year, month) {
                 this.year = parseInt(year);
@@ -297,17 +310,15 @@
                 this.day = parseInt(day);
                 this.hour = NaN;
                 this.min = NaN;
-                this.updateVcl();
                 refreshDayTimePicker(this);
-                this.vcl.replaceDepValue(this, false);
+                this.updateVcl();
+                this.vcl.departureDaySet(this);
             },
             setTime: function(hour, min) {
                 this.hour = parseInt(hour);
                 this.min = parseInt(min);
                 this.updateVcl();
-                this.vcl.replaceDepValue(this, true);
-                this.vcl.replaceDepDayTimePicker(document.createElement('div'));
-                this.vcl.replaceReturnValue();
+                this.vcl.departureTimeSet(this);
             },
             updateVcl: function() {
                 this.vcl.depYear = this.year;
