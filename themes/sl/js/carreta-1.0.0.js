@@ -78,16 +78,26 @@
                     this.retDayTimePicker = createDiv(reservationDiv);
                 },
 
+                depValue: null,
                 departureDaySet: function(renderer) {
-                    this.displayDepartureValue(renderer, false);
+                    this.displayValue(this.depValue, renderer, false);
                 },
                 departureTimeSet: function(renderer) {
-                    this.displayDepartureValue(renderer, true);
+                    this.displayValue(this.depValue, renderer, true);
                     this.replaceDeparturePicker(document.createElement('div'));
+
+                    this.retYear = this.depYear;
+                    this.retMonth = this.depMonth;
+                    this.retDay = this.depDay;
+                    this.retHour = this.depHour;
+                    this.retMin = this.depMin;
+
                     if(this.returnDiv.style.display === 'none') {
                         this.returnDiv.style.display = 'initial';
+                        this.returnDiv.parentElement.replaceChild(this.returnDiv, this.returnDiv);
+                        replaceDayTimePicker(newReturnPickerRenderer(this));
+                        return;
                     }
-                    this.replaceReturnValue();
                 },
 
                 depDayTimePicker: null,
@@ -95,27 +105,37 @@
                     this.depDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.depDayTimePicker);
                     this.depDayTimePicker = newDayTimePicker;
                 },
-                depValue: null,
-                displayDepartureValue: function(renderer, clickable) {
-                    if(clickable) {
-                        this.depValue.setAttribute('class', 'value');
-                        var handler = function(event) {
-                            vcl.displayDepartureValue(renderer, false);
-                            replaceDayTimePicker(renderer);
-                            event.target.removeEventListener(event.type, handler);
-                        };
-                        this.depValue.addEventListener('click', handler);
-                    } else {
-                        this.depValue.setAttribute('class', 'non-clickable-value');
-                    }
-                    this.depValue.innerHTML = getSelectedDayTime(renderer);
-                    this.depValue.parentElement.replaceChild(this.depValue, this.depValue);
-                },
 
                 returnDiv: null,
                 retValue: null,
-                replaceReturnValue: function() {
-                    this.returnDiv.parentElement.replaceChild(this.returnDiv, this.returnDiv);
+                returnDaySet: function(renderer) {
+                    this.displayValue(this.retValue, renderer, false);
+                },
+                returnTimeSet: function(renderer) {
+                    this.displayValue(this.retValue, renderer, true);
+                    this.replaceReturnPicker(document.createElement('div'));
+                },
+
+                retDayTimePicker: null,
+                replaceReturnPicker: function(newDayTimePicker) {
+                    this.retDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.retDayTimePicker);
+                    this.retDayTimePicker = newDayTimePicker;
+                },
+
+                displayValue: function(element, renderer, clickable) {
+                    if(clickable) {
+                        element.setAttribute('class', 'value');
+                        var handler = function(event) {
+                            vcl.displayValue(element, renderer, false);
+                            replaceDayTimePicker(renderer);
+                            event.target.removeEventListener(event.type, handler);
+                        };
+                        element.addEventListener('click', handler);
+                    } else {
+                        element.setAttribute('class', 'non-clickable-value');
+                    }
+                    element.innerHTML = getSelectedDayTime(renderer);
+                    element.parentElement.replaceChild(element, element);
                 }
             };
             return vcl;
@@ -329,6 +349,146 @@
             }
         };
         return departDayTimeRenderer;
+    }
+
+    function newReturnPickerRenderer(vcl) {
+        var renderer = {
+            vcl: vcl,
+            year: vcl.retYear,
+            month: vcl.retMonth,
+            day: vcl.retDay,
+            hour: vcl.retHour,
+            min: vcl.retMin,
+            getMonthName: function() {
+                return voc.months[this.month - 1];
+            },
+            getDayNames: function() {
+                return voc.weekDays;
+            },
+            isPrevMonthAvailable: function() {
+                return this.vcl.depYear < this.year || this.vcl.depMonth < this.month;
+            },
+            isNextMonthAvailable: function() {
+                return true;
+            },
+            getFirstActiveDay: function() {
+                if(this.vcl.depYear == this.year && this.vcl.depMonth == this.month) {
+                    return this.vcl.depDay;
+                }
+                if(this.vcl.depYear < this.year || this.vcl.depMonth < this.month) {
+                    return 1;
+                }
+                return 100;
+            },
+            getFirstActiveHour: function() {
+                if(this.vcl.depYear == this.year && this.vcl.depMonth == this.month && this.vcl.depDay == this.day) {
+                    if(this.vcl.depMin == 0) {
+                        return this.vcl.depHour + 2;
+                    }
+                    return this.vcl.depHour + 3;
+                }
+                return 8;
+            },
+            newDayElement: function(i) {
+                var dayDiv = document.createElement("div");
+                dayDiv.append(i);
+                if(this.day == i) {
+                    dayDiv.setAttribute("class", "selected-clicky");
+                } else {
+                    var dayAgenda = getDayAgenda(i, this.vcl.agenda);
+                    var dayClass;
+                    if(dayAgenda == null) {
+                        dayClass = "clicky";
+                    } else if(dayAgenda.available) {
+                        dayClass = "bordered-clicky";
+                    } else {
+                        dayClass = "disabled-clicky";
+                    }
+                    dayDiv.setAttribute("class", dayClass);
+                    if(dayAgenda == null || dayAgenda.available) {
+                        dayDiv.addEventListener('click', function(event) {
+                            renderer.setDay(event.target.innerHTML);
+                        });
+                    }
+                }
+                return dayDiv;
+            },
+            newTimeElement: function(timepicker, hour, mins, prevTimeAdded) {
+                var timeClicky = createDiv(timepicker);
+                var text = '';
+                if(hour < 10) {
+                    text += '0';
+                }
+                text += hour + ':' + mins;
+                if(mins == 0) {
+                    text += '0';
+                }
+                timeClicky.append(text);
+                if(!this.day) {
+                    timeClicky.setAttribute("class", "disabled-clicky");
+                    return true;
+                }
+                var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
+                if(!isTimeAvailable(hour, mins, dayAgenda)) {
+                    if(prevTimeAdded) {
+                        timeClicky.setAttribute("class", "disabled-clicky");
+                    } else {
+                        timepicker.removeChild(timeClicky);
+                    }
+                    return false;
+                }
+                if(hour == this.hour && mins == this.min) {
+                    timeClicky.setAttribute("class", "selected-clicky");
+                } else {
+                    timeClicky.setAttribute("class", "clicky");
+                }
+                timeClicky.addEventListener('click', function(event) {
+                    var text = event.target.innerHTML;
+                    var colon = text.indexOf(':');
+                    renderer.setTime(text.substring(0, colon), text.substring(colon + 1));
+                });
+                return true;
+            },
+            replaceDayTimePicker: function(newDayTimePicker) {
+                this.vcl.replaceReturnPicker(newDayTimePicker);
+            },
+            setMonth: function(year, month) {
+                this.year = parseInt(year);
+                this.month = parseInt(month);
+                if(this.vcl.retMonth == this.month) {
+                    this.day = this.vcl.retDay;
+                    this.hour = this.vcl.retHour;
+                    this.min = this.vcl.retMin;
+                } else {
+                    this.day = NaN;
+                    this.hour = NaN;
+                    this.min = NaN;
+                }
+                refreshDayTimePicker(this);
+            },
+            setDay: function(day) {
+                this.day = parseInt(day);
+                this.hour = NaN;
+                this.min = NaN;
+                refreshDayTimePicker(this);
+                this.updateVcl();
+                this.vcl.returnDaySet(this);
+            },
+            setTime: function(hour, min) {
+                this.hour = parseInt(hour);
+                this.min = parseInt(min);
+                this.updateVcl();
+                this.vcl.returnTimeSet(this);
+            },
+            updateVcl: function() {
+                this.vcl.retYear = this.year;
+                this.vcl.retMonth = this.month;
+                this.vcl.retDay = this.day;
+                this.vcl.retHour = this.hour;
+                this.vcl.retMin = this.min;
+            }
+        };
+        return renderer;
     }
 
     function getSelectedDayTime(renderer) {
