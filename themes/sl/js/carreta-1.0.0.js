@@ -61,6 +61,7 @@
                     createDiv(vclInfo).innerHTML = this.thumbnail;
 
                     var reservationDiv = createDiv(vehicule, 'reservation');
+                    reservationDiv.setAttribute("style", "border: 1px none; grid-row: 1/3;");
                     reservationDiv.setAttribute("id", "reservation" + vcl.id);
 
                     var departure = createDiv(reservationDiv, "labelvalue");
@@ -70,20 +71,27 @@
                     this.depDayTimePicker = createDiv(reservationDiv);
                     replaceDayTimePicker(newDeparturePickerRenderer(this));
 
-                    this.returnDiv = createDiv(reservationDiv, "labelvalue");
-                    this.returnDiv.style.display = 'none';
-                    var retLabel = createDiv(this.returnDiv, "label");
+                    this.returnContainer = createDiv(reservationDiv);
+                    this.returnContainer.style.display = 'none';
+                    returnLabelValue = createDiv(this.returnContainer, "labelvalue");
+                    retLabel = createDiv(returnLabelValue, "label");
                     retLabel.append(voc.labelReturn);
-                    this.retValue = createDiv(this.returnDiv, "value");
-                    this.retDayTimePicker = createDiv(reservationDiv);
+                    this.retValue = createDiv(returnLabelValue, "value");
+                    this.retDayTimePicker = createDiv(this.returnContainer);
                 },
 
                 depValue: null,
                 departureDaySet: function(renderer) {
-                    this.displayValue(this.depValue, renderer, false);
+                    this.displayValue(this.depValue, renderer);
                 },
                 departureTimeSet: function(renderer) {
-                    this.displayValue(this.depValue, renderer, true);
+                    var clickHandler = function(event) {
+                        vcl.hideReturnContainer();
+                        vcl.displayValue(event.target, renderer);
+                        replaceDayTimePicker(renderer);
+                        event.target.removeEventListener(event.type, clickHandler);
+                    };
+                    this.displayValue(this.depValue, renderer, clickHandler);
                     this.replaceDeparturePicker(document.createElement('div'));
 
                     this.retYear = this.depYear;
@@ -92,12 +100,7 @@
                     this.retHour = this.depHour;
                     this.retMin = this.depMin;
 
-                    if(this.returnDiv.style.display === 'none') {
-                        this.returnDiv.style.display = 'initial';
-                        this.returnDiv.parentElement.replaceChild(this.returnDiv, this.returnDiv);
-                        replaceDayTimePicker(newReturnPickerRenderer(this));
-                        return;
-                    }
+                    this.displayReturnContainer();
                 },
 
                 depDayTimePicker: null,
@@ -106,13 +109,27 @@
                     this.depDayTimePicker = newDayTimePicker;
                 },
 
-                returnDiv: null,
+                returnContainer: null,
+                displayReturnContainer: function() {
+                    if(displayElement(this.returnContainer)) {
+                        replaceDayTimePicker(newReturnPickerRenderer(this));
+                    }
+                },
+                hideReturnContainer: function() {
+                    hideElement(this.returnContainer);
+                },
+
                 retValue: null,
                 returnDaySet: function(renderer) {
-                    this.displayValue(this.retValue, renderer, false);
+                    this.displayValue(this.retValue, renderer);
                 },
                 returnTimeSet: function(renderer) {
-                    this.displayValue(this.retValue, renderer, true);
+                    var clickHandler = function(event) {
+                        vcl.displayValue(event.target, renderer);
+                        replaceDayTimePicker(renderer);
+                        event.target.removeEventListener(event.type, clickHandler);
+                    };
+                    this.displayValue(this.retValue, renderer, clickHandler);
                     this.replaceReturnPicker(document.createElement('div'));
                 },
 
@@ -122,15 +139,10 @@
                     this.retDayTimePicker = newDayTimePicker;
                 },
 
-                displayValue: function(element, renderer, clickable) {
-                    if(clickable) {
+                displayValue: function(element, renderer, clickHandler) {
+                    if(clickHandler) {
                         element.setAttribute('class', 'value');
-                        var handler = function(event) {
-                            vcl.displayValue(element, renderer, false);
-                            replaceDayTimePicker(renderer);
-                            event.target.removeEventListener(event.type, handler);
-                        };
-                        element.addEventListener('click', handler);
+                        element.addEventListener('click', clickHandler);
                     } else {
                         element.setAttribute('class', 'non-clickable-value');
                     }
@@ -508,7 +520,25 @@
 
     var isDayAvailable = function(date) {
         return 12*60 - date.getHours()*60 - date.getMinutes() > 120;
-    }
+    };
+
+    var displayElement = function(e) {
+        if(e.style.display === 'initial') {
+            return false;
+        }
+        e.style.display = 'initial';
+        e.parentElement.replaceChild(e, e);
+        return true;
+    };
+
+    var hideElement = function(e) {
+        if(e.style.display === 'none') {
+            return false;
+        }
+        e.style.display = 'none';
+        e.parentElement.replaceChild(e, e);
+        return true;
+    };
 
   });
 
