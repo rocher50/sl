@@ -33,7 +33,7 @@ function sl_setup() {
 add_action('after_setup_theme', 'sl_setup');
 
 function sl_endpoints() {
-    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)', [
+    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_fleet',
         'agrs' => [
@@ -47,6 +47,11 @@ function sl_endpoints() {
                     return is_numeric($param);
                 }
              ],
+            'day' => [
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+             ]
         ]
     ]);
     register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)', [
@@ -141,7 +146,14 @@ function vcl_fleet($data) {
     $args = [
         'post_type' => 'vcl'
     ];
+    $year = $data['year'];
+    $month = $data['month'];
+    $day = $data['day'];
+    $hour = $data['hour'];
+    $min = $data['min'];
+    $date = mktime($hour, $min, 0, $month, $day, $year);
     $the_query = new WP_Query(['post_type' => 'vcl']);
+    
     while($the_query->have_posts()) {
         $the_query->the_post();
         $vcl = [
@@ -151,6 +163,7 @@ function vcl_fleet($data) {
             'agenda' => vcl_agenda([
                 'vcl' => get_the_ID(),
                 'year' => $data['year'],
+                'date' => $date,
                 'month' => $data['month'],
                 'day' => $data['day'],
                 'hour' => $data['hour'],
@@ -174,11 +187,7 @@ function vcl_agenda($data) {
 */
     $result = [
         'vcl' => $data['vcl'],
-        'year' => $data['year'],
-        'month' => $data['month'],
-        'day' => $data['day'],
-        'hour' => $data['hour'],
-        'min' => $data['min'],
+        'date' => date('Y-m-d H:i', $data['date']),
         'days' => [
             ['day' => 3,
             'available' => false],

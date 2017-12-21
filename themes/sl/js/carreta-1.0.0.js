@@ -4,7 +4,7 @@
 
     if(window.location.pathname === '/') {
         var date = new Date();
-        displayFleet(date.getFullYear(), date.getMonth() + 1);
+        displayFleet(date.getFullYear(), date.getMonth() + 1, date.getDate());
     }
 
     var voc = {
@@ -15,8 +15,8 @@
     };
 
     var fistAvailableHour = 8;
-    var lastAvailableHour = 19;
     var firstAvailableMin = 30;
+    var lastAvailableHour = 19;
     var lastAvailableMin = 0;
 
     var fleet = {
@@ -44,11 +44,7 @@
                 id: id,
                 title: null,
                 thumbnail: null,
-                depYear: null,
-                depMonth: null,
-                depDay: null,
-                depHour: null,
-                depMin: null,
+                depDate: null,
                 retYear: null,
                 retMonth: null,
                 retDay: null,
@@ -57,6 +53,7 @@
                 agenda: null,
 
                 display: function() {
+
                     var vclBody = document.getElementById("page_content");
                     var vehicule = createDiv(vclBody, "vehicule");
                     var vclInfo = createDiv(vehicule);
@@ -100,11 +97,11 @@
                     this.replaceDeparturePicker(document.createElement('div'));
 
                     var returnRenderer = this.getReturnPickerRenderer();
-                    returnRenderer.year = this.depYear;
-                    returnRenderer.month = this.depMonth;
-                    returnRenderer.day = this.depDay;
-                    returnRenderer.hour = this.depHour;
-                    returnRenderer.min = this.depMin;
+                    returnRenderer.year = this.depDate.getFullYear();
+                    returnRenderer.month = this.depDate.getMonth() + 1;
+                    returnRenderer.day = this.depDate.getDate();
+                    returnRenderer.hour = this.depDate.getHours();
+                    returnRenderer.min = this.depDate.getMinutes();
 
                     this.displayReturnContainer();
                 },
@@ -167,9 +164,9 @@
         }
     };
 
-    function displayFleet(year, month) {
+    function displayFleet(year, month, day) {
         var req = new XMLHttpRequest();
-        var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month;
+        var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month + "/day=" + day;
         req.open('GET', url);
         req.onload = function() {
             if(req.status >= 200 && req.status < 400) {
@@ -179,11 +176,7 @@
                     var vcl = fleet.getVcl(vclInfo.id);
                     vcl.title = vclInfo.title;
                     vcl.thumbnail = vclInfo.thumbnail;
-                    vcl.depYear = parseInt(vclInfo.agenda.year);
-                    vcl.depMonth = parseInt(vclInfo.agenda.month);
-                    vcl.depDay = parseInt(vclInfo.agenda.day);
-                    vcl.depHour = parseInt(vclInfo.agenda.hour);
-                    vcl.depMin = parseInt(vclInfo.agenda.min);
+                    vcl.depDate = new Date(vclInfo.agenda.date);
                     vcl.agenda = vclInfo.agenda.days;
                     vcl.display();
                 }
@@ -228,11 +221,11 @@
     function newDeparturePickerRenderer(vcl) {
         var departDayTimeRenderer = {
             vcl: vcl,
-            year: vcl.depYear,
-            month: vcl.depMonth,
-            day: vcl.depDay,
-            hour: vcl.depHour,
-            min: vcl.depMin,
+            year: vcl.depDate.getFullYear(),
+            month: vcl.depDate.getMonth() + 1,
+            day: vcl.depDate.getDate(),
+            hour: vcl.depDate.getHours(),
+            min: vcl.depDate.getMinutes(),
             getMonthName: function() {
                 return voc.months[this.month - 1];
             },
@@ -340,10 +333,10 @@
             setMonth: function(year, month) {
                 this.year = parseInt(year);
                 this.month = parseInt(month);
-                if(this.vcl.depMonth == this.month) {
-                    this.day = this.vcl.depDay;
-                    this.hour = this.vcl.depHour;
-                    this.min = this.vcl.depMin;
+                if(this.vcl.depDate.getMonth() + 1 == this.month) {
+                    this.day = this.vcl.depDate.getDate();
+                    this.hour = this.vcl.depDate.getHours();
+                    this.min = this.vcl.depDate.getMinutes();
                 } else {
                     this.day = NaN;
                     this.hour = NaN;
@@ -366,11 +359,15 @@
                 this.vcl.departureTimeSet(this);
             },
             updateVcl: function() {
-                this.vcl.depYear = this.year;
-                this.vcl.depMonth = this.month;
-                this.vcl.depDay = this.day;
-                this.vcl.depHour = this.hour;
-                this.vcl.depMin = this.min;
+                this.vcl.depDate.setFullYear(this.year);
+                this.vcl.depDate.setMonth(this.month - 1);
+                this.vcl.depDate.setDate(this.day);
+                if(!isNaN(this.hour)) {
+                    this.vcl.depDate.setHours(this.hour);
+                }
+                if(!isNaN(this.min)) {
+                    this.vcl.depDate.setMinutes(this.min);
+                }
             }
         };
         return departDayTimeRenderer;
@@ -433,26 +430,26 @@
                 return voc.weekDays;
             },
             isPrevMonthAvailable: function() {
-                return this.vcl.depYear < this.year || this.vcl.depMonth < this.month;
+                return this.vcl.depDate.getFullYear() < this.year || this.vcl.depDate.getMonth() + 1 < this.month;
             },
             isNextMonthAvailable: function() {
                 return true;
             },
             getFirstActiveDay: function() {
-                if(this.vcl.depYear == this.year && this.vcl.depMonth == this.month) {
-                    return this.vcl.depDay;
+                if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() + 1 == this.month) {
+                    return this.vcl.depDate.getDate();
                 }
-                if(this.vcl.depYear < this.year || this.vcl.depMonth < this.month) {
+                if(this.vcl.depDate.getFullYear() < this.year || this.vcl.depDate.getMonth() + 1 < this.month) {
                     return 1;
                 }
                 return 100;
             },
             getFirstActiveHour: function() {
-                if(this.vcl.depYear == this.year && this.vcl.depMonth == this.month && this.vcl.depDay == this.day) {
-                    if(this.vcl.depMin == 0) {
-                        return this.vcl.depHour;
+                if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() + 1 == this.month && this.vcl.depDate.getDate() == this.day) {
+                    if(this.vcl.depDate.getMinutes() == 0) {
+                        return this.vcl.depDate.getHours();
                     }
-                    return this.vcl.depHour + 1;
+                    return this.vcl.depDate.getHours() + 1;
                 }
                 return this.firstAvailableHour;
             },
