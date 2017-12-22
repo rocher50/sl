@@ -93,16 +93,8 @@
                     this.replaceDeparturePicker(document.createElement('div'));
 
                     var returnRenderer = this.getReturnPickerRenderer();
-                    this.retDate = new Date();
-                    this.retDate.setFullYear(this.depDate.getFullYear(), this.depDate.getMonth(), this.depDate.getDate());
-                    this.retDate.setHours(this.depDate.getHours());
-                    this.retDate.setMinutes(this.depDate.getMinutes());
-                    returnRenderer.year = this.depDate.getFullYear();
-                    returnRenderer.month = this.depDate.getMonth() + 1;
-                    returnRenderer.day = this.depDate.getDate();
-                    returnRenderer.hour = this.depDate.getHours();
-                    returnRenderer.min = this.depDate.getMinutes();
-
+                    returnRenderer.initDate();
+                    this.returnDaySet(returnRenderer);
                     this.displayReturnContainer();
                 },
 
@@ -374,53 +366,26 @@
     function newReturnPickerRenderer(vcl) {
         var renderer = {
             vcl: vcl,
-            year: vcl.depDate.getFullYear(),
-            month: vcl.depDate.getMonth() + 1,
-            day: vcl.depDate.getDate(),
-            hour: vcl.depDate.getHours(),
-            min: vcl.depDate.getMinutes(),
-/*
-            ensureDepartureTime: function() {
-                if(this.year > this.vcl.depYear) {
-                    return;
-                }
-                if(this.year == this.vcl.depYear) {
-                    if(this.month > this.vcl.depMonth) {
-                        return;
-                    }
-                    if(this.month == this.vcl.depMonth) {
-                        if(this.day > this.vcl.depDay) {
-                            return;
-                        }
-                        if(this.day == this.vcl.depDay) {
-                            if(this.hour > this.vcl.depHour) {
-                                return;
-                            }
-                            if(this.hour == this.vcl.depHour) {
-                                if(this.min > this.vcl.depMin) {
-                                    return;
-                                }
-                                if(this.min == this.vcl.depMin) {
-                                    if(this.vcl.depMin == 0) {
-                                        this.min = 30;
-                                        return;
-                                    }
-                                }
-                                this.min = 0;
-                                this.hour += 1;
-                                return;
-                            }
-                        }
-                    }
-                }
+            year: null,
+            month: null,
+            day: null,
+            hour: NaN,
+            min: NaN,
 
-                this.year = this.vcl.depYear;
-                this.month = this.vcl.depMonth;
-                this.day = this.vcl.depDay;
-                this.hour = this.vcl.depHour;
-                this.min = this.vcl.depMin;
+            initDate: function() {
+                if(this.vcl.retDate == null) {
+                    this.vcl.retDate = new Date();
+                    this.vcl.retDate.setFullYear(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.vcl.depDate.getDate());
+                } else if(this.vcl.retDate < this.vcl.depDate) {
+                    this.vcl.retDate.setFullYear(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.vcl.depDate.getDate());
+                    this.hour = NaN;
+                    this.min = NaN;
+                }
+                this.year = this.vcl.retDate.getFullYear();
+                this.month = this.vcl.retDate.getMonth() + 1;
+                this.day = this.vcl.retDate.getDate();
             },
-*/
+
             getMonthName: function() {
                 return voc.months[this.month - 1];
             },
