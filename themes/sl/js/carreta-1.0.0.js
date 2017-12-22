@@ -14,10 +14,11 @@
         'labelReturn': 'Retour'
     };
 
-    var fistAvailableHour = 8;
+    var firstAvailableHour = 8;
     var firstAvailableMin = 30;
     var lastAvailableHour = 19;
     var lastAvailableMin = 0;
+    var minRentMinutes = 60;
 
     var fleet = {
         vclList: [],
@@ -372,18 +373,68 @@
             hour: NaN,
             min: NaN,
 
+            nextMonthEnabled: NaN,
+            lastAvailableDay: NaN,
+
             initDate: function() {
+                this.recalcBoundaries(this.vcl.depDate);
+
+                var tmp = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
+                if(tmp.getHours() > lastAvailableHour) {
+                    tmp.setDate(tmp.getDate() + 1);
+                    tmp.setHours(firstAvailableHour);
+                    tmp.setMinutes(firstAvailableMin);
+                }
+
+                if(this.lastAvailableDay != null) {
+                    var lastAvailableDate = new Date(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.lastAvailableDay, 0, 0, 0);
+                    if(tmp > lastAvailableDate) {
+                        tmp = lastAvailableDate;
+                    }
+                }
+
                 if(this.vcl.retDate == null) {
-                    this.vcl.retDate = new Date();
-                    this.vcl.retDate.setFullYear(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.vcl.depDate.getDate());
-                } else if(this.vcl.retDate < this.vcl.depDate) {
-                    this.vcl.retDate.setFullYear(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.vcl.depDate.getDate());
+                    this.vcl.retDate = tmp;
+                } else if(this.vcl.retDate < tmp) {
+                    this.vcl.retDate = tmp;
                     this.hour = NaN;
                     this.min = NaN;
                 }
                 this.year = this.vcl.retDate.getFullYear();
                 this.month = this.vcl.retDate.getMonth() + 1;
                 this.day = this.vcl.retDate.getDate();
+            },
+
+            recalcBoundaries: function(date) {
+                this.nextMonthEnabled = true;
+                this.lastAvailableDay = NaN;
+                var i = 0;
+                while(i < this.vcl.agenda.length) {
+                    var dayAgenda = this.vcl.agenda[i++];
+                    if(date.getDate() < dayAgenda.day) {
+                        this.nextMonthEnabled = false;
+                        if(!dayAgenda.available) {
+                            this.lastAvailableDay = dayAgenda.day - 1;
+                        } else if(dayAgenda.bookings[0] > firstActiveHour) {
+                            this.lastAvailableDay = dayAgenda.day;
+                        }
+                        break;
+                    }
+                    if(date.getDate() == dayAgenda.day) {
+                        if(!dayAgenda.available) {
+                            this.nextMonthEnabled = false;
+                            this.lastAvailableDay = dayAgenda.day;
+                        }
+                        var availableTime = dayAgenda.bookings[dayAgenda.bookings.length - 2] + dayAgenda.bookings[dayAgenda.bookings.length - 1];
+                        if(this.vcl.depDate.getHours()*60 + this.vcl.depDate.getMinutes() > availableTime*60) {
+                            this.nextMonthEnabled = true;
+                        } else {
+                            this.nextMonthEnabled = false;
+                            this.lastAvailableDay = dayAgenda.day;
+                        }
+                        break;
+                    }
+                }
             },
 
             getMonthName: function() {
@@ -396,7 +447,7 @@
                 return this.vcl.depDate.getFullYear() < this.year || this.vcl.depDate.getMonth() + 1 < this.month;
             },
             isNextMonthAvailable: function() {
-                return true;
+                return this.nextMonthEnabled;
             },
             getFirstActiveDay: function() {
                 if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() + 1 == this.month) {
@@ -422,17 +473,16 @@
                 if(this.day == i) {
                     dayDiv.setAttribute("class", "selected-clicky");
                 } else {
-                    var dayAgenda = getDayAgenda(i, this.vcl.agenda);
-                    var dayClass;
-                    if(dayAgenda == null) {
+                    if(isNaN(this.lastAvailableDay) || i < this.lastAvailableDay) {
                         dayClass = "clicky";
-                    } else if(dayAgenda.available) {
+                    } else if(i == this.lastAvailableDay) {
                         dayClass = "bordered-clicky";
                     } else {
                         dayClass = "disabled-clicky";
                     }
+
                     dayDiv.setAttribute("class", dayClass);
-                    if(dayAgenda == null || dayAgenda.available) {
+                    if(dayClass != "disabled-clicky") {
                         dayDiv.addEventListener('click', function(event) {
                             renderer.setDay(parseInt(event.target.innerHTML));
                         });
