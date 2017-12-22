@@ -45,11 +45,7 @@
                 title: null,
                 thumbnail: null,
                 depDate: null,
-                retYear: null,
-                retMonth: null,
-                retDay: null,
-                retHour: null,
-                retMin: null,
+                retDate: null,
                 agenda: null,
 
                 display: function() {
@@ -97,6 +93,10 @@
                     this.replaceDeparturePicker(document.createElement('div'));
 
                     var returnRenderer = this.getReturnPickerRenderer();
+                    this.retDate = new Date();
+                    this.retDate.setFullYear(this.depDate.getFullYear(), this.depDate.getMonth(), this.depDate.getDate());
+                    this.retDate.setHours(this.depDate.getHours());
+                    this.retDate.setMinutes(this.depDate.getMinutes());
                     returnRenderer.year = this.depDate.getFullYear();
                     returnRenderer.month = this.depDate.getMonth() + 1;
                     returnRenderer.day = this.depDate.getDate();
@@ -285,7 +285,7 @@
                     dayDiv.setAttribute("class", dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
                         dayDiv.addEventListener('click', function(event) {
-                            departDayTimeRenderer.setDay(event.target.innerHTML);
+                            departDayTimeRenderer.setDay(parseInt(event.target.innerHTML));
                         });
                     }
                 }
@@ -323,7 +323,7 @@
                 timeClicky.addEventListener('click', function(event) {
                     var text = event.target.innerHTML;
                     var colon = text.indexOf(':');
-                    departDayTimeRenderer.setTime(text.substring(0, colon), text.substring(colon + 1));
+                    departDayTimeRenderer.setTime(parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
                 });
                 return true;
             },
@@ -331,9 +331,9 @@
                 this.vcl.replaceDeparturePicker(newDayTimePicker);
             },
             setMonth: function(year, month) {
-                this.year = parseInt(year);
-                this.month = parseInt(month);
-                if(this.vcl.depDate.getMonth() + 1 == this.month) {
+                this.year = year;
+                this.month = month;
+                if(this.vcl.depDate.getFullYear() == year && this.vcl.depDate.getMonth() + 1 == this.month) {
                     this.day = this.vcl.depDate.getDate();
                     this.hour = this.vcl.depDate.getHours();
                     this.min = this.vcl.depDate.getMinutes();
@@ -345,7 +345,7 @@
                 refreshDayTimePicker(this);
             },
             setDay: function(day) {
-                this.day = parseInt(day);
+                this.day = day;
                 this.hour = NaN;
                 this.min = NaN;
                 refreshDayTimePicker(this);
@@ -353,15 +353,13 @@
                 this.vcl.departureDaySet(this);
             },
             setTime: function(hour, min) {
-                this.hour = parseInt(hour);
-                this.min = parseInt(min);
+                this.hour = hour;
+                this.min = min;
                 this.updateVcl();
                 this.vcl.departureTimeSet(this);
             },
             updateVcl: function() {
-                this.vcl.depDate.setFullYear(this.year);
-                this.vcl.depDate.setMonth(this.month - 1);
-                this.vcl.depDate.setDate(this.day);
+                this.vcl.depDate.setFullYear(this.year, this.month - 1, this.day);
                 if(!isNaN(this.hour)) {
                     this.vcl.depDate.setHours(this.hour);
                 }
@@ -376,11 +374,11 @@
     function newReturnPickerRenderer(vcl) {
         var renderer = {
             vcl: vcl,
-            year: vcl.retYear,
-            month: vcl.retMonth,
-            day: vcl.retDay,
-            hour: vcl.retHour,
-            min: vcl.retMin,
+            year: vcl.depDate.getFullYear(),
+            month: vcl.depDate.getMonth() + 1,
+            day: vcl.depDate.getDate(),
+            hour: vcl.depDate.getHours(),
+            min: vcl.depDate.getMinutes(),
 /*
             ensureDepartureTime: function() {
                 if(this.year > this.vcl.depYear) {
@@ -471,7 +469,7 @@
                     dayDiv.setAttribute("class", dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
                         dayDiv.addEventListener('click', function(event) {
-                            renderer.setDay(event.target.innerHTML);
+                            renderer.setDay(parseInt(event.target.innerHTML));
                         });
                     }
                 }
@@ -509,7 +507,7 @@
                 timeClicky.addEventListener('click', function(event) {
                     var text = event.target.innerHTML;
                     var colon = text.indexOf(':');
-                    renderer.setTime(text.substring(0, colon), text.substring(colon + 1));
+                    renderer.setTime(parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
                 });
                 return true;
             },
@@ -517,12 +515,12 @@
                 this.vcl.replaceReturnPicker(newDayTimePicker);
             },
             setMonth: function(year, month) {
-                this.year = parseInt(year);
-                this.month = parseInt(month);
-                if(this.vcl.retMonth == this.month) {
-                    this.day = this.vcl.retDay;
-                    this.hour = this.vcl.retHour;
-                    this.min = this.vcl.retMin;
+                this.year = year;
+                this.month = month;
+                if(this.vcl.retDate.getFullYear() == this.year && this.vcl.retDate.getMonth() + 1 == this.month) {
+                    this.day = this.vcl.retDate.getDate();
+                    this.hour = this.vcl.retDate.getHours();
+                    this.min = this.vcl.retDate.getMinutes();
                 } else {
                     this.day = NaN;
                     this.hour = NaN;
@@ -531,7 +529,7 @@
                 refreshDayTimePicker(this);
             },
             setDay: function(day) {
-                this.day = parseInt(day);
+                this.day = day;
                 this.hour = NaN;
                 this.min = NaN;
                 refreshDayTimePicker(this);
@@ -539,17 +537,22 @@
                 this.vcl.returnDaySet(this);
             },
             setTime: function(hour, min) {
-                this.hour = parseInt(hour);
-                this.min = parseInt(min);
+                this.hour = hour;
+                this.min = min;
                 this.updateVcl();
                 this.vcl.returnTimeSet(this);
             },
             updateVcl: function() {
-                this.vcl.retYear = this.year;
-                this.vcl.retMonth = this.month;
-                this.vcl.retDay = this.day;
-                this.vcl.retHour = this.hour;
-                this.vcl.retMin = this.min;
+                if(this.vcl.retDate == null) {
+                    this.vcl.retDate = new Date();
+                }
+                this.vcl.retDate.setFullYear(this.year, this.month - 1, this.day);
+                if(!isNaN(this.hour)) {
+                    this.vcl.retDate.setHours(this.hour);
+                }
+                if(!isNaN(this.min)) {
+                    this.vcl.retDate.setMinutes(this.min);
+                }
             }
         };
         return renderer;
