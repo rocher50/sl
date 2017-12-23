@@ -19,6 +19,7 @@
     var lastAvailableHour = 19;
     var lastAvailableMin = 0;
     var minRentMinutes = 60;
+    var pauseMinutes = 30;
 
     var fleet = {
         vclList: [],
@@ -374,32 +375,46 @@
             min: NaN,
 
             nextMonthEnabled: NaN,
+            firstAvailableDay: NaN,
             lastAvailableDay: NaN,
+            lastAvailableHour: NaN,
+            lastAvailableMin: NaN,
 
             initDate: function() {
                 this.recalcBoundaries(this.vcl.depDate);
 
-                var tmp = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
-                if(tmp.getHours() > lastAvailableHour) {
-                    tmp.setDate(tmp.getDate() + 1);
-                    tmp.setHours(firstAvailableHour);
-                    tmp.setMinutes(firstAvailableMin);
+                var firstAvailableDate = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
+                if(firstAvailableDate.getHours() > lastAvailableHour) {
+                    firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
                 }
 
-                if(this.lastAvailableDay != null) {
-                    var lastAvailableDate = new Date(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.lastAvailableDay, 0, 0, 0);
-                    if(tmp > lastAvailableDate) {
-                        tmp = lastAvailableDate;
+                var lastAvailableDate = null;
+                if(!isNaN(this.lastAvailableDay)) {
+                    lastAvailableDate = new Date(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.lastAvailableDay, lastAvailableHour, lastAvailableMin, 0);
+                    if(!isNaN(this.lastAvailableHour)) {
+                        lastAvailableDate.setHours(this.lastAvailableHour);
+                    }
+                    if(!isNaN(this.lastAvailableMin)) {
+                        lastAvailableDate.setMinutes(this.lastAvailableMin);
+                    }
+                    if(firstAvailableDate > lastAvailableDate) {
+                        firstAvailableDate = lastAvailableDate;
                     }
                 }
 
+                this.firstAvailableDay = firstAvailableDate.getDate();
                 if(this.vcl.retDate == null) {
-                    this.vcl.retDate = tmp;
-                } else if(this.vcl.retDate < tmp) {
-                    this.vcl.retDate = tmp;
+                    this.vcl.retDate = firstAvailableDate;
+                } else if(this.vcl.retDate < firstAvailableDate) {
+                    this.vcl.retDate = firstAvailableDate;
+                    this.hour = NaN;
+                    this.min = NaN;
+                } else if(lastAvailableDate != null && this.vcl.retDate > lastAvailableDate) {
+                    this.vcl.retDate = lastAvailableDate;
                     this.hour = NaN;
                     this.min = NaN;
                 }
+
                 this.year = this.vcl.retDate.getFullYear();
                 this.month = this.vcl.retDate.getMonth() + 1;
                 this.day = this.vcl.retDate.getDate();
@@ -408,6 +423,9 @@
             recalcBoundaries: function(date) {
                 this.nextMonthEnabled = true;
                 this.lastAvailableDay = NaN;
+                this.lastAvailableHour = NaN;
+                this.lastAvailableMin = NaN;
+
                 var i = 0;
                 while(i < this.vcl.agenda.length) {
                     var dayAgenda = this.vcl.agenda[i++];
@@ -415,8 +433,14 @@
                         this.nextMonthEnabled = false;
                         if(!dayAgenda.available) {
                             this.lastAvailableDay = dayAgenda.day - 1;
-                        } else if(dayAgenda.bookings[0] > firstActiveHour) {
+                            this.lastAvailableHour = lastAvailableHour;
+                            this.lastAvailableMin = lastAvailableMin;
+                        } else {
                             this.lastAvailableDay = dayAgenda.day;
+                            var bookingTime = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, 0, 0, 0);
+                            bookingTime = new Date(bookingTime.getTime() + dayAgenda.bookings[0]*60*60*1000);
+                            this.lastAvailableHour = bookingTime.getHours();
+                            this.lastAvailableMin = bookingTime.getMinutes();
                         }
                         break;
                     }
@@ -424,15 +448,24 @@
                         if(!dayAgenda.available) {
                             this.nextMonthEnabled = false;
                             this.lastAvailableDay = dayAgenda.day;
+                            break;
                         }
-                        var availableTime = dayAgenda.bookings[dayAgenda.bookings.length - 2] + dayAgenda.bookings[dayAgenda.bookings.length - 1];
-                        if(this.vcl.depDate.getHours()*60 + this.vcl.depDate.getMinutes() > availableTime*60) {
-                            this.nextMonthEnabled = true;
-                        } else {
-                            this.nextMonthEnabled = false;
-                            this.lastAvailableDay = dayAgenda.day;
+                        var dayInMillis = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0).getTime();
+                        var t = 0;
+                        while(t < dayAgenda.bookings.length) {
+                            var bookingTime = new Date(dayInMillis + dayAgenda.bookings[t]*60*60*1000);
+                            if(date < bookingTime) {
+                                this.nextMonthEnabled = false;
+                                this.lastAvailableDay = dayAgenda.day;
+                                this.lastAvailableHour = bookingTime.getHours();
+                                this.lastAvailableMin = bookingTime.getMinutes();
+                                break;
+                            }
+                            if(date === bookingTime) {
+                                alert("error");
+                            }
+                            t += 2;
                         }
-                        break;
                     }
                 }
             },
@@ -450,22 +483,38 @@
                 return this.nextMonthEnabled;
             },
             getFirstActiveDay: function() {
-                if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() + 1 == this.month) {
-                    return this.vcl.depDate.getDate();
-                }
-                if(this.vcl.depDate.getFullYear() < this.year || this.vcl.depDate.getMonth() + 1 < this.month) {
-                    return 1;
-                }
-                return 100;
+                return this.firstAvailableDay;
             },
             getFirstActiveHour: function() {
-                if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() + 1 == this.month && this.vcl.depDate.getDate() == this.day) {
-                    if(this.vcl.depDate.getMinutes() == 0) {
-                        return this.vcl.depDate.getHours();
+                var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
+                if(dayAgenda == null) {
+                    if(this.day == this.vcl.depDate.getDate()) {
+                        return new Date(this.vcl.depDate.getTime() + minRentMinutes*60*1000).getHours();
                     }
-                    return this.vcl.depDate.getHours() + 1;
+                    return firstAvailableHour;
                 }
-                return this.firstAvailableHour;
+
+                if(!isNaN(this.lastAvailableDay) && this.day == this.lastAvailableDay) {
+                    var bookingTime = new Date(this.year, this.month - 1, this.day, 0, 0, 0);
+                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes)*60*1000);
+                    return bookingTime.getHours();
+                }
+                var firstAvailableTime = new Date(this.year, this.month - 1, this.day, firstAvailableHour, firstAvailableMin, 0);
+                var i = 0;
+                while(i < dayAgenda.bookings.length) {
+                    var bookingTime = new Date(this.year, this.month - 1, this.day, 0, 0, 0);
+                    bookingTime = new Date(bookingTime.getTime() + dayAgenda.bookings[i]*60*60*1000);
+                    if(firstAvailableTime < bookingTime) {
+                        return firstAvailableTime.getHours();
+                    }
+                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
+                    if(firstAvailableTime === bookingTime) {
+                        return firstAvailableTime.getHours();
+                    }
+                    firstAvailableTime = bookingTime;
+                    i += 2;
+                }
+                return this.lastAvailableHour;
             },
             newDayElement: function(i) {
                 var dayDiv = document.createElement("div");
@@ -505,8 +554,10 @@
                     timeClicky.setAttribute("class", "disabled-clicky");
                     return true;
                 }
-                var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
-                if(!isTimeAvailable(hour, mins, dayAgenda)) {
+
+                if(!isNaN(this.lastAvailableDay) && this.lastAvailableDay == this.day &&
+                    this.lastAvailableHour < hour ||
+                    this.lastAvailableHour == hour && this.lastAvailableMin < mins) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
                     } else {
@@ -573,6 +624,19 @@
         return renderer;
     }
 
+    function getDayAgenda(day, days) {
+        for(var i = 0; i < days.length; i++) {
+            var dayAgenda = days[i];
+            if(day < dayAgenda.day) {
+                return null;
+            }
+            if(day === dayAgenda.day) {
+                return dayAgenda;
+            }
+        }
+        return null;
+    };
+
     function getSelectedDayTime(renderer) {
         return toTwoChars(renderer.day) + '.' + toTwoChars(renderer.month) + '.' + renderer.year + ' ' +
             toTwoChars(renderer.hour) + ':' + toTwoChars(renderer.min);
@@ -586,6 +650,31 @@
             return '0' + i;
         }
         return i;
+    }
+
+
+    function isTimeAvailable(hour, mins, dayAgenda) {
+        if(dayAgenda == null) {
+            return true;
+        }
+        var time = hour;
+        if(mins == 30) {
+            time += 0.5;
+        }
+        var bookings = dayAgenda.bookings;
+        for(var i = 0; i < bookings.length; i += 2) {
+            var bookingStart = bookings[i];
+            if(time < bookingStart) {
+                return true;
+            }
+            if(time === bookingStart) {
+                return false;
+            }
+            if(time < bookingStart + bookings[i+1]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     var isDayAvailable = function(date) {

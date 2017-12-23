@@ -157,43 +157,6 @@ function clearSelection() {
             return timepicker;
         }
 
-        var getDayAgenda = function(day, days) {
-            for(var i = 0; i < days.length; i++) {
-                var dayAgenda = days[i];
-                if(day < dayAgenda.day) {
-                    return null;
-                }
-                if(day === dayAgenda.day) {
-                    return dayAgenda;
-                }
-            }
-            return null;
-        };
-
-        var isTimeAvailable = function(hour, mins, dayAgenda) {
-            if(dayAgenda == null) {
-                return true;
-            }
-            var time = hour;
-            if(mins == 30) {
-                time += 0.5;
-            }
-            var bookings = dayAgenda.bookings;
-            for(var i = 0; i < bookings.length; i += 2) {
-                var bookingStart = bookings[i];
-                if(time < bookingStart) {
-                    return true;
-                }
-                if(time === bookingStart) {
-                    return false;
-                }
-                if(time < bookingStart + bookings[i+1]) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
         var daysInMonth = function(year, month) {
             return 32 - new Date(year, month, 32).getDate();
         }

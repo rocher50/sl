@@ -196,7 +196,7 @@ function vcl_agenda($data) {
             'bookings' => [9.5, 2.5, 15, 3]],
             ['day' => 20,
             'available' => true,
-            'bookings' => [8.5, 4]],
+            'bookings' => [8, 4]],
             ['day' => 26,
             'available' => false]
         ]
