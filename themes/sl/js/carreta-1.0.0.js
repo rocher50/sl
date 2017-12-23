@@ -11,7 +11,15 @@
         'months': ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
         'weekDays': ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
         'labelDepart': 'Départ',
-        'labelReturn': 'Retour'
+        'labelReturn': 'Retour',
+        'labelFirstName': 'Prénom',
+        'labelLastName': 'Nom',
+        'labelEmail': 'E-mail',
+        'labelPhone': 'Téléphone',
+        'labelStreet': 'Adresse',
+        'labelCity': 'Ville',
+        'labelZip': 'NPA',
+        'labelCountry': 'Pays',
     };
 
     var firstAvailableHour = 8;
@@ -20,6 +28,9 @@
     var lastAvailableMin = 0;
     var minRentMinutes = 60;
     var pauseMinutes = 30;
+
+    var clientFirstName = null;
+    var clientLastName = null;
 
     var fleet = {
         vclList: [],
@@ -50,6 +61,8 @@
                 retDate: null,
                 agenda: null,
 
+                contactsDiv: null,
+
                 display: function() {
 
                     var vclBody = document.getElementById("page_content");
@@ -78,6 +91,42 @@
                     retLabel.append(voc.labelReturn);
                     this.retValue = createDiv(returnLabelValue, "value");
                     this.retDayTimePicker = createDiv(this.returnContainer);
+
+                    this.contactsDiv = document.createElement('div');
+                    this.contactsDiv.style.display = 'none';
+                    var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var firstnameLabel = createDiv(firstnameContainer, 'label');
+                    firstnameLabel.append(voc.labelFirstName);
+
+                    var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var lastnameLabel = createDiv(lastnameContainer, 'label');
+                    lastnameLabel.append(voc.labelLastName);
+
+                    var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var emailLabel = createDiv(emailContainer, 'label');
+                    emailLabel.append(voc.labelEmail);
+
+                    var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var phoneLabel = createDiv(phoneContainer, 'label');
+                    phoneLabel.append(voc.labelPhone);
+
+                    var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var streetLabel = createDiv(streetContainer, 'label');
+                    streetLabel.append(voc.labelStreet);
+
+                    var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var cityLabel = createDiv(cityContainer, 'label');
+                    cityLabel.append(voc.labelCity);
+
+                    var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var zipLabel = createDiv(zipContainer, 'label');
+                    zipLabel.append(voc.labelZip);
+
+                    var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var countryLabel = createDiv(countryContainer, 'label');
+                    countryLabel.append(voc.labelCountry);
+
+                    reservationDiv.appendChild(this.contactsDiv);
                 },
 
                 depValue: null,
@@ -86,6 +135,7 @@
                 },
                 departureTimeSet: function(renderer) {
                     var clickHandler = function(event) {
+                        vcl.hideContacts();
                         vcl.hideReturnContainer();
                         vcl.displayValue(event.target, renderer);
                         replaceDayTimePicker(renderer);
@@ -129,12 +179,15 @@
                 },
                 returnTimeSet: function(renderer) {
                     var clickHandler = function(event) {
+                        vcl.hideContacts();
                         vcl.displayValue(event.target, renderer);
                         replaceDayTimePicker(renderer);
                         event.target.removeEventListener(event.type, clickHandler);
                     };
                     this.displayValue(this.retValue, renderer, clickHandler);
                     this.replaceReturnPicker(document.createElement('div'));
+
+                    this.displayContacts();
                 },
 
                 retDayTimePicker: null,
@@ -152,6 +205,14 @@
                     }
                     element.innerHTML = getSelectedDayTime(renderer);
                     element.parentElement.replaceChild(element, element);
+                },
+
+                displayContacts: function() {
+                    this.contactsDiv.style.display = 'initial';
+                    this.contactsDiv.parentElement.replaceChild(this.contactsDiv, this.contactsDiv);
+                },
+                hideContacts: function() {
+                    hideElement(this.contactsDiv);
                 }
             };
             return vcl;
