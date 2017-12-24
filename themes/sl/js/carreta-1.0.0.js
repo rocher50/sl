@@ -311,6 +311,18 @@
                 }
                 return 100;
             },
+            getFirstWorkingHour: function() {
+                return firstAvailableHour;
+            },
+            getFirstWorkingHourMin: function() {
+                return firstAvailableMin;
+            },
+            getLastWorkingHour: function() {
+                return lastAvailableHour;
+            },
+            getLastWorkingHourMin: function() {
+                return lastAvailableMin;
+            },
             getFirstActiveHour: function() {
                 var curDate = new Date();
                 if(curDate.getFullYear() == this.year && curDate.getMonth() == this.month - 1 && curDate.getDate() == this.day) {
@@ -437,9 +449,7 @@
 
             nextMonthEnabled: NaN,
             firstAvailableDay: NaN,
-            lastAvailableDay: NaN,
-            lastAvailableHour: NaN,
-            lastAvailableMin: NaN,
+            lastAvailableDate: null,
 
             initDate: function() {
                 this.recalcBoundaries(this.vcl.depDate);
@@ -449,17 +459,9 @@
                     firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
                 }
 
-                var lastAvailableDate = null;
-                if(!isNaN(this.lastAvailableDay)) {
-                    lastAvailableDate = new Date(this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth(), this.lastAvailableDay, lastAvailableHour, lastAvailableMin, 0);
-                    if(!isNaN(this.lastAvailableHour)) {
-                        lastAvailableDate.setHours(this.lastAvailableHour);
-                    }
-                    if(!isNaN(this.lastAvailableMin)) {
-                        lastAvailableDate.setMinutes(this.lastAvailableMin);
-                    }
-                    if(firstAvailableDate > lastAvailableDate) {
-                        firstAvailableDate = lastAvailableDate;
+                if(this.lastAvailableDay != null) {
+                    if(firstAvailableDate > this.lastAvailableDate) {
+                        firstAvailableDate = this.lastAvailableDate;
                     }
                 }
 
@@ -470,8 +472,8 @@
                     this.vcl.retDate = firstAvailableDate;
                     this.hour = NaN;
                     this.min = NaN;
-                } else if(lastAvailableDate != null && this.vcl.retDate > lastAvailableDate) {
-                    this.vcl.retDate = lastAvailableDate;
+                } else if(this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate) {
+                    this.vcl.retDate = this.lastAvailableDate;
                     this.hour = NaN;
                     this.min = NaN;
                 }
@@ -483,9 +485,7 @@
 
             recalcBoundaries: function(date) {
                 this.nextMonthEnabled = true;
-                this.lastAvailableDay = NaN;
-                this.lastAvailableHour = NaN;
-                this.lastAvailableMin = NaN;
+                this.lastAvailableDate = null;
 
                 var i = 0;
                 while(i < this.vcl.agenda.length) {
@@ -493,22 +493,17 @@
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;
                         if(!dayAgenda.available) {
-                            this.lastAvailableDay = dayAgenda.day - 1;
-                            this.lastAvailableHour = lastAvailableHour;
-                            this.lastAvailableMin = lastAvailableMin;
+                            this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day - 1, lastAvailableHour, lastAvailableMin, 0);
                         } else {
-                            this.lastAvailableDay = dayAgenda.day;
-                            var bookingTime = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, 0, 0, 0);
-                            bookingTime = new Date(bookingTime.getTime() + dayAgenda.bookings[0]*60*60*1000);
-                            this.lastAvailableHour = bookingTime.getHours();
-                            this.lastAvailableMin = bookingTime.getMinutes();
+                            this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, 0, 0, 0);
+                            this.lastAvailableDate = new Date(this.lastAvailableDate.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes*60)*60*1000);
                         }
                         break;
                     }
                     if(date.getDate() == dayAgenda.day) {
                         if(!dayAgenda.available) {
                             this.nextMonthEnabled = false;
-                            this.lastAvailableDay = dayAgenda.day;
+                            this.lastAvailableDay = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, firstAvailableHour, firstAvailableMin, 0);
                             break;
                         }
                         var dayInMillis = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0).getTime();
@@ -517,9 +512,7 @@
                             var bookingTime = new Date(dayInMillis + dayAgenda.bookings[t]*60*60*1000);
                             if(date < bookingTime) {
                                 this.nextMonthEnabled = false;
-                                this.lastAvailableDay = dayAgenda.day;
-                                this.lastAvailableHour = bookingTime.getHours();
-                                this.lastAvailableMin = bookingTime.getMinutes();
+                                this.lastAvailableDay = bookingTime;
                                 break;
                             }
                             if(date === bookingTime) {
@@ -546,6 +539,18 @@
             getFirstActiveDay: function() {
                 return this.firstAvailableDay;
             },
+            getFirstWorkingHour: function() {
+                return firstAvailableHour;
+            },
+            getFirstWorkingHourMin: function() {
+                return firstAvailableMin;
+            },
+            getLastWorkingHour: function() {
+                return lastAvailableHour;
+            },
+            getLastWorkingHourMin: function() {
+                return lastAvailableMin;
+            },
             getFirstActiveHour: function() {
                 var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
                 if(dayAgenda == null) {
@@ -555,7 +560,7 @@
                     return firstAvailableHour;
                 }
 
-                if(!isNaN(this.lastAvailableDay) && this.day == this.lastAvailableDay) {
+                if(this.lastAvailableDate != null && this.day == this.lastAvailableDate.getDate()) {
                     var bookingTime = new Date(this.year, this.month - 1, this.day, 0, 0, 0);
                     bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes)*60*1000);
                     return bookingTime.getHours();
@@ -583,9 +588,9 @@
                 if(this.day == i) {
                     dayDiv.setAttribute("class", "selected-clicky");
                 } else {
-                    if(isNaN(this.lastAvailableDay) || i < this.lastAvailableDay) {
+                    if(this.lastAvailableDate == null || i < this.lastAvailableDate.getDate()) {
                         dayClass = "clicky";
-                    } else if(i == this.lastAvailableDay) {
+                    } else if(i == this.lastAvailableDate.getDate()) {
                         dayClass = "bordered-clicky";
                     } else {
                         dayClass = "disabled-clicky";
@@ -616,9 +621,9 @@
                     return true;
                 }
 
-                if(!isNaN(this.lastAvailableDay) && this.lastAvailableDay == this.day &&
-                    this.lastAvailableHour < hour ||
-                    this.lastAvailableHour == hour && this.lastAvailableMin < mins) {
+                if(this.lastAvailableDate != null && this.lastAvailableDate.getDate() == this.day &&
+                    (this.lastAvailableDate.getHours() < hour ||
+                    this.lastAvailableDate.getHours() == hour && this.lastAvailableDate.getMinutes() < mins)) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
                     } else {
@@ -739,7 +744,7 @@
     }
 
     var isDayAvailable = function(date) {
-        return 12*60 - date.getHours()*60 - date.getMinutes() > 120;
+        return lastAvailableHour*60 + lastAvailableMin - date.getHours()*60 - date.getMinutes() > 120;
     };
 
     var displayElement = function(e) {

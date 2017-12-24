@@ -139,13 +139,14 @@ function clearSelection() {
                 timepicker.style.height = height + 'px';
             }
             var addedTime = false;
-            var hour = 8;
-            var mins = 0;
+            var hour = renderer.getFirstWorkingHour();
+            var mins = renderer.getFirstWorkingHourMin();
             var firstActiveHour = renderer.getFirstActiveHour();
             while(hour < firstActiveHour) {
                 hour++;
             }
-            while(hour <= 19) {
+            while(hour < renderer.getLastWorkingHour() ||
+                  hour == renderer.getLastWorkingHour() && mins <= renderer.getLastWorkingHourMin()) {
                 addedTime = renderer.newTimeElement(timepicker, hour, mins, addedTime);
                 if(mins == 30) {
                     hour++;
