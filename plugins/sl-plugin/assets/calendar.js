@@ -142,6 +142,9 @@ function clearSelection() {
             var hour = renderer.getFirstWorkingHour();
             var mins = renderer.getFirstWorkingHourMin();
             var firstActiveHour = renderer.getFirstActiveHour();
+            if(hour < firstActiveHour) {
+                mins = 0;
+            }
             while(hour < firstActiveHour) {
                 hour++;
             }

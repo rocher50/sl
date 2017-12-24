@@ -449,38 +449,25 @@
 
             nextMonthEnabled: NaN,
             firstAvailableDay: NaN,
+            firstAvailableTime: NaN,
             lastAvailableDate: null,
 
             initDate: function() {
                 this.recalcBoundaries(this.vcl.depDate);
 
-                var firstAvailableDate = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
-                if(firstAvailableDate.getHours() > lastAvailableHour) {
-                    firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
+                if(this.vcl.retDate == null
+                    || this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate
+                    || this.vcl.retDate < this.firstAvailableTime) {
+                    this.vcl.retDate = this.firstAvailableTime;
+                } else if(this.vcl.depDate.getMonth() != this.vcl.retDate.getMonth()
+                    || this.vcl.depDate.getFullYear() != this.vcl.retDate.getFullYear()) {
+                    this.recalcBoundaries(new Date(this.vcl.retDate.getFullYear(), this.vcl.retDate.getMonth(), 1, 0, 0, 0));
                 }
-
-                if(this.lastAvailableDay != null) {
-                    if(firstAvailableDate > this.lastAvailableDate) {
-                        firstAvailableDate = this.lastAvailableDate;
-                    }
-                }
-
-                this.firstAvailableDay = firstAvailableDate.getDate();
-                if(this.vcl.retDate == null) {
-                    this.vcl.retDate = firstAvailableDate;
-                } else if(this.vcl.retDate < firstAvailableDate) {
-                    this.vcl.retDate = firstAvailableDate;
-                    this.hour = NaN;
-                    this.min = NaN;
-                } else if(this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate) {
-                    this.vcl.retDate = this.lastAvailableDate;
-                    this.hour = NaN;
-                    this.min = NaN;
-                }
-
                 this.year = this.vcl.retDate.getFullYear();
                 this.month = this.vcl.retDate.getMonth() + 1;
                 this.day = this.vcl.retDate.getDate();
+                this.hour = NaN;
+                this.min = NaN;
             },
 
             recalcBoundaries: function(date) {
@@ -488,7 +475,7 @@
                 this.lastAvailableDate = null;
 
                 var i = 0;
-                while(i < this.vcl.agenda.length) {
+                while(i < this.vcl.agenda.length && this.lastAvailableDate == null) {
                     var dayAgenda = this.vcl.agenda[i++];
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;
@@ -496,23 +483,27 @@
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day - 1, lastAvailableHour, lastAvailableMin, 0);
                         } else {
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, 0, 0, 0);
-                            this.lastAvailableDate = new Date(this.lastAvailableDate.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes*60)*60*1000);
+                            this.lastAvailableDate = new Date(this.lastAvailableDate.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes)*60*1000);
+                            if(this.lastAvailableDate.getHours() < firstAvailableHour ||
+                                this.lastAvailableDate.getHours() == firstAvailableHour && this.lastAvailableDate.getMinutes() < firstAvailableMin) {
+                                this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day - 1, lastAvailableHour, lastAvailableMin, 0);
+                            }
                         }
                         break;
                     }
                     if(date.getDate() == dayAgenda.day) {
                         if(!dayAgenda.available) {
                             this.nextMonthEnabled = false;
-                            this.lastAvailableDay = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, firstAvailableHour, firstAvailableMin, 0);
+                            this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, firstAvailableHour, firstAvailableMin, 0);
                             break;
                         }
                         var dayInMillis = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0).getTime();
                         var t = 0;
                         while(t < dayAgenda.bookings.length) {
-                            var bookingTime = new Date(dayInMillis + dayAgenda.bookings[t]*60*60*1000);
+                            var bookingTime = new Date(dayInMillis + (dayAgenda.bookings[t]*60 - pauseMinutes)*60*1000);
                             if(date < bookingTime) {
                                 this.nextMonthEnabled = false;
-                                this.lastAvailableDay = bookingTime;
+                                this.lastAvailableDate = bookingTime;
                                 break;
                             }
                             if(date === bookingTime) {
@@ -521,6 +512,43 @@
                             t += 2;
                         }
                     }
+                }
+
+                this.recalcFirstAvailableTime(date.getFullYear(), date.getMonth() + 1, date.getDate());
+                this.firstAvailableDay = this.firstAvailableTime.getDate();
+            },
+
+            recalcFirstAvailableTime: function(year, month, day) {
+                if(day == this.vcl.depDate.getDate() && month - 1 == this.vcl.depDate.getMonth() && year == this.vcl.depDate.getFullYear()) {
+                    this.firstAvailableTime = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
+                    if(this.firstAvailableTime.getHours() > lastAvailableHour ||
+                        this.firstAvailableTime.getHours() == lastAvailableHour && this.firstAvailableTime.getMinutes() > lastAvailableMin) {
+                        this.firstAvailableTime.setDate(firstAvailableTime.getDate() + 1);
+                        this.firstAvailableTime.setHours(firstAvailableHour);
+                        this.firstAvailableTime.setMinutes(firstAvailableMin);
+                    }
+                } else {
+                    this.firstAvailableTime = new Date(year, month - 1, day, firstAvailableHour, firstAvailableMin, 0);
+                }
+
+                var dayAgenda = getDayAgenda(day, this.vcl.agenda);
+                if(dayAgenda == null || !dayAgenda.available) {
+                    return;
+                }
+
+                var i = 0;
+                while(i < dayAgenda.bookings.length) {
+                    var bookingTime = new Date(year, month - 1, day, 0, 0, 0);
+                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i]*60 - pauseMinutes)*60*1000);
+                    if(this.firstAvailableTime < bookingTime) {
+                        return;
+                    }
+                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
+                    if(this.firstAvailableTime === bookingTime) {
+                        return;
+                    }
+                    this.firstAvailableTime = bookingTime;
+                    i += 2;
                 }
             },
 
@@ -552,35 +580,7 @@
                 return lastAvailableMin;
             },
             getFirstActiveHour: function() {
-                var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
-                if(dayAgenda == null) {
-                    if(this.day == this.vcl.depDate.getDate()) {
-                        return new Date(this.vcl.depDate.getTime() + minRentMinutes*60*1000).getHours();
-                    }
-                    return firstAvailableHour;
-                }
-
-                if(this.lastAvailableDate != null && this.day == this.lastAvailableDate.getDate()) {
-                    var bookingTime = new Date(this.year, this.month - 1, this.day, 0, 0, 0);
-                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes)*60*1000);
-                    return bookingTime.getHours();
-                }
-                var firstAvailableTime = new Date(this.year, this.month - 1, this.day, firstAvailableHour, firstAvailableMin, 0);
-                var i = 0;
-                while(i < dayAgenda.bookings.length) {
-                    var bookingTime = new Date(this.year, this.month - 1, this.day, 0, 0, 0);
-                    bookingTime = new Date(bookingTime.getTime() + dayAgenda.bookings[i]*60*60*1000);
-                    if(firstAvailableTime < bookingTime) {
-                        return firstAvailableTime.getHours();
-                    }
-                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
-                    if(firstAvailableTime === bookingTime) {
-                        return firstAvailableTime.getHours();
-                    }
-                    firstAvailableTime = bookingTime;
-                    i += 2;
-                }
-                return this.lastAvailableHour;
+                return this.firstAvailableTime.getHours();
             },
             newDayElement: function(i) {
                 var dayDiv = document.createElement("div");
@@ -606,6 +606,9 @@
                 return dayDiv;
             },
             newTimeElement: function(timepicker, hour, mins, prevTimeAdded) {
+                if(hour == this.firstAvailableTime.getHours() && mins < this.firstAvailableTime.getMinutes()) {
+                    return false;
+                }
                 var timeClicky = createDiv(timepicker);
                 var text = '';
                 if(hour < 10) {
@@ -658,12 +661,18 @@
                     this.hour = NaN;
                     this.min = NaN;
                 }
+                if(this.vcl.depDate.getFullYear() == year && this.vcl.depDate.getMonth() == month - 1) {
+                    this.recalcBoundaries(this.vcl.depDate);
+                } else {
+                    this.recalcBoundaries(new Date(year, month - 1, 1, 0, 0, 0));
+                }
                 refreshDayTimePicker(this);
             },
             setDay: function(day) {
                 this.day = day;
                 this.hour = NaN;
                 this.min = NaN;
+                this.recalcFirstAvailableTime(this.year, this.month, day);
                 refreshDayTimePicker(this);
                 this.updateVcl();
                 this.vcl.returnDaySet(this);
@@ -679,6 +688,8 @@
                     this.vcl.retDate = new Date();
                 }
                 this.vcl.retDate.setFullYear(this.year, this.month - 1, this.day);
+                this.vcl.retDate.setHours(0);
+                this.vcl.retDate.setMinutes(0);
                 if(!isNaN(this.hour)) {
                     this.vcl.retDate.setHours(this.hour);
                 }
