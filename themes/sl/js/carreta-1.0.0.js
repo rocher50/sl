@@ -129,6 +129,10 @@
                     reservationDiv.appendChild(this.contactsDiv);
                 },
 
+                getMonthAgenda: function() {
+                    return this.agenda;
+                },
+
                 depValue: null,
                 departureDaySet: function(renderer) {
                     this.displayValue(this.depValue, renderer);
@@ -340,7 +344,7 @@
                 if(this.day == i) {
                     dayDiv.setAttribute("class", "selected-clicky");
                 } else {
-                    var dayAgenda = getDayAgenda(i, this.vcl.agenda);
+                    var dayAgenda = getDayAgenda(i, this.vcl.getMonthAgenda());
                     var dayClass;
                     if(dayAgenda == null) {
                         dayClass = "clicky";
@@ -373,7 +377,7 @@
                     timeClicky.setAttribute("class", "disabled-clicky");
                     return true;
                 }
-                var dayAgenda = getDayAgenda(this.day, this.vcl.agenda);
+                var dayAgenda = getDayAgenda(this.day, this.vcl.getMonthAgenda());
                 if(!isTimeAvailable(hour, mins, dayAgenda)) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
@@ -457,17 +461,16 @@
 
                 if(this.vcl.retDate == null
                     || this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate
-                    || this.vcl.retDate < this.firstAvailableTime) {
-                    this.vcl.retDate = this.firstAvailableTime;
-                } else if(this.vcl.depDate.getMonth() != this.vcl.retDate.getMonth()
+                    || this.vcl.retDate < this.firstAvailableTime
+                    || this.vcl.depDate.getMonth() != this.vcl.retDate.getMonth()
                     || this.vcl.depDate.getFullYear() != this.vcl.retDate.getFullYear()) {
-                    this.recalcBoundaries(new Date(this.vcl.retDate.getFullYear(), this.vcl.retDate.getMonth(), 1, 0, 0, 0));
+                    this.vcl.retDate = this.firstAvailableTime;
+                    this.year = this.vcl.retDate.getFullYear();
+                    this.month = this.vcl.retDate.getMonth() + 1;
+                    this.day = this.vcl.retDate.getDate();
+                    this.hour = NaN;
+                    this.min = NaN;
                 }
-                this.year = this.vcl.retDate.getFullYear();
-                this.month = this.vcl.retDate.getMonth() + 1;
-                this.day = this.vcl.retDate.getDate();
-                this.hour = NaN;
-                this.min = NaN;
             },
 
             recalcBoundaries: function(date) {
@@ -475,8 +478,8 @@
                 this.lastAvailableDate = null;
 
                 var i = 0;
-                while(i < this.vcl.agenda.length && this.lastAvailableDate == null) {
-                    var dayAgenda = this.vcl.agenda[i++];
+                while(i < this.vcl.getMonthAgenda().length && this.lastAvailableDate == null) {
+                    var dayAgenda = this.vcl.getMonthAgenda()[i++];
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;
                         if(!dayAgenda.available) {
@@ -531,7 +534,7 @@
                     this.firstAvailableTime = new Date(year, month - 1, day, firstAvailableHour, firstAvailableMin, 0);
                 }
 
-                var dayAgenda = getDayAgenda(day, this.vcl.agenda);
+                var dayAgenda = getDayAgenda(day, this.vcl.getMonthAgenda());
                 if(dayAgenda == null || !dayAgenda.available) {
                     return;
                 }
@@ -547,7 +550,6 @@
                     if(this.firstAvailableTime === bookingTime) {
                         return;
                     }
-                    this.firstAvailableTime = bookingTime;
                     i += 2;
                 }
             },

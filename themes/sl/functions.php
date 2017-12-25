@@ -162,12 +162,7 @@ function vcl_fleet($data) {
             'thumbnail' => get_the_post_thumbnail(),
             'agenda' => vcl_agenda([
                 'vcl' => get_the_ID(),
-                'year' => $data['year'],
-                'date' => $date,
-                'month' => $data['month'],
-                'day' => $data['day'],
-                'hour' => $data['hour'],
-                'min' => $data['min']
+                'date' => $date
             ])
         ];
         array_push($result, $vcl);
@@ -185,10 +180,8 @@ function vcl_agenda($data) {
         );
     }
 */
-    $result = [
-        'vcl' => $data['vcl'],
-        'date' => date('Y-m-d H:i', $data['date']),
-        'days' => [
+/*
+    $days = [
             ['day' => 3,
             'available' => false],
             ['day' => 17,
@@ -199,7 +192,17 @@ function vcl_agenda($data) {
             'bookings' => [8, 4]],
             ['day' => 26,
             'available' => false]
-        ]
+        ];
+*/
+    $date = $data['date'];
+    $days = [
+        ['day' => idate('m', $date), 'available' => false]
+    ];
+    
+    $result = [
+        'vcl' => $data['vcl'],
+        'date' => date('Y-m-d H:i', $data['date']),
+        'days' => $days
     ];
     return $result;
 }
