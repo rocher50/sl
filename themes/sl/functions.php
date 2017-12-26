@@ -33,7 +33,7 @@ function sl_setup() {
 add_action('after_setup_theme', 'sl_setup');
 
 function sl_endpoints() {
-    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
+    register_rest_route('slplugin/v1', '/fleet/year=(?P<year>\d+)/month=(?P<month>\d+)', [
         'methods' => 'GET',
         'callback' => 'vcl_fleet',
         'agrs' => [
@@ -43,11 +43,6 @@ function sl_endpoints() {
                 }
              ],
             'month' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'day' => [
                 'validate_callback' => function($param, $request, $key) {
                     return is_numeric($param);
                 }
@@ -75,69 +70,6 @@ function sl_endpoints() {
              ]
         ]
     ]);
-    register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)', [
-        'methods' => 'GET',
-        'callback' => 'vcl_agenda',
-        'agrs' => [
-            'vcl' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-            ],
-            'year' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'month' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'day' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ]
-        ]
-    ]);
-
-    register_rest_route('slplugin/v1', '/agenda/vcl=(?P<vcl>\d+)/year=(?P<year>\d+)/month=(?P<month>\d+)/day=(?P<day>\d+)/hour=(?P<hour>\d+)/min=(?P<min>\d+)', [
-        'methods' => 'GET',
-        'callback' => 'vcl_agenda',
-        'agrs' => [
-            'vcl' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-            ],
-            'year' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'month' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'day' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'hour' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ],
-            'min' => [
-                'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param);
-                }
-             ]
-        ]
-    ]);
 }
 add_action('rest_api_init', 'sl_endpoints');
 
@@ -148,10 +80,6 @@ function vcl_fleet($data) {
     ];
     $year = $data['year'];
     $month = $data['month'];
-    $day = $data['day'];
-    $hour = $data['hour'];
-    $min = $data['min'];
-    $date = mktime($hour, $min, 0, $month, $day, $year);
     $the_query = new WP_Query(['post_type' => 'vcl']);
     
     while($the_query->have_posts()) {
@@ -162,7 +90,8 @@ function vcl_fleet($data) {
             'thumbnail' => get_the_post_thumbnail(),
             'agenda' => vcl_agenda([
                 'vcl' => get_the_ID(),
-                'date' => $date
+                'year' => $data['year'],
+                'month' => $data['month']
             ])
         ];
         array_push($result, $vcl);
@@ -180,7 +109,7 @@ function vcl_agenda($data) {
         );
     }
 */
-/*
+
     $days = [
             ['day' => 3,
             'available' => false],
@@ -193,15 +122,15 @@ function vcl_agenda($data) {
             ['day' => 26,
             'available' => false]
         ];
-*/
-    $date = $data['date'];
+/*
     $days = [
-        ['day' => idate('m', $date), 'available' => false]
+        ['day' => $data['month'], 'available' => false]
     ];
-    
+*/
     $result = [
         'vcl' => $data['vcl'],
-        'date' => date('Y-m-d H:i', $data['date']),
+        'year' => $data['year'],
+        'month' => $data['month'],
         'days' => $days
     ];
     return $result;

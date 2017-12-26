@@ -3,8 +3,7 @@
   $(document).ready(function() {
 
     if(window.location.pathname === '/') {
-        var date = new Date();
-        displayFleet(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        displayFleet(new Date());
     }
 
     var voc = {
@@ -59,11 +58,10 @@
                 thumbnail: null,
                 depDate: null,
                 retDate: null,
-                agenda: null,
 
                 contactsDiv: null,
 
-                display: function() {
+                display: function(agenda) {
 
                     var vclBody = document.getElementById("page_content");
                     var vehicule = createDiv(vclBody, "vehicule");
@@ -82,7 +80,7 @@
                     depLabel.append(voc.labelDepart);
                     this.depValue = createDiv(departure, "value");
                     this.depDayTimePicker = createDiv(reservationDiv);
-                    replaceDayTimePicker(newDeparturePickerRenderer(this));
+                    newDeparturePickerRenderer(this).setAgenda(agenda);
 
                     this.returnContainer = createDiv(reservationDiv);
                     this.returnContainer.style.display = 'none';
@@ -129,8 +127,22 @@
                     reservationDiv.appendChild(this.contactsDiv);
                 },
 
-                getMonthAgenda: function() {
-                    return this.agenda;
+                updateAgenda: function(renderer, year, month) {
+                    var req = new XMLHttpRequest();
+                    var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + this.id + "/year=" + year + "/month=" + month;
+                    req.open('GET', url);
+                    req.onload = function() {
+                        if(req.status >= 200 && req.status < 400) {
+                            var data = JSON.parse(req.responseText);
+                            renderer.setAgenda(data.days);
+                        } else {
+                            alert('Server returned an error');
+                        }
+                    };
+                    req.onerror = function() {
+                        alert('Connection error');
+                    };
+                    req.send();
                 },
 
                 depValue: null,
@@ -149,7 +161,7 @@
                     this.replaceDeparturePicker(document.createElement('div'));
 
                     var returnRenderer = this.getReturnPickerRenderer();
-                    returnRenderer.initDate();
+                    returnRenderer.initDate(renderer.agenda);
                     this.returnDaySet(returnRenderer);
                     this.displayReturnContainer();
                 },
@@ -223,9 +235,9 @@
         }
     };
 
-    function displayFleet(year, month, day) {
+    function displayFleet(date) {
         var req = new XMLHttpRequest();
-        var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + year + "/month=" + month + "/day=" + day;
+        var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + date.getFullYear() + "/month=" + (date.getMonth() + 1);
         req.open('GET', url);
         req.onload = function() {
             if(req.status >= 200 && req.status < 400) {
@@ -235,9 +247,8 @@
                     var vcl = fleet.getVcl(vclInfo.id);
                     vcl.title = vclInfo.title;
                     vcl.thumbnail = vclInfo.thumbnail;
-                    vcl.depDate = new Date(vclInfo.agenda.date);
-                    vcl.agenda = vclInfo.agenda.days;
-                    vcl.display();
+                    vcl.depDate = date;
+                    vcl.display(vclInfo.agenda.days);
                 }
             } else {
                 alert('Server returned an error');
@@ -266,6 +277,7 @@
         req.onload = function() {
             if(req.status >= 200 && req.status < 400) {
                 var data = JSON.parse(req.responseText);
+                renderer.agenda = data.days;
                 replaceDayTimePicker(renderer);
             } else {
                 alert('Server returned an error');
@@ -285,6 +297,9 @@
             day: vcl.depDate.getDate(),
             hour: vcl.depDate.getHours(),
             min: vcl.depDate.getMinutes(),
+            agenda: null,
+            firstAvailableDate: null,
+
             getMonthName: function() {
                 return voc.months[this.month - 1];
             },
@@ -302,18 +317,41 @@
                 return true;
             },
             getFirstActiveDay: function() {
-                var curDate = new Date();
-                if(curDate.getFullYear() == this.year && curDate.getMonth() == this.month - 1) {
-                    var firstActiveDay = curDate.getDate();
-                    if(!isDayAvailable(curDate)) {
-                        firstActiveDay++;
+                this.firstAvailableDate = new Date();
+                if(this.year != this.firstAvailableDate.getFullYear() || this.month != this.firstAvailableDate.getMonth() + 1) {
+                    this.firstAvailableDate = new Date(this.year, this.month -1 , 1, firstAvailableHour, firstAvailableMin, 0);
+                } else if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() > lastAvailableHour*60 + lastAvailableMin - minRentMinutes) {
+                    var curMonth = this.firstAvailableDate.getMonth();
+                    this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() + 1, firstAvailableHour, firstAvailableMin, 0);
+                    if(curMonth != this.firstAvailableDate.getMonth()) {
+                        alert("Failed to resolve the first available day");
+                        return new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() - 1, lastAvailableHour, lastAvailableMin, 0);
                     }
-                    return firstActiveDay;
                 }
-                if(curDate.getFullYear() < this.year || curDate.getMonth() < this.month - 1) {
-                    return 1;
+
+                while(true) {
+                    var dayAgenda = getDayAgenda(this.firstAvailableDate.getDate(), this.agenda);
+                    if(dayAgenda == null) {
+                        return this.firstAvailableDate.getDate();
+                    }
+                    if(dayAgenda.available) {
+                        var i = 0;
+                        while(i < dayAgenda.bookings.length) {
+                            if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() <= dayAgenda.bookings[i]*60 - minRentMinutes - pauseMinutes) {
+                                return this.firstAvailableDate.getDate();
+                            }
+                            this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate(), 0, 0, 0);
+                            this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + (dayAgenda.bookings[i]*60 + dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
+                            i += 2;
+                        }
+                    }
+                    var curMonth = this.firstAvailableDate.getMonth();
+                    this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() + 1, firstAvailableHour, firstAvailableMin, 0);
+                    if(curMonth != this.firstAvailableDate.getMonth()) {
+                        alert("Failed to resolve the first available day");
+                        return new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() - 1, lastAvailableHour, lastAvailableMin, 0);
+                    }
                 }
-                return 100;
             },
             getFirstWorkingHour: function() {
                 return firstAvailableHour;
@@ -328,15 +366,7 @@
                 return lastAvailableMin;
             },
             getFirstActiveHour: function() {
-                var curDate = new Date();
-                if(curDate.getFullYear() == this.year && curDate.getMonth() == this.month - 1 && curDate.getDate() == this.day) {
-                    var fah = curDate.getHours() + 2;
-                    if(curDate.getMinutes() > 30) {
-                        fah++;
-                    }
-                    return fah;
-                }
-                return this.firstAvailableHour;
+                return this.firstAvailableDate.getHours();
             },
             newDayElement: function(i) {
                 var dayDiv = document.createElement("div");
@@ -344,7 +374,7 @@
                 if(this.day == i) {
                     dayDiv.setAttribute("class", "selected-clicky");
                 } else {
-                    var dayAgenda = getDayAgenda(i, this.vcl.getMonthAgenda());
+                    var dayAgenda = getDayAgenda(i, this.agenda);
                     var dayClass;
                     if(dayAgenda == null) {
                         dayClass = "clicky";
@@ -363,6 +393,9 @@
                 return dayDiv;
             },
             newTimeElement: function(timepicker, hour, mins, prevTimeAdded) {
+                if(this.day == this.firstAvailableDate.getDate() && this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() > hour*60 + mins) {
+                    return false;
+                }
                 var timeClicky = createDiv(timepicker);
                 var text = '';
                 if(hour < 10) {
@@ -377,7 +410,7 @@
                     timeClicky.setAttribute("class", "disabled-clicky");
                     return true;
                 }
-                var dayAgenda = getDayAgenda(this.day, this.vcl.getMonthAgenda());
+                var dayAgenda = getDayAgenda(this.day, this.agenda);
                 if(!isTimeAvailable(hour, mins, dayAgenda)) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
@@ -401,6 +434,10 @@
             replaceDayTimePicker: function(newDayTimePicker) {
                 this.vcl.replaceDeparturePicker(newDayTimePicker);
             },
+            setAgenda: function(agenda) {
+                this.agenda = agenda;
+                replaceDayTimePicker(this);
+            },
             setMonth: function(year, month) {
                 this.year = year;
                 this.month = month;
@@ -413,13 +450,13 @@
                     this.hour = NaN;
                     this.min = NaN;
                 }
-                refreshDayTimePicker(this);
+                this.vcl.updateAgenda(this, year, month);
             },
             setDay: function(day) {
                 this.day = day;
                 this.hour = NaN;
                 this.min = NaN;
-                refreshDayTimePicker(this);
+                replaceDayTimePicker(this);
                 this.updateVcl();
                 this.vcl.departureDaySet(this);
             },
@@ -450,14 +487,16 @@
             day: null,
             hour: NaN,
             min: NaN,
+            agenda: null,
 
             nextMonthEnabled: NaN,
             firstAvailableDay: NaN,
             firstAvailableTime: NaN,
             lastAvailableDate: null,
 
-            initDate: function() {
-                this.recalcBoundaries(this.vcl.depDate);
+            initDate: function(agenda) {
+                var curAgenda = this.agenda;
+                this.recalcBoundaries(this.vcl.depDate, agenda);
 
                 if(this.vcl.retDate == null
                     || this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate
@@ -470,16 +509,20 @@
                     this.day = this.vcl.retDate.getDate();
                     this.hour = NaN;
                     this.min = NaN;
+                    this.agenda = agenda;
+                } else {
+                    this.agenda = curAgenda;
                 }
             },
 
-            recalcBoundaries: function(date) {
+            recalcBoundaries: function(date, agenda) {
                 this.nextMonthEnabled = true;
                 this.lastAvailableDate = null;
+                this.agenda = agenda;
 
                 var i = 0;
-                while(i < this.vcl.getMonthAgenda().length && this.lastAvailableDate == null) {
-                    var dayAgenda = this.vcl.getMonthAgenda()[i++];
+                while(i < agenda.length && this.lastAvailableDate == null) {
+                    var dayAgenda = agenda[i++];
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;
                         if(!dayAgenda.available) {
@@ -534,7 +577,7 @@
                     this.firstAvailableTime = new Date(year, month - 1, day, firstAvailableHour, firstAvailableMin, 0);
                 }
 
-                var dayAgenda = getDayAgenda(day, this.vcl.getMonthAgenda());
+                var dayAgenda = getDayAgenda(day, this.agenda);
                 if(dayAgenda == null || !dayAgenda.available) {
                     return;
                 }
@@ -651,6 +694,15 @@
             replaceDayTimePicker: function(newDayTimePicker) {
                 this.vcl.replaceReturnPicker(newDayTimePicker);
             },
+            setAgenda: function(agenda) {
+                this.agenda = agenda;
+                if(this.vcl.depDate.getFullYear() == this.year && this.vcl.depDate.getMonth() == this.month - 1) {
+                    this.recalcBoundaries(this.vcl.depDate, agenda);
+                } else {
+                    this.recalcBoundaries(new Date(this.year, this.month - 1, 1, 0, 0, 0), agenda);
+                }
+                replaceDayTimePicker(this);
+            },
             setMonth: function(year, month) {
                 this.year = year;
                 this.month = month;
@@ -664,18 +716,17 @@
                     this.min = NaN;
                 }
                 if(this.vcl.depDate.getFullYear() == year && this.vcl.depDate.getMonth() == month - 1) {
-                    this.recalcBoundaries(this.vcl.depDate);
+                    this.vcl.updateAgenda(this, this.vcl.depDate.getFullYear(), this.vcl.depDate.getMonth() + 1);
                 } else {
-                    this.recalcBoundaries(new Date(year, month - 1, 1, 0, 0, 0));
+                    this.vcl.updateAgenda(this, year, month);
                 }
-                refreshDayTimePicker(this);
             },
             setDay: function(day) {
                 this.day = day;
                 this.hour = NaN;
                 this.min = NaN;
                 this.recalcFirstAvailableTime(this.year, this.month, day);
-                refreshDayTimePicker(this);
+                replaceDayTimePicker(this);
                 this.updateVcl();
                 this.vcl.returnDaySet(this);
             },
@@ -709,7 +760,7 @@
             if(day < dayAgenda.day) {
                 return null;
             }
-            if(day === dayAgenda.day) {
+            if(day == dayAgenda.day) {
                 return dayAgenda;
             }
         }
@@ -736,20 +787,17 @@
         if(dayAgenda == null) {
             return true;
         }
-        var time = hour;
-        if(mins == 30) {
-            time += 0.5;
+        if(!dayAgenda.available) {
+            return false;
         }
+        var timeInMin = hour*60 + mins;
         var bookings = dayAgenda.bookings;
         for(var i = 0; i < bookings.length; i += 2) {
-            var bookingStart = bookings[i];
-            if(time < bookingStart) {
+            var bookingStart = bookings[i]*60 - minRentMinutes - pauseMinutes;
+            if(timeInMin <= bookingStart) {
                 return true;
             }
-            if(time === bookingStart) {
-                return false;
-            }
-            if(time < bookingStart + bookings[i+1]) {
+            if(timeInMin < bookings[i]*60 + bookings[i+1]*60 + pauseMinutes) {
                 return false;
             }
         }
