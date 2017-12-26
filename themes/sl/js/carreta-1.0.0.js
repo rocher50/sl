@@ -517,11 +517,21 @@
 
             recalcBoundaries: function(date, agenda) {
                 this.nextMonthEnabled = true;
+                var monthAgendaLength = agenda.length;
+                var dayAgenda = getDayAgenda(32, agenda);
+                if(dayAgenda != null) {
+                    monthAgendaLength = agenda.length - 1;
+                    if(!dayAgenda.available
+                        || firstAvailableHour*60 + firstAvailableMin > dayAgenda.bookings[0]*60 - pauseMinutes) {
+                        this.nextMonthEnabled = false;
+                    }
+                }
+
                 this.lastAvailableDate = null;
                 this.agenda = agenda;
 
                 var i = 0;
-                while(i < agenda.length && this.lastAvailableDate == null) {
+                while(i < monthAgendaLength && this.lastAvailableDate == null) {
                     var dayAgenda = agenda[i++];
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;

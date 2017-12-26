@@ -109,7 +109,7 @@ function vcl_agenda($data) {
         );
     }
 */
-
+/*
     $days = [
             ['day' => 3,
             'available' => false],
@@ -122,11 +122,17 @@ function vcl_agenda($data) {
             ['day' => 26,
             'available' => false]
         ];
-/*
-    $days = [
-        ['day' => $data['month'], 'available' => false]
-    ];
 */
+    $days = [
+//        ['day' => $data['month'], 'available' => false],
+        ['day' => $data['month'], 'available' => true, 'bookings' => [8.5, 2]],
+        ['day' => 28 - $data['month'], 'available' => true, 'bookings' => [8.5, 3, 14, 3]]
+    ];
+
+    if($data['month'] == 12) {
+        array_push($days, ['day' => 32, 'available' => true, 'bookings' => [8.5, 2]]);
+    }
+
     $result = [
         'vcl' => $data['vcl'],
         'year' => $data['year'],
