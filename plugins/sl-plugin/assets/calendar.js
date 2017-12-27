@@ -124,7 +124,8 @@ function clearSelection() {
                 createDiv(daypicker, "clicky-ph");
             }
             var i = 1;
-            while(i < renderer.getFirstActiveDay()) {
+            var firstActiveDay = renderer.getFirstActiveDay();
+            while(i < firstActiveDay) {
                 createDiv(daypicker, "disabled-clicky").append(i++);
             }
             while(i <= daysTotal) {

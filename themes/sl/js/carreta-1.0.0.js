@@ -27,6 +27,7 @@
     var lastAvailableMin = 0;
     var minRentMinutes = 60;
     var pauseMinutes = 30;
+    var rentFromNowMinutes = 120;
 
     var clientFirstName = null;
     var clientLastName = null;
@@ -318,6 +319,8 @@
             },
             getFirstActiveDay: function() {
                 this.firstAvailableDate = new Date();
+                this.firstAvailableDate.setSeconds(0);
+                this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + rentFromNowMinutes*60*1000);
                 if(this.year != this.firstAvailableDate.getFullYear() || this.month != this.firstAvailableDate.getMonth() + 1) {
                     this.firstAvailableDate = new Date(this.year, this.month -1 , 1, firstAvailableHour, firstAvailableMin, 0);
                 } else if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() > lastAvailableHour*60 + lastAvailableMin - minRentMinutes) {
@@ -366,7 +369,12 @@
                 return lastAvailableMin;
             },
             getFirstActiveHour: function() {
-                return this.firstAvailableDate.getHours();
+                if(this.year == this.firstAvailableDate.getFullYear()
+                    && this.month - 1 == this.firstAvailableDate.getMonth()
+                    && this.day == this.firstAvailableDate.getDate()) {
+                    return this.firstAvailableDate.getHours();
+                }
+                return firstAvailableHour;
             },
             newDayElement: function(i) {
                 var dayDiv = document.createElement("div");
