@@ -19,6 +19,7 @@
         'labelCity': 'Ville',
         'labelZip': 'NPA',
         'labelCountry': 'Pays',
+        'buttonReserve': 'Réserver'
     };
 
     var firstAvailableHour = 8;
@@ -70,6 +71,16 @@
 
                 contactsDiv: null,
 
+                firstnameInput: null,
+                lastnameInput: null,
+                emailInput: null,
+                phoneInput: null,
+                streetInput: null,
+                cityInput: null,
+                zipInput: null,
+                countryInput: null,
+                reserveButton: null,
+
                 display: function(agenda) {
 
                     var vclBody = document.getElementById("page_content");
@@ -89,7 +100,9 @@
                     depLabel.append(voc.labelDepart);
                     this.depValue = createDiv(departure, "value");
                     this.depDayTimePicker = createDiv(reservationDiv);
-                    newDeparturePickerRenderer(this).setAgenda(agenda);
+                    var depRenderer = newDeparturePickerRenderer(this);
+                    depRenderer.init(agenda);
+                    this.displayValue(this.depValue, depRenderer);
 
                     this.returnContainer = createDiv(reservationDiv);
                     this.returnContainer.style.display = 'none';
@@ -101,37 +114,77 @@
 
                     this.contactsDiv = document.createElement('div');
                     this.contactsDiv.style.display = 'none';
+
+                    var onInput = function(event) {
+                        var inputComplete = vcl.firstnameInput.value.trim().length > 0
+                            && vcl.lastnameInput.value.trim().length > 0
+                            && vcl.emailInput.value.trim().length > 0
+                            && vcl.phoneInput.value.trim().length > 0
+                            && vcl.streetInput.value.trim().length > 0
+                            && vcl.cityInput.value.trim().length > 0
+                            && vcl.zipInput.value.trim().length > 0
+                            && vcl.countryInput.value.trim().length > 0;
+                        if(inputComplete) {
+                            if(vcl.reserveButton.getAttribute('class') != 'button') {
+                                vcl.reserveButton.setAttribute('class', 'button');
+                                vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
+                            }
+                        } else if(vcl.reserveButton.getAttribute('class') === 'button') {
+                            vcl.reserveButton.setAttribute('class', 'button disabled');
+                            vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
+                        }
+                    };
+
                     var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var firstnameLabel = createDiv(firstnameContainer, 'label');
                     firstnameLabel.append(voc.labelFirstName);
+                    this.firstnameInput = createInput(firstnameContainer, 'firstname');
+                    this.firstnameInput.addEventListener('input', onInput);
 
                     var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var lastnameLabel = createDiv(lastnameContainer, 'label');
                     lastnameLabel.append(voc.labelLastName);
+                    this.lastnameInput = createInput(lastnameContainer, 'lastname');
+                    this.lastnameInput.addEventListener('input', onInput);
 
                     var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var emailLabel = createDiv(emailContainer, 'label');
                     emailLabel.append(voc.labelEmail);
+                    this.emailInput = createInput(emailContainer, 'email');
+                    this.emailInput.addEventListener('input', onInput);
 
                     var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var phoneLabel = createDiv(phoneContainer, 'label');
                     phoneLabel.append(voc.labelPhone);
+                    this.phoneInput = createInput(phoneContainer, 'phone');
+                    this.phoneInput.addEventListener('input', onInput);
 
                     var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var streetLabel = createDiv(streetContainer, 'label');
                     streetLabel.append(voc.labelStreet);
+                    this.streetInput = createInput(streetContainer, 'street');
+                    this.streetInput.addEventListener('input', onInput);
 
                     var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var cityLabel = createDiv(cityContainer, 'label');
                     cityLabel.append(voc.labelCity);
+                    this.cityInput = createInput(cityContainer, 'city');
+                    this.cityInput.addEventListener('input', onInput);
 
                     var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var zipLabel = createDiv(zipContainer, 'label');
                     zipLabel.append(voc.labelZip);
+                    this.zipInput = createInput(zipContainer, 'zip');
+                    this.zipInput.addEventListener('input', onInput);
 
                     var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var countryLabel = createDiv(countryContainer, 'label');
                     countryLabel.append(voc.labelCountry);
+                    this.countryInput = createInput(countryContainer, 'country');
+                    this.countryInput.addEventListener('input', onInput);
+
+                    this.reserveButton = createChild(this.contactsDiv, "button", "button disabled");
+                    this.reserveButton.append(voc.buttonReserve);
 
                     reservationDiv.appendChild(this.contactsDiv);
                 },
@@ -302,6 +355,17 @@
             min: vcl.depDate.getMinutes(),
             agenda: null,
             firstAvailableDate: null,
+
+            init: function(agenda) {
+                this.agenda = agenda;
+                this.getFirstActiveDay();
+                this.year = this.firstAvailableDate.getFullYear();
+                this.month = this.firstAvailableDate.getMonth() + 1;
+                this.day = this.firstAvailableDate.getDate();
+                this.hour = NaN;
+                this.min = NaN;
+                replaceDayTimePicker(this);                
+            },
 
             getMonthName: function() {
                 return voc.months[this.month - 1];

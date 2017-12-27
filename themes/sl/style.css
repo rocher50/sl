@@ -74,11 +74,12 @@ div.container {
 .vehicule .reservation {
     border: 1px transparent;
     width: 100%;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .vehicule .reservation .labelvalue {
     width: 100%;
+    margin: 1%;
 }
 
 .vehicule .reservation .label {
@@ -91,20 +92,64 @@ div.container {
 .vehicule .reservation .value {
     border: 1px transparent;
     display: inline-block;
+    box-sizing: border-box;
     float: right;
     padding: 1%;
+    background: var(--tinted-font-color);
+    color: var(--main-color);
     border-radius: 5px;
+    text-align: right;
+    width: 70%;
 }
 .vehicule .reservation .value:hover {
-    background: #ddd;
+    background: var(--highlighted-color);
     cursor: pointer;
 }
 .vehicule .reservation .non-clickable-value {
     border: 1px transparent;
-    border-radius: 5px;
     display: inline-block;
+    box-sizing: border-box;
     float: right;
     padding: 1%;
+    border-radius: 5px;
+    color: var(--highlighted-color);
+}
+
+.vehicule .reservation input {
+    border: 1px transparent;
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1%;
+    border-radius: 5px;
+    font-size: 18px;
+    width: 70%;
+    text-align: right;
+    color: var(--main-font-color)
+}
+
+.vehicule .reservation .button {
+    border: transparent;
+    border-radius: 5px;
+    background: var(--tinted-font-color);
+    color: var(--main-color);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2%;
+    margin-right: 0;
+    padding: 2%;
+    font-size: 20px;
+    cursor: pointer;
+    float: right;
+}
+.vehicule .reservation .button:hover {
+    background: var(--highlighted-color);
+}
+
+.vehicule .reservation .disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .site-header {

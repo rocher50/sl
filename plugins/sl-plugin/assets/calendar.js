@@ -4,6 +4,13 @@ function createHeader(parent, h, text, cssClass) {
     return header;
 }
 
+function createInput(parent, id) {
+    var input = createChild(parent, "input");
+    input.setAttribute('id', id);
+    input.setAttribute('name', id);
+    return input;
+}
+
 function createDiv(parent, cssClass) {
     return createChild(parent, "div", cssClass);
 }
