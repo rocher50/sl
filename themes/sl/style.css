@@ -5,12 +5,36 @@ Author URI: http://sl.ch
 Version: 1.0
 */
 
-/* p3 */
 :root {
+/* p1
+    --main-color: #dddddf;
+    --main-font-color: #000000;
+    --tinted-font-color: #9f8d77;
+    --highlighted-color: #ea8200;
+*/
+/* p2
+    --main-color: #f2e0d4;
+    --main-font-color: #000000;
+    --tinted-font-color: #947e69;
+    --highlighted-color: #ffa92b;
+*/
+/* p3
     --main-color: #f1f1f2;
     --main-font-color: #542c1e;
     --tinted-font-color: #98887a;
     --highlighted-color: #ee823b;
+*/
+/* p5
+    --main-color: #ffdcba;
+    --main-font-color: #040500;
+    --tinted-font-color: #9e786d;
+    --highlighted-color: #fc9045;
+*/
+/* p6 */
+    --main-color: #ffffff;
+    --main-font-color: #4b4f4e;
+    --tinted-font-color: #9bb296;
+    --highlighted-color: #fd932f;
 
     --cal-arrow-color: var(--tinted-font-color);
     --cal-arrow-hover-color: var(--highlighted-color);
