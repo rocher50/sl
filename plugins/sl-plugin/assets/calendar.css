@@ -16,7 +16,7 @@
     text-align: center;
 }
 .daytimepicker .clicky:hover {
-    background: #eee;
+    background: var(--highlighted-color);
     border: 1px solid transparent;
     cursor: pointer;
 }
@@ -38,7 +38,7 @@
     padding: 1%;
     margin: 0;
     text-align: center;
-    color: #ddd;
+    color: var(--tinted-font-color);
 }
 .daytimepicker .bordered-clicky {
     display: inline-block;
@@ -60,12 +60,11 @@
     border: 1px transparent;
     border-radius: 5px;
     box-sizing: border-box;
-    background: #444;
-    color: #eee;
+    background: var(--main-font-color);
+    color: var(--main-color);
     padding: 1%;
     margin: 0;
     text-align: center;
-    color: #ddd;
     cursor: pointer;
 }
 
@@ -180,7 +179,7 @@
 }
 .timepicker::-webkit-scrollbar {
     width: 6px;
-    background-color: #efefef;
+    background-color: transparent;
     visibility: hidden;
 }
 .timepicker::-webkit-scrollbar:hover{
@@ -188,12 +187,12 @@
     visibility: visible;
 }
 .timepicker::-webkit-scrollbar-thumb {
-    background-color: #ddd;
+    background-color: var(--tinted-font-color);
     border: 1px transparent;
     border-radius: 5px;
 }
 .timepicker::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+    background-color: var(--highlighted-color);
     cursor: pointer;
 }
 
@@ -223,13 +222,13 @@
   height: 0;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-  border-left: 10px solid #ddd;
+  border-left: 10px solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .month-arrows .right:hover {
-    border-left: 10px solid #999;
+    border-left: 10px solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .month-arrows .disabled-right {
@@ -237,7 +236,7 @@
   height: 0;
   border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
-  border-left: 9px solid #efefef;
+  border-left: 9px solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -248,13 +247,13 @@
   height: 0;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-  border-right: 10px solid #ddd;
+  border-right: 10px solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .month-arrows .left:hover {
-    border-right: 10px solid #999;
+    border-right: 10px solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .month-arrows .disabled-left {
@@ -262,7 +261,7 @@
   height: 0;
   border-top: 9px solid transparent;
   border-bottom: 9px solid transparent;
-  border-right: 9px solid #efefef;
+  border-right: 9px solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -273,13 +272,13 @@
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #ddd;
+  border-bottom: 10px solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .arrows .up:hover {
-    border-bottom: 10px solid #999;
+    border-bottom: 10px solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .arrows .disabled-up {
@@ -287,7 +286,7 @@
   height: 0;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
-  border-bottom: 9px solid #efefef;
+  border-bottom: 9px solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -298,13 +297,13 @@
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid #ddd;
+  border-top: 10px solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .arrows .down:hover {
-    border-top: 10px solid #999;
+    border-top: 10px solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .arrows .disabled-down {
@@ -312,7 +311,7 @@
   height: 0;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
-  border-top: 9px solid #efefef;
+  border-top: 9px solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;

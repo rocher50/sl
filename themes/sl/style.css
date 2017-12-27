@@ -5,6 +5,18 @@ Author URI: http://sl.ch
 Version: 1.0
 */
 
+/* p3 */
+:root {
+    --main-color: #f1f1f2;
+    --main-font-color: #542c1e;
+    --tinted-font-color: #98887a;
+    --highlighted-color: #ee823b;
+
+    --cal-arrow-color: var(--tinted-font-color);
+    --cal-arrow-hover-color: var(--highlighted-color);
+    --cal-arrow-disabled-color: transparent;
+}
+
 html {
     padding: 0;
     margin: 0;
@@ -15,7 +27,8 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     font-size: 14px;
-    color: #333;
+    color: var(--main-font-color);
+    background-color: var(--main-color);
 }
 
 a:link,

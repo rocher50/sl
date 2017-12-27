@@ -60,6 +60,14 @@
                 depDate: null,
                 retDate: null,
 
+                depValue: null,
+                depDayTimePicker: null,
+
+                returnContainer: null,
+                returnPickerRenderer: null,
+                retValue: null,
+                retDayTimePicker: null,
+
                 contactsDiv: null,
 
                 display: function(agenda) {
@@ -146,7 +154,6 @@
                     req.send();
                 },
 
-                depValue: null,
                 departureDaySet: function(renderer) {
                     this.displayValue(this.depValue, renderer);
                 },
@@ -167,14 +174,11 @@
                     this.displayReturnContainer();
                 },
 
-                depDayTimePicker: null,
                 replaceDeparturePicker: function(newDayTimePicker) {
                     this.depDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.depDayTimePicker);
                     this.depDayTimePicker = newDayTimePicker;
                 },
 
-                returnContainer: null,
-                returnPickerRenderer: null,
                 getReturnPickerRenderer: function() {
                     if(this.returnPickerRenderer == null) {
                         this.returnPickerRenderer = newReturnPickerRenderer(this);
@@ -190,7 +194,6 @@
                     hideElement(this.returnContainer);
                 },
 
-                retValue: null,
                 returnDaySet: function(renderer) {
                     this.displayValue(this.retValue, renderer);
                 },
@@ -207,7 +210,6 @@
                     this.displayContacts();
                 },
 
-                retDayTimePicker: null,
                 replaceReturnPicker: function(newDayTimePicker) {
                     this.retDayTimePicker.parentElement.replaceChild(newDayTimePicker, this.retDayTimePicker);
                     this.retDayTimePicker = newDayTimePicker;
