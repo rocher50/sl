@@ -5,6 +5,10 @@ function sl_resources() {
 
     wp_enqueue_script('jquery', get_theme_file_uri('/js/jquery-3.2.1.min.js'));
     wp_enqueue_script('carreta', get_theme_file_uri('/js/carreta-1.0.0.js'));
+    wp_localize_script('carreta', 'screenReaderText', [
+        'adminAjax' => admin_url('admin-ajax.php'),
+        'security' => wp_create_nonce('user-submitted-reservation')
+    ]);
 
     if(basename(get_permalink()) == 'reservation') {
         wp_enqueue_script('functions', get_theme_file_uri('js/functions.js'));

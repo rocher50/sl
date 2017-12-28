@@ -10,7 +10,6 @@
     if($the_query->have_posts()) {
         while($the_query->have_posts()) {
             $the_query->the_post(); ?>
-        
             <article class="post">
                 <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 

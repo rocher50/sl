@@ -6,6 +6,30 @@
         displayFleet(new Date());
     }
 
+    var adminAjax = function(formData, action) {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: screenReaderText.adminAjax,
+            data: {
+                action: action,
+                data: formData,
+                submission: document.getElementById( 'xyq' + formData.vcl ).value,
+                security: screenReaderText.security
+            },
+            success: function(response) {
+                if(true == response.success) {
+                    alert('this was a success');
+                } else {
+                    alert('this failed');
+                }
+            },
+            error: function(response) {
+                alert('there was an error');
+            }
+        });
+    };
+
     var voc = {
         'months': ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
         'weekDays': ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
@@ -33,6 +57,9 @@
 
     var clientFirstName = null;
     var clientLastName = null;
+
+    var userSubmittedReservation = document.getElementById('user-submitted-reservation');
+    var xyq = document.getElementById('xyq');
 
     var fleet = {
         vclList: [],
@@ -185,8 +212,26 @@
                     this.countryInput.setAttribute('placeholder', voc.switzerland);
                     this.countryInput.addEventListener('input', onInput);
 
-                    this.reserveButton = createChild(this.contactsDiv, "button", "button disabled");
+                    var form = createChild(this.contactsDiv, "form");
+                    this.reserveButton = createChild(form, 'button', 'button disabled');
                     this.reserveButton.append(voc.buttonReserve);
+                    this.reserveButton.addEventListener('click', function(event) {
+                         event.preventDefault();
+                         vcl.submit();
+                    });
+                    var userSubmRes = createChild(form, 'input');
+                    userSubmRes.setAttribute('type', 'hidden');
+                    userSubmRes.setAttribute('name', userSubmittedReservation.getAttribute('name'));
+                    userSubmRes.setAttribute('value', userSubmittedReservation.getAttribute('value'));
+                    var xyqInput = createChild(form, 'input');
+                    xyqInput.setAttribute('id', xyq.id + this.id);
+                    xyqInput.setAttribute('type', xyq.type);
+                    xyqInput.setAttribute('name', xyq.name);
+                    xyqInput.setAttribute('value', xyq.value);
+                    xyqInput.setAttribute('style', xyq.getAttribute('style'));
+                 
+                    userSubmRes.setAttribute('name', userSubmittedReservation.getAttribute('name'));
+                    userSubmRes.setAttribute('value', userSubmittedReservation.getAttribute('value'));
 
                     reservationDiv.appendChild(this.contactsDiv);
                 },
@@ -287,6 +332,27 @@
                 },
                 hideContacts: function() {
                     hideElement(this.contactsDiv);
+                },
+
+                submit: function() {
+                    var countryValue = this.countryInput.value.trim();
+                    if(countryValue.length == 0) {
+                        countryValue = this.countryInput.placeholder;
+                    }
+                    var data = {
+                        'firstName': this.firstnameInput.value.trim(),
+                        'lastName': this.lastnameInput.value.trim(),
+                        'email': this.emailInput.value.trim(),
+                        'phone': this.phoneInput.value.trim(),
+                        'street': this.streetInput.value.trim(),
+                        'city': this.cityInput.value.trim(),
+                        'zip': this.zipInput.value.trim(),
+                        'country': countryValue,
+                        'departure': this.depDate,
+                        'return': this.retDate,
+                        'vcl': this.id};
+
+                    adminAjax(data, 'process_user_generated_post');
                 }
             };
             return vcl;
