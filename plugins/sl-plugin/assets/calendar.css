@@ -17,6 +17,7 @@
 }
 .daytimepicker .clicky:hover {
     background: var(--highlighting-color);
+    color: var(--light-color);
     border: 1px solid transparent;
     cursor: pointer;
 }
@@ -60,8 +61,8 @@
     border: 1px transparent;
     border-radius: 5px;
     box-sizing: border-box;
-    background: var(--main-font-color);
-    color: var(--gray-font-color);
+    background: var(--gray-font-color);
+    color: var(--light-color);
     padding: 1%;
     margin: 0;
     text-align: center;
@@ -78,6 +79,7 @@
     text-align: left;
     width: 60%;
     vertical-align: middle;
+    color: var(--gray-font-color);
 }
 
 .daypicker {
@@ -99,7 +101,7 @@
     margin: 0;
     text-align: center;
     width: 14.28%;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .daytimepicker .daypicker .clicky {
@@ -121,6 +123,10 @@
 .daytimepicker .daypicker .selected-clicky {
     vertical-align: top;
     width: 14.28%;
+}
+.daytimepicker .daypicker .selected-clicky:hover {
+    background: var(--highlighting-color);
+    color: var(--light-color);
 }
 
 .daytimepicker .arrows {
@@ -172,6 +178,10 @@
 .daytimepicker .timepicker .selected-clicky {
     width: 98%;
 }
+.daytimepicker .timepicker .selected-clicky:hover {
+    background-color: var(--highlighting-color);
+}
+
 
 .timepicker::-webkit-scrollbar-track {
     background-color: transparent;

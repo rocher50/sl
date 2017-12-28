@@ -50,19 +50,21 @@ Version: 1.0
 }
 
 @font-face {
-    font-family: carreta-regular;
-/*
-    src: url('fonts/montserrat-regular/montserrat-regular-webfont.woff2') format('woff2'),
-         url('fonts/montserrat-regular/montserrat-regular-webfont.woff') format('woff');
-*/
+    font-family: main-font-family;
     src: url('fonts/open-sans/opensans-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
 }
+@font-face {
+    font-family: light-font-family;
+    src: url('fonts/open-sans/opensans-light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 * {
-    font-family: carreta-regular;
+    font-family: main-font-family;
 }
 
 html {
@@ -135,7 +137,8 @@ div.container {
     display: inline-block;
     padding: 1%;
     border-radius: 5px;
-    color: var(--gray-color);
+    color: var(--main-font-color);
+    font-family: main-font-family;
 }
 
 .vehicule .reservation .value {
@@ -149,7 +152,7 @@ div.container {
     color: var(--main-font-color);
     border-radius: 5px;
     text-align: right;
-    width: 65%;
+    width: 70%;
 }
 .vehicule .reservation .value:hover {
     border-color: var(--highlighting-color);
@@ -164,7 +167,7 @@ div.container {
     padding: 1%;
     border-radius: 5px;
     color: var(--highlighting-color);
-    width: 65%;
+    width: 70%;
     text-align: right;
 }
 
@@ -177,7 +180,7 @@ div.container {
     padding: 1%;
     border-radius: 5px;
     font-size: var(--main-font-size);
-    width: 65%;
+    width: 70%;
     text-align: right;
     color: var(--main-font-color);
     outline: none;
@@ -195,13 +198,14 @@ div.container {
     border: transparent;
     border-radius: 5px;
     background: var(--gray-color);
-    color: var(--main-font-color);
+    color: var(--light-color);
     text-align: center;
     text-decoration: none;
     display: inline-block;
     margin-top: 2%;
     margin-right: 0;
     padding: 2%;
+    outline: none;
     font-size: var(--main-font-size);
     cursor: pointer;
     float: right;

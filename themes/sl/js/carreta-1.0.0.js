@@ -19,7 +19,8 @@
         'labelCity': 'Ville',
         'labelZip': 'NPA',
         'labelCountry': 'Pays',
-        'buttonReserve': 'Réserver'
+        'buttonReserve': 'Réserver',
+        'switzerland': 'Suisse'
     };
 
     var firstAvailableHour = 8;
@@ -122,8 +123,8 @@
                             && vcl.phoneInput.value.trim().length > 0
                             && vcl.streetInput.value.trim().length > 0
                             && vcl.cityInput.value.trim().length > 0
-                            && vcl.zipInput.value.trim().length > 0
-                            && vcl.countryInput.value.trim().length > 0;
+                            && vcl.zipInput.value.trim().length > 0;
+                            //&& vcl.countryInput.value.trim().length > 0;
                         if(inputComplete) {
                             if(vcl.reserveButton.getAttribute('class') != 'button') {
                                 vcl.reserveButton.setAttribute('class', 'button');
@@ -181,6 +182,7 @@
                     var countryLabel = createDiv(countryContainer, 'label');
                     countryLabel.append(voc.labelCountry);
                     this.countryInput = createInput(countryContainer, 'country');
+                    this.countryInput.setAttribute('placeholder', voc.switzerland);
                     this.countryInput.addEventListener('input', onInput);
 
                     this.reserveButton = createChild(this.contactsDiv, "button", "button disabled");
@@ -852,8 +854,15 @@
     };
 
     function getSelectedDayTime(renderer) {
-        return toTwoChars(renderer.day) + '.' + toTwoChars(renderer.month) + '.' + renderer.year + ' ' +
-            toTwoChars(renderer.hour) + ':' + toTwoChars(renderer.min);
+        var dayStr = '';
+        if(!isNaN(renderer.day)) {
+            dayStr = dayStr + renderer.day;
+        }
+        return dayStr + ' ' + renderer.getMonthName().substring(0, 3)
+            //toTwoChars(renderer.day) + '.' + toTwoChars(renderer.month)
+            //dayStr + ' ' + renderer.getMonthName().substring(0, 3)
+            + '. ' + renderer.year
+            + ' ' + toTwoChars(renderer.hour) + ':' + toTwoChars(renderer.min);
     }
 
     function toTwoChars(i) {
