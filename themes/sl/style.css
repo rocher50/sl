@@ -7,37 +7,41 @@ Version: 1.0
 
 :root {
 /* p1
-    --main-color: #dddddf;
+    --main-background-color: #dddddf;
     --main-font-color: #000000;
-    --tinted-font-color: #9f8d77;
-    --highlighted-color: #ea8200;
+    --gray-font-color: #9f8d77;
+    --highlighting-color: #ea8200;
 */
 /* p2
-    --main-color: #f2e0d4;
+    --main-background-color: #f2e0d4;
     --main-font-color: #000000;
-    --tinted-font-color: #947e69;
-    --highlighted-color: #ffa92b;
+    --gray-font-color: #947e69;
+    --highlighting-color: #ffa92b;
 */
 /* p3
-    --main-color: #f1f1f2;
+    --main-background-color: #f1f1f2;
     --main-font-color: #542c1e;
-    --tinted-font-color: #98887a;
-    --highlighted-color: #ee823b;
+    --gray-font-color: #98887a;
+    --highlighting-color: #ee823b;
 */
 /* p5
-    --main-color: #ffdcba;
+    --main-background-color: #ffdcba;
     --main-font-color: #040500;
-    --tinted-font-color: #9e786d;
-    --highlighted-color: #fc9045;
+    --gray-font-color: #9e786d;
+    --highlighting-color: #fc9045;
 */
 /* p6 */
-    --main-color: #ffffff;
-    --main-font-color: #4b4f4e;
-    --tinted-font-color: #9bb296;
-    --highlighted-color: #fd932f;
+    --light-color: #ffffff;
+    --dark-color: #4b4f4e;
+    --gray-color: #9bb296;
+    --highlighting-color: #fd932f;
 
-    --cal-arrow-color: var(--tinted-font-color);
-    --cal-arrow-hover-color: var(--highlighted-color);
+    --main-background-color: var(--light-color);
+    --main-font-color: var(--dark-color);
+    --gray-font-color: var(--gray-color);
+
+    --cal-arrow-color: var(--gray-color);
+    --cal-arrow-hover-color: var(--highlighting-color);
     --cal-arrow-disabled-color: transparent;
 }
 
@@ -52,7 +56,7 @@ body {
     font-family: Arial, sans-serif;
     font-size: 14px;
     color: var(--main-font-color);
-    background-color: var(--main-color);
+    background-color: var(--main-background-color);
 }
 
 a:link,
@@ -114,33 +118,38 @@ div.container {
 }
 
 .vehicule .reservation .value {
-    border: 1px transparent;
+    border: 1px solid;
+    border-color: var(--gray-color);
     display: inline-block;
     box-sizing: border-box;
     float: right;
     padding: 1%;
-    background: var(--tinted-font-color);
-    color: var(--main-color);
+    background: transparent;
+    color: var(--main-font-color);
     border-radius: 5px;
     text-align: right;
     width: 70%;
 }
 .vehicule .reservation .value:hover {
-    background: var(--highlighted-color);
+    border-color: var(--highlighting-color);
+    color: var(--highlighting-color);
     cursor: pointer;
 }
 .vehicule .reservation .non-clickable-value {
-    border: 1px transparent;
+    border: 1px solid;
     display: inline-block;
     box-sizing: border-box;
     float: right;
     padding: 1%;
     border-radius: 5px;
-    color: var(--highlighted-color);
+    color: var(--highlighting-color);
+    width: 70%;
+    text-align: right;
 }
 
 .vehicule .reservation input {
-    border: 1px transparent;
+    border: 1px solid;
+    border-color: var(--gray-color);
     display: inline-block;
     box-sizing: border-box;
     float: right;
@@ -149,14 +158,23 @@ div.container {
     font-size: 18px;
     width: 70%;
     text-align: right;
-    color: var(--main-font-color)
+    color: var(--main-font-color);
+    outline: none;
+}
+.vehicule .reservation input:focus {
+    border-color: var(--highlighting-color);
+    color: var(--main-font-color);
+}
+.vehicule .reservation input:hover {
+    border-color: var(--highlighting-color);
+    color: var(--highlighting-color);
 }
 
 .vehicule .reservation .button {
     border: transparent;
     border-radius: 5px;
-    background: var(--tinted-font-color);
-    color: var(--main-color);
+    background: var(--gray-color);
+    color: var(--main-font-color);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -168,7 +186,7 @@ div.container {
     float: right;
 }
 .vehicule .reservation .button:hover {
-    background: var(--highlighted-color);
+    background: var(--highlighting-color);
 }
 
 .vehicule .reservation .disabled {

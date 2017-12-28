@@ -16,7 +16,7 @@
     text-align: center;
 }
 .daytimepicker .clicky:hover {
-    background: var(--highlighted-color);
+    background: var(--highlighting-color);
     border: 1px solid transparent;
     cursor: pointer;
 }
@@ -38,7 +38,7 @@
     padding: 1%;
     margin: 0;
     text-align: center;
-    color: var(--tinted-font-color);
+    color: var(--gray-font-color);
 }
 .daytimepicker .bordered-clicky {
     display: inline-block;
@@ -61,7 +61,7 @@
     border-radius: 5px;
     box-sizing: border-box;
     background: var(--main-font-color);
-    color: var(--main-color);
+    color: var(--gray-font-color);
     padding: 1%;
     margin: 0;
     text-align: center;
@@ -187,12 +187,12 @@
     visibility: visible;
 }
 .timepicker::-webkit-scrollbar-thumb {
-    background-color: var(--tinted-font-color);
+    background-color: var(--gray-font-color);
     border: 1px transparent;
     border-radius: 5px;
 }
 .timepicker::-webkit-scrollbar-thumb:hover {
-    background-color: var(--highlighted-color);
+    background-color: var(--highlighting-color);
     cursor: pointer;
 }
 
