@@ -43,6 +43,26 @@ Version: 1.0
     --cal-arrow-color: var(--gray-color);
     --cal-arrow-hover-color: var(--highlighting-color);
     --cal-arrow-disabled-color: transparent;
+
+    --main-font-size: 16px;
+    --daypicker-font-size: var(--main-font-size);
+    --timepicker-font-size: var(--main-font-size);
+}
+
+@font-face {
+    font-family: carreta-regular;
+/*
+    src: url('fonts/montserrat-regular/montserrat-regular-webfont.woff2') format('woff2'),
+         url('fonts/montserrat-regular/montserrat-regular-webfont.woff') format('woff');
+*/
+    src: url('fonts/open-sans/opensans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+* {
+    font-family: carreta-regular;
 }
 
 html {
@@ -102,7 +122,7 @@ div.container {
 .vehicule .reservation {
     border: 1px transparent;
     width: 100%;
-    font-size: 18px;
+    font-size: var(--main-font-size);
 }
 
 .vehicule .reservation .labelvalue {
@@ -114,7 +134,8 @@ div.container {
     border: 1px transparent;
     display: inline-block;
     padding: 1%;
-    border-radius: 5px;    
+    border-radius: 5px;
+    color: var(--gray-color);
 }
 
 .vehicule .reservation .value {
@@ -128,7 +149,7 @@ div.container {
     color: var(--main-font-color);
     border-radius: 5px;
     text-align: right;
-    width: 70%;
+    width: 65%;
 }
 .vehicule .reservation .value:hover {
     border-color: var(--highlighting-color);
@@ -143,7 +164,7 @@ div.container {
     padding: 1%;
     border-radius: 5px;
     color: var(--highlighting-color);
-    width: 70%;
+    width: 65%;
     text-align: right;
 }
 
@@ -155,8 +176,8 @@ div.container {
     float: right;
     padding: 1%;
     border-radius: 5px;
-    font-size: 18px;
-    width: 70%;
+    font-size: var(--main-font-size);
+    width: 65%;
     text-align: right;
     color: var(--main-font-color);
     outline: none;
@@ -181,7 +202,7 @@ div.container {
     margin-top: 2%;
     margin-right: 0;
     padding: 2%;
-    font-size: 20px;
+    font-size: var(--main-font-size);
     cursor: pointer;
     float: right;
 }
