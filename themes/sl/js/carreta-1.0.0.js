@@ -340,16 +340,16 @@
                         countryValue = this.countryInput.placeholder;
                     }
                     var data = {
-                        'firstName': this.firstnameInput.value.trim(),
-                        'lastName': this.lastnameInput.value.trim(),
+                        'first_name': this.firstnameInput.value.trim(),
+                        'last_name': this.lastnameInput.value.trim(),
                         'email': this.emailInput.value.trim(),
                         'phone': this.phoneInput.value.trim(),
                         'street': this.streetInput.value.trim(),
                         'city': this.cityInput.value.trim(),
                         'zip': this.zipInput.value.trim(),
                         'country': countryValue,
-                        'departure': this.depDate,
-                        'return': this.retDate,
+                        'dep_date': this.depDate,
+                        'ret_date': this.retDate,
                         'vcl': this.id};
 
                     adminAjax(data, 'process_user_generated_post');

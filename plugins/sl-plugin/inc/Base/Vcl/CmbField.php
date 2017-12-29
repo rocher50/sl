@@ -61,7 +61,11 @@ class CmbField {
     }
 
     public function echo_field( $meta ) {
-        if( !empty( $meta[ $this->id ] ) ) echo esc_attr( $meta[ $this->id ][0] );
+        if(array_key_exists($this->id, $meta)) {
+            echo esc_attr( $meta[ $this->id ][0] );
+        } else {
+            echo $this->id . ' not present';
+        }
     }
 
     public function update_field( $post_id ) {

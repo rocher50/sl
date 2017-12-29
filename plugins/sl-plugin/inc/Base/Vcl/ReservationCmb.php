@@ -8,13 +8,24 @@ namespace Inc\Base\Vcl;
 class ReservationCmb {
 
     protected $fields;
-    protected $vclField;
-    protected $dateField;
+    protected $vcl;
+    protected $firstName;
+    protected $lastName;
+    protected $depDate;
 
     function __construct() {
         $this->fields = new CmbFieldSet( 'meta-row' );
-        $this->vclField = $this->fields->add_field('rsrv_vcl', 'Véhicule', 'vcl-row-title', 'meta-th', 'vcl-row-content', 'meta-td');
-        $this->dateField = $this->fields->add_field('rsrv_date', 'Date', 'vcl-row-title', 'meta-th', 'vcl-row-content datepicker', 'meta-td');
+        $this->vcl = $this->fields->add_field('vcl', 'Véhicule', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->firstName = $this->fields->add_field('first_name', 'Prénom', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->lastName = $this->fields->add_field('last_name', 'Nom', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('email', 'E-mail', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('phone', 'Téléphone', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('street', 'Adresse', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('city', 'Ville', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('zip', 'NPA', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->fields->add_field('country', 'Pays', 'row-title', 'meta-th', 'row-content', 'meta-td');
+        $this->depDate = $this->fields->add_field('dep_date', 'Départ', 'row-title', 'meta-th', 'row-content datepicker', 'meta-td');
+        $this->fields->add_field('ret_date', 'Retour', 'row-title', 'meta-th', 'row-content datepicker', 'meta-td');
     }
 
     public function register() {
@@ -37,12 +48,18 @@ class ReservationCmb {
 
     public function modify_title( $data ) {
         if( $data['post_type'] == 'rsrv') {
-            $title = null;
-            if( isset( $_POST[ $this->vclField->get_id() ] ) ) {
-                $title = $_POST[  $this->vclField->get_id() ];
+            $title = '';
+            if( isset( $_POST[ $this->vcl->get_id() ] ) ) {
+                $title = $_POST[  $this->vcl->get_id() ];
             }
-            if( isset( $_POST[ $this->dateField->get_id() ] ) ) {
-                $title = $title . " " . $_POST[  $this->dateField->get_id() ];
+            if( isset( $_POST[ $this->firstName->get_id() ] ) ) {
+                $title = $title . ' ' . $_POST[  $this->firstName->get_id() ][0] . '.';
+            }
+            if( isset( $_POST[ $this->lastName->get_id() ] ) ) {
+                $title = $title . ' ' . $_POST[  $this->lastName->get_id() ];
+            }
+            if( isset( $_POST[ $this->depDate->get_id() ] ) ) {
+                $title = $title . " " . $_POST[  $this->depDate->get_id() ];
             }
             if( $title != null ) {
                 $data['post_title'] = $title;
@@ -59,10 +76,10 @@ class ReservationCmb {
         <div>
             <div class="meta-row">
                 <div class="meta-th">
-                    <label for="post_title" class="vcl-row-title">Titre</label>
+                    <label for="post_title" class="row-title">Titre</label>
                 </div>
                 <div class="meta-td">
-                    <input type="text" name="post_title" id="title" class="vcl-row-content" readonly value="<?php echo $post->post_title; ?>"/>
+                    <input type="text" name="post_title" id="title" class="row-content" readonly value="<?php echo $post->post_title; ?>"/>
                 </div>
             </div>
 

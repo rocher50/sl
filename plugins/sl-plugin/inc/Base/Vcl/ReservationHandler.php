@@ -22,11 +22,14 @@ class ReservationHandler {
             wp_send_json_error('Security check failed.');
         }
 
+        $formData = $_POST['data'];
         $reservation_data = [
-            'post_title' => sprintf('%s-%s-%s',
-                sanitize_text_field( $_POST['data']['name']),
-                sanitize_text_field( $_POST['data']['vcl']),
-                esc_attr( current_time('Y-m-d'))),
+            'post_title' => sprintf('%s %s.%s @ %s',
+                sanitize_text_field($formData['vcl']),
+                sanitize_text_field($formData['first_name']),
+                sanitize_text_field($formData['last_name']),
+                date("d.m.Y H:i P", strtotime($formData['dep_date']))),
+            'meta_input' => $formData,
             'post_status' => 'draft',
             'post_type' => 'rsrv'
             //'post_content' => sanitize_text_field($_POST['data']['remarques'])
