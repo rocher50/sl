@@ -90,7 +90,7 @@ function clearSelection() {
 
             var daypicker = addDayPicker(daytimepicker, firstOfMonth.getDay(), totalDays, renderer);
             renderer.replaceDayTimePicker(daytimepicker);
-            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight, renderer);
+            var timepicker = addTimePicker(daytimepicker, daypicker.clientHeight - 2*daypicker.clientHeight/100, renderer);
             timepicker.addEventListener('scroll', function(event) {
                 if(timepicker.scrollTop == 0) {
                     upArrow.removeChild(timeScrollUp);

@@ -2,7 +2,9 @@
     box-sizing: border-box;
     font-size: var(--daypicker-font-size);
     width: 100%;
-    border: 1px transparent;
+    border: 1px dotted;
+    border-color: var(--highlighting-color);
+    border-radius: 5px;
 }
 
 .daytimepicker .clicky {

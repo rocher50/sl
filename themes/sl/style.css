@@ -139,10 +139,12 @@ div.container {
     border-radius: 5px;
     color: var(--main-font-color);
     font-family: main-font-family;
+    text-align: right;
+    width: 28%;
 }
 
 .vehicule .reservation .value {
-    border: 1px solid;
+    border: 1px transparent;
     border-color: var(--gray-color);
     display: inline-block;
     box-sizing: border-box;
@@ -151,16 +153,17 @@ div.container {
     background: transparent;
     color: var(--main-font-color);
     border-radius: 5px;
-    text-align: right;
+    text-align: left;
     width: 70%;
 }
 .vehicule .reservation .value:hover {
+    border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--highlighting-color);
     cursor: pointer;
 }
 .vehicule .reservation .non-clickable-value {
-    border: 1px solid;
+    border: 1px transparent;
     display: inline-block;
     box-sizing: border-box;
     float: right;
@@ -168,11 +171,11 @@ div.container {
     border-radius: 5px;
     color: var(--highlighting-color);
     width: 70%;
-    text-align: right;
+    text-align: left;
 }
 
 .vehicule .reservation input {
-    border: 1px solid;
+    border: 1px transparent;
     border-color: var(--gray-color);
     display: inline-block;
     box-sizing: border-box;
@@ -181,15 +184,17 @@ div.container {
     border-radius: 5px;
     font-size: var(--main-font-size);
     width: 70%;
-    text-align: right;
+    text-align: left;
     color: var(--main-font-color);
     outline: none;
 }
 .vehicule .reservation input:focus {
+    border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--main-font-color);
 }
 .vehicule .reservation input:hover {
+    border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--highlighting-color);
 }
@@ -209,6 +214,7 @@ div.container {
     font-size: var(--main-font-size);
     cursor: pointer;
     float: right;
+    width: 100%;
 }
 .vehicule .reservation .button:hover {
     background: var(--highlighting-color);

@@ -125,7 +125,7 @@
 
                     var departure = createDiv(reservationDiv, "labelvalue");
                     var depLabel = createDiv(departure, "label");
-                    depLabel.append(voc.labelDepart);
+                    depLabel.append(voc.labelDepart + ':');
                     this.depValue = createDiv(departure, "value");
                     this.depDayTimePicker = createDiv(reservationDiv);
                     var depRenderer = newDeparturePickerRenderer(this);
@@ -136,7 +136,7 @@
                     this.returnContainer.style.display = 'none';
                     returnLabelValue = createDiv(this.returnContainer, "labelvalue");
                     retLabel = createDiv(returnLabelValue, "label");
-                    retLabel.append(voc.labelReturn);
+                    retLabel.append(voc.labelReturn + ':');
                     this.retValue = createDiv(returnLabelValue, "value");
                     this.retDayTimePicker = createDiv(this.returnContainer);
 
@@ -165,54 +165,54 @@
 
                     var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var firstnameLabel = createDiv(firstnameContainer, 'label');
-                    firstnameLabel.append(voc.labelFirstName);
+                    firstnameLabel.append(voc.labelFirstName + ':');
                     this.firstnameInput = createInput(firstnameContainer, 'firstname');
                     this.firstnameInput.addEventListener('input', onInput);
 
                     var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var lastnameLabel = createDiv(lastnameContainer, 'label');
-                    lastnameLabel.append(voc.labelLastName);
+                    lastnameLabel.append(voc.labelLastName + ':');
                     this.lastnameInput = createInput(lastnameContainer, 'lastname');
                     this.lastnameInput.addEventListener('input', onInput);
 
                     var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var emailLabel = createDiv(emailContainer, 'label');
-                    emailLabel.append(voc.labelEmail);
+                    emailLabel.append(voc.labelEmail + ':');
                     this.emailInput = createInput(emailContainer, 'email');
                     this.emailInput.addEventListener('input', onInput);
 
                     var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var phoneLabel = createDiv(phoneContainer, 'label');
-                    phoneLabel.append(voc.labelPhone);
+                    phoneLabel.append(voc.labelPhone + ':');
                     this.phoneInput = createInput(phoneContainer, 'phone');
                     this.phoneInput.addEventListener('input', onInput);
 
                     var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var streetLabel = createDiv(streetContainer, 'label');
-                    streetLabel.append(voc.labelStreet);
+                    streetLabel.append(voc.labelStreet + ':');
                     this.streetInput = createInput(streetContainer, 'street');
                     this.streetInput.addEventListener('input', onInput);
 
                     var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var cityLabel = createDiv(cityContainer, 'label');
-                    cityLabel.append(voc.labelCity);
+                    cityLabel.append(voc.labelCity + ':');
                     this.cityInput = createInput(cityContainer, 'city');
                     this.cityInput.addEventListener('input', onInput);
 
                     var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var zipLabel = createDiv(zipContainer, 'label');
-                    zipLabel.append(voc.labelZip);
+                    zipLabel.append(voc.labelZip + ':');
                     this.zipInput = createInput(zipContainer, 'zip');
                     this.zipInput.addEventListener('input', onInput);
 
                     var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
                     var countryLabel = createDiv(countryContainer, 'label');
-                    countryLabel.append(voc.labelCountry);
+                    countryLabel.append(voc.labelCountry + ':');
                     this.countryInput = createInput(countryContainer, 'country');
                     this.countryInput.setAttribute('placeholder', voc.switzerland);
                     this.countryInput.addEventListener('input', onInput);
 
-                    var form = createChild(this.contactsDiv, "form");
+                    var form = createChild(this.contactsDiv, 'form');
                     this.reserveButton = createChild(form, 'button', 'button disabled');
                     this.reserveButton.append(voc.buttonReserve);
                     this.reserveButton.addEventListener('click', function(event) {
