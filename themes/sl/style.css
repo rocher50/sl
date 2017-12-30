@@ -36,6 +36,18 @@ Version: 1.0
     --gray-color: #9bb296;
     --highlighting-color: #fd932f;
 
+/* p9
+    --light-color: #fffae7;
+    --dark-color: #46474f;
+    --gray-color: #a37e3b;
+    --highlighting-color: #ed6a04;
+*/
+/* p10
+    --light-color: #fef8e2;
+    --dark-color: #241f19;
+    --gray-color: #b8a49a;
+    --highlighting-color: #ff8407;
+*/
     --main-background-color: var(--light-color);
     --main-font-color: var(--dark-color);
     --gray-font-color: var(--gray-color);
@@ -160,6 +172,7 @@ div.container {
     border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--highlighting-color);
+    background-color: #ffffff;
     cursor: pointer;
 }
 .vehicule .reservation .non-clickable-value {
@@ -177,11 +190,12 @@ div.container {
 .vehicule .reservation input {
     border: 1px transparent;
     border-color: var(--gray-color);
+    border-radius: 5px;
     display: inline-block;
     box-sizing: border-box;
     float: right;
     padding: 1%;
-    border-radius: 5px;
+    background-color: transparent;
     font-size: var(--main-font-size);
     width: 70%;
     text-align: left;
@@ -192,11 +206,22 @@ div.container {
     border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--main-font-color);
+    background-color: #ffffff;
 }
 .vehicule .reservation input:hover {
     border: 1px dotted;
     border-color: var(--highlighting-color);
     color: var(--highlighting-color);
+    background-color: #ffffff;
+}
+
+.vehicule .reservation .button-container {
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1%;
+    background: transparent;
+    width: 70%;
 }
 
 .vehicule .reservation .button {
@@ -213,8 +238,7 @@ div.container {
     outline: none;
     font-size: var(--main-font-size);
     cursor: pointer;
-    float: right;
-    width: 100%;
+    float: left;
 }
 .vehicule .reservation .button:hover {
     background: var(--highlighting-color);
@@ -330,3 +354,13 @@ img {
     left: 0;
 }
 
+.ajax-loader {
+    display: inline-block;
+    box-sizing: border-box;
+    visibility: hidden;
+    margin: 2%;
+}
+
+.ajax-loader img {
+    vertical-align: middle;
+}

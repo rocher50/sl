@@ -26,9 +26,9 @@ class ReservationHandler {
         $reservation_data = [
             'post_title' => sprintf('%s %s.%s @ %s',
                 sanitize_text_field($formData['vcl']),
-                sanitize_text_field($formData['first_name']),
+                sanitize_text_field($formData['first_name'][0]),
                 sanitize_text_field($formData['last_name']),
-                date("d.m.Y H:i P", strtotime($formData['dep_date']))),
+                $formData['dep_date']),
             'meta_input' => $formData,
             'post_status' => 'draft',
             'post_type' => 'rsrv'

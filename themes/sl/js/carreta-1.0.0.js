@@ -6,9 +6,14 @@
         displayFleet(new Date());
     }
 
+    var defaultCursor = document.body.style.cursor;
+
     var adminAjax = function(formData, action) {
         $.ajax({
             type: 'POST',
+            beforeSend: function() {
+                $('.ajax-loader').css("visibility", "visible");
+            },
             dataType: 'json',
             url: screenReaderText.adminAjax,
             data: {
@@ -19,13 +24,16 @@
             },
             success: function(response) {
                 if(true == response.success) {
-                    alert('this was a success');
+                    alert('this was a success ' + document.body.style.cursor);
                 } else {
                     alert('this failed');
                 }
             },
             error: function(response) {
                 alert('there was an error');
+            },
+            complete: function() {
+                $('.ajax-loader').css("visibility", "hidden");
             }
         });
     };
@@ -213,12 +221,15 @@
                     this.countryInput.addEventListener('input', onInput);
 
                     var form = createChild(this.contactsDiv, 'form');
-                    this.reserveButton = createChild(form, 'button', 'button disabled');
+                    var buttonContainer = createDiv(form, 'button-container');
+                    this.reserveButton = createChild(buttonContainer, 'button', 'button disabled');
                     this.reserveButton.append(voc.buttonReserve);
                     this.reserveButton.addEventListener('click', function(event) {
                          event.preventDefault();
                          vcl.submit();
                     });
+                    buttonContainer.appendChild(createAjaxLoader());
+
                     var userSubmRes = createChild(form, 'input');
                     userSubmRes.setAttribute('type', 'hidden');
                     userSubmRes.setAttribute('name', userSubmittedReservation.getAttribute('name'));
@@ -983,6 +994,15 @@
         e.style.display = 'none';
         e.parentElement.replaceChild(e, e);
         return true;
+    };
+
+    var createAjaxLoader = function() {
+        var div = document.createElement('div');
+        div.setAttribute('class', 'ajax-loader');
+        var img = document.createElement('img');
+        img.src = slCal.siteURL + '/wp-content/themes/sl/images/ajax-loader.gif';
+        div.appendChild(img); 
+        return div;
     };
 
   });
