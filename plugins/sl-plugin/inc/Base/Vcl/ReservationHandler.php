@@ -9,12 +9,12 @@ class ReservationHandler {
 
     public function register() {
         // for logged in users
-        add_action( 'wp_ajax_process_user_generated_post', [$this, 'process_user_generated_post'] );
+        add_action( 'wp_ajax_register_reservation', [$this, 'register_reservation'] );
         // for not logged in users
-        add_action( 'wp_ajax_nopriv_process_user_generated_post', [$this, 'process_user_generated_post'] );
+        add_action( 'wp_ajax_nopriv_register_reservation', [$this, 'register_reservation'] );
     }
 
-    public function process_user_generated_post() {
+    public function register_reservation() {
         if(!empty($_POST['submission'])) {
             wp_send_json_error('Honeypot check failed.');
         }

@@ -8,36 +8,6 @@
 
     var defaultCursor = document.body.style.cursor;
 
-    var adminAjax = function(formData, action) {
-        $.ajax({
-            type: 'POST',
-            beforeSend: function() {
-                $('.ajax-loader').css("visibility", "visible");
-            },
-            dataType: 'json',
-            url: screenReaderText.adminAjax,
-            data: {
-                action: action,
-                data: formData,
-                submission: document.getElementById( 'xyq' + formData.vcl ).value,
-                security: screenReaderText.security
-            },
-            success: function(response) {
-                if(true == response.success) {
-                    alert('this was a success ' + document.body.style.cursor);
-                } else {
-                    alert('this failed');
-                }
-            },
-            error: function(response) {
-                alert('there was an error');
-            },
-            complete: function() {
-                $('.ajax-loader').css("visibility", "hidden");
-            }
-        });
-    };
-
     var voc = {
         'months': ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
         'weekDays': ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'],
@@ -52,7 +22,39 @@
         'labelZip': 'NPA',
         'labelCountry': 'Pays',
         'buttonReserve': 'Réserver',
-        'switzerland': 'Suisse'
+        'reserved': 'Réservé',
+        'switzerland': 'Suisse',
+        'reservationSent': 'Votre réservation a été enregistrée avec succès.'
+    };
+
+    var adminAjax = function(vcl) {
+        $.ajax({
+            type: 'POST',
+            beforeSend: function() {
+                $('.ajax-loader').css("visibility", "visible");
+            },
+            dataType: 'json',
+            url: screenReaderText.adminAjax,
+            data: {
+                action: 'register_reservation',
+                data: vcl.getReservationData(),
+                submission: document.getElementById( 'xyq' + vcl.id ).value,
+                security: screenReaderText.security
+            },
+            success: function(response) {
+                if(true == response.success) {
+                    vcl.displayReservationMessage('Votre réservation a été enregistrée avec succès.');
+                } else {
+                    vcl.displayReservationMessage('Processing has failed');
+                }
+            },
+            error: function(response) {
+                vcl.displayReservationMessage('Processing has failed');
+            },
+            complete: function() {
+                $('.ajax-loader').css("visibility", "hidden");
+            }
+        });
     };
 
     var firstAvailableHour = 8;
@@ -152,15 +154,7 @@
                     this.contactsDiv.style.display = 'none';
 
                     var onInput = function(event) {
-                        var inputComplete = vcl.firstnameInput.value.trim().length > 0
-                            && vcl.lastnameInput.value.trim().length > 0
-                            && vcl.emailInput.value.trim().length > 0
-                            && vcl.phoneInput.value.trim().length > 0
-                            && vcl.streetInput.value.trim().length > 0
-                            && vcl.cityInput.value.trim().length > 0
-                            && vcl.zipInput.value.trim().length > 0;
-                            //&& vcl.countryInput.value.trim().length > 0;
-                        if(inputComplete) {
+                        if(vcl.isFormComplete()) {
                             if(vcl.reserveButton.getAttribute('class') != 'button') {
                                 vcl.reserveButton.setAttribute('class', 'button');
                                 vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
@@ -222,11 +216,14 @@
 
                     var form = createChild(this.contactsDiv, 'form');
                     var buttonContainer = createDiv(form, 'button-container');
+
                     this.reserveButton = createChild(buttonContainer, 'button', 'button disabled');
                     this.reserveButton.append(voc.buttonReserve);
                     this.reserveButton.addEventListener('click', function(event) {
-                         event.preventDefault();
-                         vcl.submit();
+                        event.preventDefault();
+                        if(vcl.isFormComplete()) {
+                            adminAjax(vcl);
+                        }
                     });
                     buttonContainer.appendChild(createAjaxLoader());
 
@@ -245,6 +242,17 @@
                     userSubmRes.setAttribute('value', userSubmittedReservation.getAttribute('value'));
 
                     reservationDiv.appendChild(this.contactsDiv);
+                },
+
+                isFormComplete: function() {
+                    return vcl.firstnameInput.value.trim().length > 0
+                        && vcl.lastnameInput.value.trim().length > 0
+                        && vcl.emailInput.value.trim().length > 0
+                        && vcl.phoneInput.value.trim().length > 0
+                        && vcl.streetInput.value.trim().length > 0
+                        && vcl.cityInput.value.trim().length > 0
+                        && vcl.zipInput.value.trim().length > 0;
+                        //&& vcl.countryInput.value.trim().length > 0;
                 },
 
                 updateAgenda: function(renderer, year, month) {
@@ -337,6 +345,13 @@
                     element.parentElement.replaceChild(element, element);
                 },
 
+                makeImmutable: function(element, text) {
+                    var textDiv = document.createElement('div');
+                    textDiv.setAttribute('class', 'non-clickable-value');
+                    textDiv.innerHTML = text;
+                    element.parentElement.replaceChild(textDiv, element);
+                },
+
                 displayContacts: function() {
                     this.contactsDiv.style.display = 'initial';
                     this.contactsDiv.parentElement.replaceChild(this.contactsDiv, this.contactsDiv);
@@ -345,11 +360,31 @@
                     hideElement(this.contactsDiv);
                 },
 
-                submit: function() {
+                displayReservationMessage: function(msg) {
+                    var message = document.createElement('div');
+                    message.setAttribute('class', 'labelvalue');
+                    message.append(msg);
+                    var parent = this.reserveButton.parentElement;
+                    parent.parentElement.replaceChild(message, parent);
+                },
+
+                getReservationData: function() {
                     var countryValue = this.countryInput.value.trim();
                     if(countryValue.length == 0) {
                         countryValue = this.countryInput.placeholder;
                     }
+
+                    this.makeImmutable(this.depValue, this.depValue.innerHTML);
+                    this.makeImmutable(this.retValue, this.retValue.innerHTML);
+                    this.makeImmutable(this.firstnameInput, this.firstnameInput.value);
+                    this.makeImmutable(this.lastnameInput, this.lastnameInput.value);
+                    this.makeImmutable(this.emailInput, this.emailInput.value);
+                    this.makeImmutable(this.phoneInput, this.phoneInput.value);
+                    this.makeImmutable(this.streetInput, this.streetInput.value);
+                    this.makeImmutable(this.cityInput, this.cityInput.value);
+                    this.makeImmutable(this.zipInput, this.zipInput.value);
+                    this.makeImmutable(this.countryInput, countryValue);
+
                     var data = {
                         'first_name': this.firstnameInput.value.trim(),
                         'last_name': this.lastnameInput.value.trim(),
@@ -362,8 +397,7 @@
                         'dep_date': this.depDate,
                         'ret_date': this.retDate,
                         'vcl': this.id};
-
-                    adminAjax(data, 'process_user_generated_post');
+                    return data;
                 }
             };
             return vcl;
@@ -371,6 +405,7 @@
     };
 
     function displayFleet(date) {
+        date.setSeconds(0);
         var req = new XMLHttpRequest();
         var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + date.getFullYear() + "/month=" + (date.getMonth() + 1);
         req.open('GET', url);
