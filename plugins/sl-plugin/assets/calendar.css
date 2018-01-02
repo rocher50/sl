@@ -77,9 +77,9 @@
     box-sizing: border-box;
     background: transparent;
     padding: 1%;
-    margin: 0;
+    margin-left: 2%;
     text-align: left;
-    width: 60%;
+    width: 58%;
     vertical-align: middle;
     color: var(--gray-font-color);
 }
