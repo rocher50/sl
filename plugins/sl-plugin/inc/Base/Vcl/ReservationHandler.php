@@ -25,11 +25,12 @@ class ReservationHandler {
         $formData = $_POST['data'];
         $vcl = $formData['vcl'];
         $reservation_data = [
-            'post_title' => sprintf('%s %s.%s @ %s',
+            'post_title' => sprintf('%s %s.%s %s - %s',
                 sanitize_text_field($vcl),
                 sanitize_text_field($formData['first_name'][0]),
                 sanitize_text_field($formData['last_name']),
-                $formData['dep_date']),
+                $formData['dep_date'],
+                $formData['ret_date']),
             'meta_input' => $formData,
             'post_status' => 'draft',
             'post_type' => 'rsrv'
@@ -39,8 +40,8 @@ class ReservationHandler {
         global $wpdb;
         $wpdb->query('START TRANSACTION');
 
-        $post_id = wp_insert_post($reservation_data, true);
-        if($post_id != null && !is_wp_error($post_id)) {
+        $result = wp_insert_post($reservation_data, true);
+        if($result != null && !is_wp_error($result)) {
 /*
             if($post_id != null) {
                 //wp_set_object_terms($post_id, sanitize_text_field($_POST['data']['vcl']));
@@ -49,20 +50,47 @@ class ReservationHandler {
             }
 */
             $depDate = strtotime($formData['dep_date']);
+            $retDate = strtotime($formData['ret_date']);
             $day = date('Y-m-d', $depDate);
-            $currentValue = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $day . '\'');
-            if(is_null($currentValue)) {
-                $wpdb->insert('wp_sl_cal', [
-                    'item' => $vcl,
-                    'day' => $day,
-                    'value' => date('H:i', $depDate)
-                ]);
-            } else {
-                $wpdb->update('wp_sl_cal',
-                    ['value' => $currentValue . ', ' . date('H:i', $depDate)],
-                    ['item' => $vcl, 'day' => $day, 'value' => $currentValue]
-                );
+            $dayTime = date('H:i', $depDate);
+            if($depDate < $retDate && idate('H', $depDate) <= 8 && idate('i', $depDate) <= 30) {
+                $dayTime = 'all_day';
             }
+            $startDay = date_create($day);
+            $endDay = date_create(date('Y-m-d', $retDate));
+            $dayInterval = date_interval_create_from_date_string('1 day');
+            while($result !== false) {
+                $currentValue = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $day . '\'');
+                if(is_null($currentValue)) {
+                    $result = $wpdb->insert('wp_sl_cal', [
+                        'item' => $vcl,
+                        'day' => $day,
+                        'value' => $dayTime
+                    ]);
+                } else {
+                    $result = $wpdb->update('wp_sl_cal',
+                        ['value' => $currentValue . ', ' . $dayTime],
+                        ['item' => $vcl, 'day' => $day, 'value' => $currentValue]
+                    );
+                }
+
+                if($startDay == $endDay) {
+                    break;
+                }
+
+                date_add($startDay, $dayInterval);
+                $day = date_format($startDay, 'Y-m-d');
+                if($startDay == $endDay) {
+                    $dayTime = '08:30';
+                } else {
+                    $dayTime = 'all_day';
+                }
+            }
+        }
+
+        if($result === false) {
+            $wpdb->query('ROLLBACK');
+        } else {
             $wpdb->query('COMMIT');
         }
 

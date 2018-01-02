@@ -394,8 +394,8 @@
                         'city': this.cityInput.value.trim(),
                         'zip': this.zipInput.value.trim(),
                         'country': countryValue,
-                        'dep_date': this.depDate,
-                        'ret_date': this.retDate,
+                        'dep_date': toMySqlDateTime(this.depDate),
+                        'ret_date': toMySqlDateTime(this.retDate),
                         'vcl': this.id};
                     return data;
                 }
@@ -403,6 +403,14 @@
             return vcl;
         }
     };
+
+    function toMySqlDateTime(date) {
+        return date.getFullYear()
+            + '-' + toTwoChars((date.getMonth() + 1))
+            + '-' + toTwoChars(date.getDate())
+            + ' ' + toTwoChars(date.getHours())
+            + ':' + toTwoChars(date.getMinutes());
+    }
 
     function displayFleet(date) {
         date.setSeconds(0);
