@@ -52,12 +52,15 @@ class ReservationHandler {
             $depDate = strtotime($formData['dep_date']);
             $retDate = strtotime($formData['ret_date']);
             $day = date('Y-m-d', $depDate);
-            $dayTime = date('H:i', $depDate);
-            if($depDate < $retDate && idate('H', $depDate) <= 8 && idate('i', $depDate) <= 30) {
-                $dayTime = 'all_day';
-            }
             $startDay = date_create($day);
             $endDay = date_create(date('Y-m-d', $retDate));
+
+            $dayBooking = date('H:i', $depDate) . '-';
+            if($startDay == $endDay) {
+                $dayBooking = $dayBooking . date('H:i', $retDate);
+            }
+
+
             $dayInterval = date_interval_create_from_date_string('1 day');
             while($result !== false) {
                 $currentValue = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $day . '\'');
@@ -65,11 +68,11 @@ class ReservationHandler {
                     $result = $wpdb->insert('wp_sl_cal', [
                         'item' => $vcl,
                         'day' => $day,
-                        'value' => $dayTime
+                        'value' => $dayBooking
                     ]);
                 } else {
                     $result = $wpdb->update('wp_sl_cal',
-                        ['value' => $currentValue . ', ' . $dayTime],
+                        ['value' => $currentValue . ', ' . $dayBooking],
                         ['item' => $vcl, 'day' => $day, 'value' => $currentValue]
                     );
                 }
@@ -80,10 +83,9 @@ class ReservationHandler {
 
                 date_add($startDay, $dayInterval);
                 $day = date_format($startDay, 'Y-m-d');
+                $dayBooking = '-';
                 if($startDay == $endDay) {
-                    $dayTime = '08:30';
-                } else {
-                    $dayTime = 'all_day';
+                    $dayBooking = $dayBooking . date('H:i', $retDate);
                 }
             }
         }
