@@ -16,7 +16,7 @@ class ReservationHandler {
 
     public function register_reservation() {
         if(!empty($_POST['submission'])) {
-            wp_send_json_error('Honeypot check failed.');
+            wp_send_js.on_error('Honeypot check failed.');
         }
         if(!check_ajax_referer('user-submitted-reservation', 'security')) {
             wp_send_json_error('Security check failed.');
@@ -41,7 +41,13 @@ class ReservationHandler {
         $wpdb->query('START TRANSACTION');
 
         $result = wp_insert_post($reservation_data, true);
-        if($result != null && !is_wp_error($result)) {
+        if($result == null) {
+            $result = 'Failed to persist the new day booking into the db';
+        } else {
+            $result = null;
+        }
+
+        if($result == null) {
 /*
             if($post_id != null) {
                 //wp_set_object_terms($post_id, sanitize_text_field($_POST['data']['vcl']));
@@ -55,47 +61,86 @@ class ReservationHandler {
             $startDay = date_create($day);
             $endDay = date_create(date('Y-m-d', $retDate));
 
-            $dayBooking = date('H:i', $depDate) . '-';
+            $startingHour = idate('H', $depDate);
+            $startingMin = idate('i', $depDate);
+            $endingHour;
+            $endingMin;
             if($startDay == $endDay) {
-                $dayBooking = $dayBooking . date('H:i', $retDate);
+                $endingHour = idate('H', $retDate);
+                $endingMin = idate('i', $retDate);
             }
 
-
             $dayInterval = date_interval_create_from_date_string('1 day');
-            while($result !== false) {
-                $currentValue = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $day . '\'');
-                if(is_null($currentValue)) {
-                    $result = $wpdb->insert('wp_sl_cal', [
-                        'item' => $vcl,
-                        'day' => $day,
-                        'value' => $dayBooking
-                    ]);
-                } else {
-                    $result = $wpdb->update('wp_sl_cal',
-                        ['value' => $currentValue . ', ' . $dayBooking],
-                        ['item' => $vcl, 'day' => $day, 'value' => $currentValue]
-                    );
-                }
-
+            while($result == null) {
+                $result = $this->persistDayBooking($vcl, $startDay, $startingHour, $startingMin, $endingHour, $endingMin);
                 if($startDay == $endDay) {
                     break;
                 }
 
+                unset($startingHour);
+                unset($startingMin);
+
                 date_add($startDay, $dayInterval);
-                $day = date_format($startDay, 'Y-m-d');
                 $dayBooking = '-';
                 if($startDay == $endDay) {
-                    $dayBooking = $dayBooking . date('H:i', $retDate);
+                    $endingHour = idate('H', $retDate);
+                    $endingMin = idate('i', $retDate);
                 }
             }
         }
 
-        if($result === false) {
+        if($result != null) {
             $wpdb->query('ROLLBACK');
+            wp_send_json_error( $result );
         } else {
             $wpdb->query('COMMIT');
+            wp_send_json_success( $post_id );
+        }
+    }
+
+    function persistDayBooking($vcl, $day, $startingHour, $startingMin, $endingHour, $endingMin) {
+
+        $dayStr = date_format($day, 'Y-m-d');
+
+        $dayBooking;
+        if(isset($startingHour)) {
+            $dayBooking = $startingHour . ':' . $startingMin . '-';
+        } else {
+            $dayBooking = '-';
+        }
+        if(isset($endingHour)) {
+            $dayBooking = $dayBooking . $endingHour . ':' . $endingMin;
         }
 
-        wp_send_json_success( $post_id );
+        global $wpdb;
+        $currentBooking = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $dayStr . '\'');
+        if(is_null($currentBooking)) {
+            $result = $wpdb->insert('wp_sl_cal', [
+                'item' => $vcl,
+                'day' => $dayStr,
+                'value' => $dayBooking
+            ]);
+            if($result === false) {
+                return 'Failed to persist the new day booking into the db';
+            }
+            return null;
+        }
+
+        if($currentBooking == '-') {
+            return $dayStr . ' is not available for booking.';
+        }
+
+        if(!isset($startingHour) && !isset($endingHour)) {
+            return $dayStr . ' is not available as a full day for booking.';
+        }
+
+        $result = $wpdb->update('wp_sl_cal',
+            ['value' => $currentBooking . ',' . $dayBooking],
+            ['item' => $vcl, 'day' => $dayStr, 'value' => $currentBooking]
+        );
+        if($result === false) {
+            return 'Failed to persist the new day booking into the db';
+        }
+        return null;
     }
 }

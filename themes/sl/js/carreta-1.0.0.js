@@ -45,11 +45,13 @@
                 if(true == response.success) {
                     vcl.displayReservationMessage('Votre réservation a été enregistrée avec succès.');
                 } else {
-                    vcl.displayReservationMessage('Processing has failed');
+                    vcl.displayReservationMessage('Processing has failed: ' + response.data);
                 }
             },
-            error: function(response) {
-                vcl.displayReservationMessage('Processing has failed');
+            error: function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+                vcl.displayReservationMessage('Processing has failed2: ' + err.Message);
             },
             complete: function() {
                 $('.ajax-loader').css("visibility", "hidden");
