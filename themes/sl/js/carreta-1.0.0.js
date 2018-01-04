@@ -49,9 +49,9 @@
                 }
             },
             error: function(xhr, status, error) {
-                var err = eval("(" + xhr.responseText + ")");
-                alert(err.Message);
-                vcl.displayReservationMessage('Processing has failed2: ' + err.Message);
+//                var err = eval('(' + xhr.responseText + ')');
+//                alert(err.Message);
+                vcl.displayReservationMessage('Processing has failed2: ' + xhr.responseText);
             },
             complete: function() {
                 $('.ajax-loader').css("visibility", "hidden");

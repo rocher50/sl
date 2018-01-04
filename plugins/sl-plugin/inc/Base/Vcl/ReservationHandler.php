@@ -101,16 +101,7 @@ class ReservationHandler {
     function persistDayBooking($vcl, $day, $startingHour, $startingMin, $endingHour, $endingMin) {
 
         $dayStr = date_format($day, 'Y-m-d');
-
-        $dayBooking;
-        if(isset($startingHour)) {
-            $dayBooking = $startingHour . ':' . $startingMin . '-';
-        } else {
-            $dayBooking = '-';
-        }
-        if(isset($endingHour)) {
-            $dayBooking = $dayBooking . $endingHour . ':' . $endingMin;
-        }
+        $dayBooking = $this->toString($startingHour, $startingMin, $endingHour, $endingMin);
 
         global $wpdb;
         $currentBooking = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $dayStr . '\'');
@@ -134,6 +125,140 @@ class ReservationHandler {
             return $dayStr . ' is not available as a full day for booking.';
         }
 
+        $currentBookings = explode(',', $currentBooking);
+        $newBooking = '';
+
+        $i = 0;
+        while($i < sizeof($currentBookings)) {
+
+            $bookingStartHour;
+            $bookingStartMin;
+            $bookingEndHour;
+            $bookingEndMin;
+
+            $curBooking = $currentBookings[$i];
+            $bookingTimes = explode('-', $curBooking);
+            if($curBooking[0] != '-') {
+                $bookingHourMin = explode(':', $bookingTimes[0]);
+                $bookingStartHour = $bookingHourMin[0];
+                $bookingStartMin = $bookingHourMin[1];
+            }
+            if($curBooking[strlen($curBooking) - 1] != '-') {
+                $bookingHourMin = explode(':', $bookingTimes[1]);
+                $bookingEndHour = $bookingHourMin[0];
+                $bookingEndMin = $bookingHourMin[1];
+            }
+
+            if(!isset($bookingStartHour)) {
+                if(!isset($startingHour)) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+
+                if($bookingEndHour > $startingHour
+                    || $bookingEndHour == $startingHour && $bookingEndMin > $startingMin) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+                $newBooking = $newBooking . $curBooking;
+                if(sizeof($currentBookings) == $i + 1) {
+                    $newBooking = $newBooking . ',' . $dayBooking;
+                    break;
+                } else {
+                    $bookingTimes = explode('-', $currentBookings[$i + 1]);
+                    $bookingHourMin = explode(':', $bookingTimes[0]);
+                    $bookingStartHour = $bookingHourMin[0];
+                    $bookingStartMin = $bookingHourMin[1];
+                    if($bookingStartHour < $endingHour
+                        || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
+                        return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBookings[$i + 1];
+                    }
+                    $newBooking = $newBooking . ',' . $dayBooking;
+                    break;
+                }
+            } else if(!isset($bookingEndHour)) {
+                if(!isset($endingHour)) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+
+                if($bookingStartHour < $endingHour
+                    || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+                $newBooking = $dayBooking . ',' . $newBooking;
+                break;
+            } else if(!isset($startingHour)) {
+                if($endingHour > $bookingStartHour
+                    || $endingHour == $bookingStartHour && $endingMin > $bookingStartMin) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+                $newBooking = $dayBooking . ',' . $newBooking;
+                break;
+            } else if(!isset($endingHour)) {
+                if($startingHour < $bookingEndHour
+                    || $startingHour == $bookingEndHour && $startingMin < $bookingEndMin) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+                if(sizeof($currentBookings) > $i + 1) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBooking;
+                }
+                $newBooking = $newBooking . ',' . $dayBooking;
+                break;
+            } else if($startingHour < $bookingStartHour
+                || $startingHour == $bookingStartHour && $startingMin < $bookingStartMin) {
+                if($endingHour > $bookingStartHour
+                    || $endingHour == $bookingStartHour && $endingMin > $bookingStartMin) {
+                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+                }
+                $newBooking = $dayBooking . ',' . $newBooking;
+                break;
+            } else if($startingHour > $bookingEndHour
+                || $startingHour == $bookingEndHour && $startingMin > $bookingEndMin) {
+                if(sizeof($currentBookings) == $i + 1) {
+                    $newBooking = $newBooking . ',' . $dayBooking;
+                    break;
+                } else {
+                    $bookingTimes = explode('-', $currentBookings[$i + 1]);
+                    $bookingHourMin = explode(':', $bookingTimes[0]);
+                    $bookingStartHour = $bookingHourMin[0];
+                    $bookingStartMin = $bookingHourMin[1];
+                    if($bookingStartHour < $endingHour
+                        || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
+                        return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBookings[$i + 1];
+                    }
+                    $newBooking = $newBooking . ',' . $dayBooking;
+                    break;
+                }
+            } else {
+                return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
+            }
+        }
+/*
+        $i = 0;
+        while($i < sizeof($currentBookings)) {
+            $curBooking = $currentBookings[i++];
+            $bookingTimes = explode('-', $curBooking);
+
+            if($curBooking[0] != '-') {
+                $bookingHourMin = explode(':', $bookingTimes[0]);
+                $bookingStartHour = $bookingHourMin[0];
+                $bookingStartMin = $bookingHourMin[1];
+            } else {
+                unset($bookingStartHour);
+                unset($bookingStartMin);
+            }
+            if($curBooking[0][strlen($curBooking) - 1] != '-') {
+                $bookingHourMin = explode(':', $bookingTimes[1]);
+                $bookingEndHour = $bookingHourMin[0];
+                $bookingEndMin = $bookingHourMin[1];
+            } else {
+                unset($bookingEndHour);
+                unset($bookingEndMin);
+            }
+
+            if(!isset($bookingStartHour)) {
+                if(
+            }
+        }
+*/
         $result = $wpdb->update('wp_sl_cal',
             ['value' => $currentBooking . ',' . $dayBooking],
             ['item' => $vcl, 'day' => $dayStr, 'value' => $currentBooking]
@@ -142,5 +267,18 @@ class ReservationHandler {
             return 'Failed to persist the new day booking into the db';
         }
         return null;
+    }
+
+    function toString($startHour, $startMin, $endHour, $endMin) {
+        $dayBooking;
+        if(isset($startHour)) {
+            $dayBooking = $startHour . ':' . $startMin . '-';
+        } else {
+            $dayBooking = '-';
+        }
+        if(isset($endHour)) {
+            $dayBooking = $dayBooking . $endHour . ':' . $endMin;
+        }
+        return $dayBooking;
     }
 }
