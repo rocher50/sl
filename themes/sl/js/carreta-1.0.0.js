@@ -777,7 +777,7 @@
                     this.firstAvailableTime = new Date(this.vcl.depDate.getTime() + 1000*60*minRentMinutes);
                     if(this.firstAvailableTime.getHours() > lastAvailableHour ||
                         this.firstAvailableTime.getHours() == lastAvailableHour && this.firstAvailableTime.getMinutes() > lastAvailableMin) {
-                        this.firstAvailableTime.setDate(firstAvailableTime.getDate() + 1);
+                        this.firstAvailableTime.setDate(this.firstAvailableTime.getDate() + 1);
                         this.firstAvailableTime.setHours(firstAvailableHour);
                         this.firstAvailableTime.setMinutes(firstAvailableMin);
                     }

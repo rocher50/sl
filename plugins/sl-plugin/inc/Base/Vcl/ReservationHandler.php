@@ -136,7 +136,7 @@ class ReservationHandler {
             $bookingEndHour;
             $bookingEndMin;
 
-            $curBooking = $currentBookings[$i];
+            $curBooking = $currentBookings[$i++];
             $bookingTimes = explode('-', $curBooking);
             if($curBooking[0] != '-') {
                 $bookingHourMin = explode(':', $bookingTimes[0]);
@@ -153,114 +153,83 @@ class ReservationHandler {
                 if(!isset($startingHour)) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-
                 if($bookingEndHour > $startingHour
                     || $bookingEndHour == $startingHour && $bookingEndMin > $startingMin) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-                $newBooking = $newBooking . $curBooking;
-                if(sizeof($currentBookings) == $i + 1) {
-                    $newBooking = $newBooking . ',' . $dayBooking;
-                    break;
-                } else {
-                    $bookingTimes = explode('-', $currentBookings[$i + 1]);
-                    $bookingHourMin = explode(':', $bookingTimes[0]);
-                    $bookingStartHour = $bookingHourMin[0];
-                    $bookingStartMin = $bookingHourMin[1];
-                    if($bookingStartHour < $endingHour
-                        || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
-                        return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBookings[$i + 1];
-                    }
-                    $newBooking = $newBooking . ',' . $dayBooking;
+                $newBooking = $curBooking;
+                if(sizeof($currentBookings) == $i) {
+                    $newBooking .= ',' . $dayBooking;
                     break;
                 }
             } else if(!isset($bookingEndHour)) {
                 if(!isset($endingHour)) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-
                 if($bookingStartHour < $endingHour
                     || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-                $newBooking = $dayBooking . ',' . $newBooking;
+                if(!empty($newBooking)) {
+                    $newBooking .= ',';
+                }
+                $newBooking .= $dayBooking . ',' . $curBooking;
                 break;
             } else if(!isset($startingHour)) {
                 if($endingHour > $bookingStartHour
                     || $endingHour == $bookingStartHour && $endingMin > $bookingStartMin) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-                $newBooking = $dayBooking . ',' . $newBooking;
+                if(!empty($newBooking)) {
+                    $newBooking .= ',';
+                }
+                $newBooking .= $dayBooking . ',' . $curBooking;
                 break;
             } else if(!isset($endingHour)) {
                 if($startingHour < $bookingEndHour
                     || $startingHour == $bookingEndHour && $startingMin < $bookingEndMin) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-                if(sizeof($currentBookings) > $i + 1) {
-                    return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBooking;
+                if(!empty($newBooking)) {
+                    $newBooking .= ',';
                 }
-                $newBooking = $newBooking . ',' . $dayBooking;
-                break;
+                $newBooking .= $curBooking;
+                if(sizeof($currentBookings) == $i) {
+                    $newBooking .= ',' . $dayBooking;
+                    break;
+                }
             } else if($startingHour < $bookingStartHour
                 || $startingHour == $bookingStartHour && $startingMin < $bookingStartMin) {
                 if($endingHour > $bookingStartHour
                     || $endingHour == $bookingStartHour && $endingMin > $bookingStartMin) {
                     return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
                 }
-                $newBooking = $dayBooking . ',' . $newBooking;
+                if(!empty($newBooking)) {
+                    $newBooking .= ',';
+                }
+                $newBooking .= $dayBooking . ',' . $curBooking;
                 break;
             } else if($startingHour > $bookingEndHour
-                || $startingHour == $bookingEndHour && $startingMin > $bookingEndMin) {
-                if(sizeof($currentBookings) == $i + 1) {
-                    $newBooking = $newBooking . ',' . $dayBooking;
-                    break;
-                } else {
-                    $bookingTimes = explode('-', $currentBookings[$i + 1]);
-                    $bookingHourMin = explode(':', $bookingTimes[0]);
-                    $bookingStartHour = $bookingHourMin[0];
-                    $bookingStartMin = $bookingHourMin[1];
-                    if($bookingStartHour < $endingHour
-                        || $bookingStartHour == $endingHour && $bookingStartMin < $endingMin) {
-                        return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $currentBookings[$i + 1];
-                    }
-                    $newBooking = $newBooking . ',' . $dayBooking;
+                || $startingHour == $bookingEndHour && $startingMin >= $bookingEndMin) {
+                if(!empty($newBooking)) {
+                    $newBooking .= ',';
+                }
+                $newBooking .= $curBooking;
+                if(sizeof($currentBookings) == $i) {
+                    $newBooking .= ',' . $dayBooking;
                     break;
                 }
             } else {
                 return 'New booking ' . $dayBooking . ' is in conflict with the existing one ' . $curBooking;
             }
         }
-/*
-        $i = 0;
+
         while($i < sizeof($currentBookings)) {
-            $curBooking = $currentBookings[i++];
-            $bookingTimes = explode('-', $curBooking);
-
-            if($curBooking[0] != '-') {
-                $bookingHourMin = explode(':', $bookingTimes[0]);
-                $bookingStartHour = $bookingHourMin[0];
-                $bookingStartMin = $bookingHourMin[1];
-            } else {
-                unset($bookingStartHour);
-                unset($bookingStartMin);
-            }
-            if($curBooking[0][strlen($curBooking) - 1] != '-') {
-                $bookingHourMin = explode(':', $bookingTimes[1]);
-                $bookingEndHour = $bookingHourMin[0];
-                $bookingEndMin = $bookingHourMin[1];
-            } else {
-                unset($bookingEndHour);
-                unset($bookingEndMin);
-            }
-
-            if(!isset($bookingStartHour)) {
-                if(
-            }
+            $newBooking .= ',' . $currentBookings[$i++];
         }
-*/
+
         $result = $wpdb->update('wp_sl_cal',
-            ['value' => $currentBooking . ',' . $dayBooking],
+            ['value' => $newBooking],
             ['item' => $vcl, 'day' => $dayStr, 'value' => $currentBooking]
         );
         if($result === false) {
