@@ -113,20 +113,33 @@ function vcl_agenda($data) {
         );
     }
 */
-/*
+
     $days = [
-            ['day' => 3,
-            'available' => false],
+            ['day' => 3, 'available' => false],
+
+            ['day' => 10,
+            'available' => true,
+            'bookings' => [
+                ['sHour' => 10, 'sMin' => 30]]],
+            ['day' => 11, 'available' => false],
+            ['day' => 12,
+            'available' => true,
+            'bookings' => [
+                ['eHour' => 13, 'eMin' => 30]]],
+
             ['day' => 17,
             'available' => true,
-            'bookings' => [9.5, 2.5, 15, 3]],
+            'bookings' => [
+                ['sHour' => 9, 'sMin' => 30, 'eHour' => 12, 'eMin' => 0],
+                ['sHour' => 15, 'sMin' => 0, 'eHour' => 18, 'eMin' => 0]]],
             ['day' => 20,
             'available' => true,
-            'bookings' => [8, 4]],
+            'bookings' => [
+                ['sHour' => 8, 'sMin' => 0, 'eHour' => 12, 'eMin' => 30]]],
             ['day' => 26,
             'available' => false]
         ];
-*/
+/*
     $days = [
 //        ['day' => $data['month'], 'available' => false],
         ['day' => $data['month'], 'available' => true, 'bookings' => [8.5, 2]],
@@ -136,7 +149,7 @@ function vcl_agenda($data) {
     if($data['month'] == 12) {
         array_push($days, ['day' => 32, 'available' => true, 'bookings' => [8.5, 2]]);
     }
-
+*/
     $result = [
         'vcl' => $data['vcl'],
         'year' => $data['year'],

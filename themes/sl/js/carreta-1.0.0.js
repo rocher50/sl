@@ -530,12 +530,20 @@
                     if(dayAgenda.available) {
                         var i = 0;
                         while(i < dayAgenda.bookings.length) {
-                            if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() <= dayAgenda.bookings[i]*60 - minRentMinutes - pauseMinutes) {
+                            var booking = dayAgenda.bookings[i++];
+                            if(isNaN(booking.sHour)) {
+                                this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate(), 0, 0, 0);
+                                this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + (booking.eHour*60 + booking.eMin + pauseMinutes)*60*1000);
+                                continue;
+                            }
+                            if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() <= booking.sHour*60 + booking.sMin - minRentMinutes - pauseMinutes) {
                                 return this.firstAvailableDate.getDate();
                             }
+                            if(isNaN(booking.eHour)) {
+                                break;
+                            }
                             this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate(), 0, 0, 0);
-                            this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + (dayAgenda.bookings[i]*60 + dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
-                            i += 2;
+                            this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + (booking.eHour*60 + booking.eMin + pauseMinutes)*60*1000);
                         }
                     }
                     var curMonth = this.firstAvailableDate.getMonth();
@@ -719,9 +727,14 @@
                 var dayAgenda = getDayAgenda(32, agenda);
                 if(dayAgenda != null) {
                     monthAgendaLength = agenda.length - 1;
-                    if(!dayAgenda.available
-                        || firstAvailableHour*60 + firstAvailableMin > dayAgenda.bookings[0]*60 - pauseMinutes) {
+                    if(!dayAgenda.available) {
                         this.nextMonthEnabled = false;
+                    } else {
+                        var firstBooking = dayAgenda.bookings[0];
+                        if(isNaN(firtBooking.sHour)
+                            || firstAvailableHour*60 + firstAvailableMin > firstBooking.sHour*60 + firstBooking.sMin - pauseMinutes) {
+                            this.nextMonthEnabled = false;
+                        }
                     }
                 }
 
@@ -733,11 +746,11 @@
                     var dayAgenda = agenda[i++];
                     if(date.getDate() < dayAgenda.day) {
                         this.nextMonthEnabled = false;
-                        if(!dayAgenda.available) {
+                        if(!dayAgenda.available || isNaN(dayAgenda.bookings[0].sHour)) {
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day - 1, lastAvailableHour, lastAvailableMin, 0);
                         } else {
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, 0, 0, 0);
-                            this.lastAvailableDate = new Date(this.lastAvailableDate.getTime() + (dayAgenda.bookings[0]*60 - pauseMinutes)*60*1000);
+                            this.lastAvailableDate = new Date(this.lastAvailableDate.getTime() + (dayAgenda.bookings[0].sHour*60 + dayAgenda.bookings[0].sMin - pauseMinutes)*60*1000);
                             if(this.lastAvailableDate.getHours() < firstAvailableHour ||
                                 this.lastAvailableDate.getHours() == firstAvailableHour && this.lastAvailableDate.getMinutes() < firstAvailableMin) {
                                 this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day - 1, lastAvailableHour, lastAvailableMin, 0);
@@ -746,7 +759,7 @@
                         break;
                     }
                     if(date.getDate() == dayAgenda.day) {
-                        if(!dayAgenda.available) {
+                        if(!dayAgenda.available || isNaN(dayAgenda.bookings[0].sHour)) {
                             this.nextMonthEnabled = false;
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, firstAvailableHour, firstAvailableMin, 0);
                             break;
@@ -754,7 +767,8 @@
                         var dayInMillis = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0).getTime();
                         var t = 0;
                         while(t < dayAgenda.bookings.length) {
-                            var bookingTime = new Date(dayInMillis + (dayAgenda.bookings[t]*60 - pauseMinutes)*60*1000);
+                            var booking = dayAgenda.bookings[t++];
+                            var bookingTime = new Date(dayInMillis + (booking.sHour*60 + booking.sMin - pauseMinutes)*60*1000);
                             if(date < bookingTime) {
                                 this.nextMonthEnabled = false;
                                 this.lastAvailableDate = bookingTime;
@@ -763,7 +777,6 @@
                             if(date === bookingTime) {
                                 alert("error");
                             }
-                            t += 2;
                         }
                     }
                 }
@@ -793,15 +806,23 @@
                 var i = 0;
                 while(i < dayAgenda.bookings.length) {
                     var bookingTime = new Date(year, month - 1, day, 0, 0, 0);
-                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i]*60 - pauseMinutes)*60*1000);
-                    if(this.firstAvailableTime < bookingTime) {
+                    var booking = dayAgenda.bookings[i++];
+                    if(!isNaN(booking.sHour)) {
+                        bookingTime = new Date(bookingTime.getTime() + (booking.sHour*60 + booking.sMin - pauseMinutes)*60*1000);
+                        if(this.firstAvailableTime < bookingTime) {
+                            return;
+                        }
+                    }
+                    if(isNaN(booking.eHour)) {
+                        this.firstAvailableTime.setDate(this.firstAvailableTime.getDate() + 1);
+                        this.firstAvailableTime.setHours(firstAvailableHour);
+                        this.firstAvailableTime.setMinutes(firstAvailableMin);
                         return;
                     }
-                    bookingTime = new Date(bookingTime.getTime() + (dayAgenda.bookings[i + 1]*60 + pauseMinutes)*60*1000);
+                    bookingTime = new Date(bookingTime.getTime() + (booking.eHour*60 + booking.eMin + pauseMinutes)*60*1000);
                     if(this.firstAvailableTime === bookingTime) {
                         return;
                     }
-                    i += 2;
                 }
             },
 
@@ -1007,13 +1028,22 @@
         }
         var timeInMin = hour*60 + mins;
         var bookings = dayAgenda.bookings;
-        for(var i = 0; i < bookings.length; i += 2) {
-            var bookingStart = bookings[i]*60 - minRentMinutes - pauseMinutes;
-            if(timeInMin <= bookingStart) {
-                return true;
+        var i = 0;
+        while(i < bookings.length) {
+            var booking = bookings[i++];
+            if(!isNaN(booking.sHour)) {
+                if(timeInMin <= booking.sHour*60 + booking.sMin - minRentMinutes - pauseMinutes) {
+                    return true;
+                }
             }
-            if(timeInMin < bookings[i]*60 + bookings[i+1]*60 + pauseMinutes) {
+            if(isNaN(booking.eHour)) {
                 return false;
+            }
+            var bookingEnd = booking.eHour*60 + booking.eMin + pauseMinutes;
+            if(timeInMin < bookingEnd) {
+                return false;
+            } else if(timeInMin == bookingEnd) {
+                return true;
             }
         }
         return true;
