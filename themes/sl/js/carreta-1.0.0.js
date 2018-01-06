@@ -540,14 +540,21 @@
                                 return this.firstAvailableDate.getDate();
                             }
                             if(isNaN(booking.eHour)) {
+                                this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate(),
+                                    lastAvailableHour + 1, firstAvailableMin, 0);
                                 break;
                             }
                             this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate(), 0, 0, 0);
                             this.firstAvailableDate = new Date(this.firstAvailableDate.getTime() + (booking.eHour*60 + booking.eMin + pauseMinutes)*60*1000);
                         }
+                        if(this.firstAvailableDate.getHours() < lastAvailableHour
+                            || this.firstAvailableDate.getHours() == lastAvailableHour && this.firstAvailableDate.getMinutes() <= lastAvailableMin) {
+                            return this.firstAvailableDate.getDate();
+                        }
                     }
                     var curMonth = this.firstAvailableDate.getMonth();
-                    this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() + 1, firstAvailableHour, firstAvailableMin, 0);
+                    this.firstAvailableDate = new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() + 1,
+                            firstAvailableHour, firstAvailableMin, 0);
                     if(curMonth != this.firstAvailableDate.getMonth()) {
                         alert("Failed to resolve the first available day");
                         return new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), this.firstAvailableDate.getDate() - 1, lastAvailableHour, lastAvailableMin, 0);
@@ -759,7 +766,7 @@
                         break;
                     }
                     if(date.getDate() == dayAgenda.day) {
-                        if(!dayAgenda.available || isNaN(dayAgenda.bookings[0].sHour)) {
+                        if(!dayAgenda.available) {
                             this.nextMonthEnabled = false;
                             this.lastAvailableDate = new Date(date.getFullYear(), date.getMonth(), dayAgenda.day, firstAvailableHour, firstAvailableMin, 0);
                             break;
@@ -768,6 +775,9 @@
                         var t = 0;
                         while(t < dayAgenda.bookings.length) {
                             var booking = dayAgenda.bookings[t++];
+                            if(isNaN(booking.sHour)) {
+                                continue;
+                            }
                             var bookingTime = new Date(dayInMillis + (booking.sHour*60 + booking.sMin - pauseMinutes)*60*1000);
                             if(date < bookingTime) {
                                 this.nextMonthEnabled = false;
@@ -880,9 +890,11 @@
                 return dayDiv;
             },
             newTimeElement: function(timepicker, hour, mins, prevTimeAdded) {
-                if(hour == this.firstAvailableTime.getHours() && mins < this.firstAvailableTime.getMinutes()) {
+                if(hour < this.firstAvailableTime.getHours()
+                    || hour == this.firstAvailableTime.getHours() && mins < this.firstAvailableTime.getMinutes()) {
                     return false;
                 }
+
                 var timeClicky = createDiv(timepicker);
                 var text = '';
                 if(hour < 10) {
@@ -1042,8 +1054,6 @@
             var bookingEnd = booking.eHour*60 + booking.eMin + pauseMinutes;
             if(timeInMin < bookingEnd) {
                 return false;
-            } else if(timeInMin == bookingEnd) {
-                return true;
             }
         }
         return true;

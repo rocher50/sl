@@ -113,7 +113,7 @@ function vcl_agenda($data) {
         );
     }
 */
-
+/*
     $days = [
             ['day' => 3, 'available' => false],
 
@@ -139,6 +139,7 @@ function vcl_agenda($data) {
             ['day' => 26,
             'available' => false]
         ];
+*/
 /*
     $days = [
 //        ['day' => $data['month'], 'available' => false],
@@ -150,6 +151,59 @@ function vcl_agenda($data) {
         array_push($days, ['day' => 32, 'available' => true, 'bookings' => [8.5, 2]]);
     }
 */
+
+    $begining = mktime(0, 0, 0, $data['month'], 1, $data['year']);
+    $end = strtotime("+1 month", $begining);
+    global $wpdb;
+    $rows = $wpdb->get_results("
+        SELECT day, value
+        FROM wp_sl_cal
+        WHERE item=" . $data['vcl'] . " AND day >= '" . date('Y-m-d', $begining) . "' AND day <= '" . date('Y-m-d', $end) . "' ORDER BY day");
+
+    $days = [];
+    if($rows) {
+        foreach ( $rows as $row ) {
+            $day;
+            $rowDate = strtotime($row->day);
+            if($end == $rowDate) {
+                $day = 32;
+            } else {
+                $day = idate('d', $rowDate);
+            }
+            $available;
+            $bookings;
+            if($row->value == '-') {
+                $available = false;
+            } else {
+                $available = true;
+                $bookings = [];
+
+                $bookingValues = explode(',', $row->value);
+
+                $i = 0;
+                while($i < sizeof($bookingValues)) {
+
+                    $booking = new stdClass;
+
+                    $bookingValue = $bookingValues[$i++];
+                    $bookingTimes = explode('-', $bookingValue);
+                    if($bookingValue[0] != '-') {
+                        $bookingHourMin = explode(':', $bookingTimes[0]);
+                        $booking->sHour = (int) $bookingHourMin[0];
+                        $booking->sMin = (int) $bookingHourMin[1];
+                    }
+                    if($bookingValue[strlen($bookingValue) - 1] != '-') {
+                        $bookingHourMin = explode(':', $bookingTimes[1]);
+                        $booking->eHour = (int) $bookingHourMin[0];
+                        $booking->eMin = (int) $bookingHourMin[1];
+                    }
+                    array_push($bookings, $booking);
+                }
+            }
+            array_push($days, ['day' => $day, 'available' => $available, 'bookings' => $bookings]);
+        }
+    }
+
     $result = [
         'vcl' => $data['vcl'],
         'year' => $data['year'],
