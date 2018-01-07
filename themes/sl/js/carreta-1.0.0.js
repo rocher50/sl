@@ -591,10 +591,49 @@
                     var dayClass;
                     if(dayAgenda == null) {
                         dayClass = "clicky";
-                    } else if(dayAgenda.available) {
-                        dayClass = "bordered-clicky";
-                    } else {
+                    } else if(!dayAgenda.available) {
                         dayClass = "disabled-clicky";
+                    } else {
+                        var available = false;
+                        var startInMin = firstAvailableHour*60 + firstAvailableMin;
+                        for(var bi = 0; bi < dayAgenda.bookings.length; ++bi) {
+                            var booking = dayAgenda.bookings[bi];
+                            if(!isNaN(booking.sHour)
+                                && startInMin + minRentMinutes + pauseMinutes <= booking.sHour*60 + booking.sMin) {
+                                available = true;
+                                break;
+                            }
+                            if(isNaN(booking.eHour)) {
+                                break;
+                            }
+                            startInMin = booking.eHour*60 + booking.eMin + pauseMinutes;
+                        }
+                        if(!available && startInMin <= lastAvailableHour*60 + lastAvailableMin) {
+                            if(startInMin + minRentMinutes <= lastAvailableHour*60 + lastAvailableMin) {
+                                available = true;
+                            } else {
+                                var nextDay = i + 1;
+                                if(new Date(this.year, this.month - 1, i + 1, 0, 0, 0).getMonth() != this.month - 1) {
+                                    nextDay = 32;
+                                }
+                                var nextDayAgenda = getDayAgenda(nextDay, this.agenda);
+                                if(nextDayAgenda == null) {
+                                    available = true;
+                                } else if(nextDayAgenda.available) {
+                                    var nextDayBooking = nextDayAgenda.bookings[0];
+                                    if(!isNaN(nextDayBooking.sHour)
+                                        && nextDayBooking.sHour*60 + nextDayBooking.sMin >= firstAvailableHour*60 + firstAvailableMin + pauseMinutes) {
+                                        available = true;
+                                    }
+                                }                                
+                            }
+                        }
+
+                        if(available) {
+                            dayClass = "bordered-clicky";
+                        } else {
+                            dayClass = "disabled-clicky";
+                        }
                     }
                     dayDiv.setAttribute("class", dayClass);
                     if(dayAgenda == null || dayAgenda.available) {
@@ -729,6 +768,7 @@
             },
 
             recalcBoundaries: function(date, agenda) {
+alert('recalc boundaries ' + date);
                 this.nextMonthEnabled = true;
                 var monthAgendaLength = agenda.length;
                 var dayAgenda = getDayAgenda(32, agenda);
@@ -738,7 +778,7 @@
                         this.nextMonthEnabled = false;
                     } else {
                         var firstBooking = dayAgenda.bookings[0];
-                        if(isNaN(firtBooking.sHour)
+                        if(isNaN(firstBooking.sHour)
                             || firstAvailableHour*60 + firstAvailableMin > firstBooking.sHour*60 + firstBooking.sMin - pauseMinutes) {
                             this.nextMonthEnabled = false;
                         }
