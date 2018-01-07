@@ -155,6 +155,62 @@
                     this.contactsDiv = document.createElement('div');
                     this.contactsDiv.style.display = 'none';
 
+                    var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var firstnameLabel = createDiv(firstnameContainer, 'label');
+                    firstnameLabel.append(voc.labelFirstName + ':');
+                    this.firstnameInput = createInput(firstnameContainer, 'firstname');
+
+                    var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var lastnameLabel = createDiv(lastnameContainer, 'label');
+                    lastnameLabel.append(voc.labelLastName + ':');
+                    this.lastnameInput = createInput(lastnameContainer, 'lastname');
+
+                    var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var emailLabel = createDiv(emailContainer, 'label');
+                    emailLabel.append(voc.labelEmail + ':');
+                    this.emailInput = createInput(emailContainer, 'email');
+
+                    var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var phoneLabel = createDiv(phoneContainer, 'label');
+                    phoneLabel.append(voc.labelPhone + ':');
+                    this.phoneInput = createInput(phoneContainer, 'phone');
+
+                    var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var streetLabel = createDiv(streetContainer, 'label');
+                    streetLabel.append(voc.labelStreet + ':');
+                    this.streetInput = createInput(streetContainer, 'street');
+
+                    var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var cityLabel = createDiv(cityContainer, 'label');
+                    cityLabel.append(voc.labelCity + ':');
+                    this.cityInput = createInput(cityContainer, 'city');
+
+                    var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var zipLabel = createDiv(zipContainer, 'label');
+                    zipLabel.append(voc.labelZip + ':');
+                    this.zipInput = createInput(zipContainer, 'zip');
+
+                    var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
+                    var countryLabel = createDiv(countryContainer, 'label');
+                    countryLabel.append(voc.labelCountry + ':');
+                    this.countryInput = createInput(countryContainer, 'country');
+                    this.countryInput.setAttribute('placeholder', voc.switzerland);
+
+                    var form = createChild(this.contactsDiv, 'form');
+                    var buttonContainer = createDiv(form, 'button-container');
+
+                    this.reserveButton = createChild(buttonContainer, 'button', 'button disabled');
+                    this.reserveButton.append(voc.buttonReserve);
+                    this.reserveButton.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        if(vcl.isFormComplete()) {
+                            vcl.reserveButton.setAttribute('class', 'button disabled');
+                            vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
+                            adminAjax(vcl);
+                        }
+                    });
+                    buttonContainer.appendChild(createAjaxLoader());
+
                     var onInput = function(event) {
                         if(vcl.isFormComplete()) {
                             if(vcl.reserveButton.getAttribute('class') != 'button') {
@@ -166,68 +222,41 @@
                             vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
                         }
                     };
-
-                    var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var firstnameLabel = createDiv(firstnameContainer, 'label');
-                    firstnameLabel.append(voc.labelFirstName + ':');
-                    this.firstnameInput = createInput(firstnameContainer, 'firstname');
-                    this.firstnameInput.addEventListener('input', onInput);
-
-                    var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var lastnameLabel = createDiv(lastnameContainer, 'label');
-                    lastnameLabel.append(voc.labelLastName + ':');
-                    this.lastnameInput = createInput(lastnameContainer, 'lastname');
-                    this.lastnameInput.addEventListener('input', onInput);
-
-                    var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var emailLabel = createDiv(emailContainer, 'label');
-                    emailLabel.append(voc.labelEmail + ':');
-                    this.emailInput = createInput(emailContainer, 'email');
-                    this.emailInput.addEventListener('input', onInput);
-
-                    var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var phoneLabel = createDiv(phoneContainer, 'label');
-                    phoneLabel.append(voc.labelPhone + ':');
-                    this.phoneInput = createInput(phoneContainer, 'phone');
-                    this.phoneInput.addEventListener('input', onInput);
-
-                    var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var streetLabel = createDiv(streetContainer, 'label');
-                    streetLabel.append(voc.labelStreet + ':');
-                    this.streetInput = createInput(streetContainer, 'street');
-                    this.streetInput.addEventListener('input', onInput);
-
-                    var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var cityLabel = createDiv(cityContainer, 'label');
-                    cityLabel.append(voc.labelCity + ':');
-                    this.cityInput = createInput(cityContainer, 'city');
-                    this.cityInput.addEventListener('input', onInput);
-
-                    var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var zipLabel = createDiv(zipContainer, 'label');
-                    zipLabel.append(voc.labelZip + ':');
-                    this.zipInput = createInput(zipContainer, 'zip');
-                    this.zipInput.addEventListener('input', onInput);
-
-                    var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var countryLabel = createDiv(countryContainer, 'label');
-                    countryLabel.append(voc.labelCountry + ':');
-                    this.countryInput = createInput(countryContainer, 'country');
-                    this.countryInput.setAttribute('placeholder', voc.switzerland);
-                    this.countryInput.addEventListener('input', onInput);
-
-                    var form = createChild(this.contactsDiv, 'form');
-                    var buttonContainer = createDiv(form, 'button-container');
-
-                    this.reserveButton = createChild(buttonContainer, 'button', 'button disabled');
-                    this.reserveButton.append(voc.buttonReserve);
-                    this.reserveButton.addEventListener('click', function(event) {
-                        event.preventDefault();
-                        if(vcl.isFormComplete()) {
-                            adminAjax(vcl);
+                    var onKeypress = function(event) {
+                        if(event.which == 13 || event.keyCode == 13) {
+                            if(event.target.isSameNode(vcl.firstnameInput)) {
+                                vcl.lastnameInput.focus();
+                            } else if(event.target.isSameNode(vcl.lastnameInput)) {
+                                vcl.emailInput.focus();
+                            } else if(event.target.isSameNode(vcl.emailInput)) {
+                                vcl.phoneInput.focus();
+                            } else if(event.target.isSameNode(vcl.phoneInput)) {
+                                vcl.streetInput.focus();
+                            } else if(event.target.isSameNode(vcl.streetInput)) {
+                                vcl.cityInput.focus();
+                            } else if(event.target.isSameNode(vcl.cityInput)) {
+                                vcl.zipInput.focus();
+                            } else if(event.target.isSameNode(vcl.zipInput)) {
+                                vcl.countryInput.focus();
+                            }
                         }
-                    });
-                    buttonContainer.appendChild(createAjaxLoader());
+                    };
+
+                    this.firstnameInput.addEventListener('keypress', onKeypress);
+                    this.firstnameInput.addEventListener('input', onInput);
+                    this.lastnameInput.addEventListener('keypress', onKeypress);
+                    this.lastnameInput.addEventListener('input', onInput);
+                    this.emailInput.addEventListener('keypress', onKeypress);
+                    this.emailInput.addEventListener('input', onInput);
+                    this.phoneInput.addEventListener('keypress', onKeypress);
+                    this.phoneInput.addEventListener('input', onInput);
+                    this.streetInput.addEventListener('keypress', onKeypress);
+                    this.streetInput.addEventListener('input', onInput);
+                    this.cityInput.addEventListener('keypress', onKeypress);
+                    this.cityInput.addEventListener('input', onInput);
+                    this.zipInput.addEventListener('keypress', onKeypress);
+                    this.zipInput.addEventListener('input', onInput);
+                    this.countryInput.addEventListener('input', onInput);
 
                     var userSubmRes = createChild(form, 'input');
                     userSubmRes.setAttribute('type', 'hidden');
@@ -246,15 +275,42 @@
                     reservationDiv.appendChild(this.contactsDiv);
                 },
 
+                isFirstnameValid: function() {
+                    return this.firstnameInput.value.trim().length > 0;
+                },
+                isLastnameValid: function() {
+                    return this.lastnameInput.value.trim().length > 0;
+                },
+                isEmailValid: function() {
+                    var email = this.emailInput.value.trim();
+                    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    return regex.test(email);
+                },
+                isPhoneValid: function() {
+                    return this.phoneInput.value.trim().length > 0;
+                },
+                isStreetValid: function() {
+                    return this.streetInput.value.trim().length > 0;
+                },
+                isCityValid: function() {
+                    return this.cityInput.value.trim().length > 0;
+                },
+                isZipValid: function() {
+                    return this.zipInput.value.trim().length > 0;
+                },
+                isCountryValid: function() {
+                    return true;
+                },
+
                 isFormComplete: function() {
-                    return vcl.firstnameInput.value.trim().length > 0
-                        && vcl.lastnameInput.value.trim().length > 0
-                        && vcl.emailInput.value.trim().length > 0
-                        && vcl.phoneInput.value.trim().length > 0
-                        && vcl.streetInput.value.trim().length > 0
-                        && vcl.cityInput.value.trim().length > 0
-                        && vcl.zipInput.value.trim().length > 0;
-                        //&& vcl.countryInput.value.trim().length > 0;
+                    return vcl.isFirstnameValid()
+                        && vcl.isLastnameValid()
+                        && vcl.isEmailValid()
+                        && vcl.isPhoneValid()
+                        && vcl.isStreetValid()
+                        && vcl.isCityValid()
+                        && vcl.isZipValid()
+                        && vcl.isCountryValid();
                 },
 
                 updateAgenda: function(renderer, year, month) {
@@ -357,6 +413,7 @@
                 displayContacts: function() {
                     this.contactsDiv.style.display = 'initial';
                     this.contactsDiv.parentElement.replaceChild(this.contactsDiv, this.contactsDiv);
+                    this.firstnameInput.focus();
                 },
                 hideContacts: function() {
                     hideElement(this.contactsDiv);
@@ -1132,7 +1189,6 @@
         div.appendChild(img); 
         return div;
     };
-
   });
 
 })(jQuery);
