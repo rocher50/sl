@@ -750,6 +750,10 @@
                 var curAgenda = this.agenda;
                 this.recalcBoundaries(this.vcl.depDate, agenda);
 
+                if(this.vcl.depDate.getMonth() != this.firstAvailableTime.getMonth()) {
+                    this.vcl.updateAgenda(this, this.firstAvailableTime.getFullYear(), this.firstAvailableTime.getMonth() + 1);
+                }
+
                 if(this.vcl.retDate == null
                     || this.lastAvailableDate != null && this.vcl.retDate > this.lastAvailableDate
                     || this.vcl.retDate < this.firstAvailableTime
@@ -768,7 +772,6 @@
             },
 
             recalcBoundaries: function(date, agenda) {
-alert('recalc boundaries ' + date);
                 this.nextMonthEnabled = true;
                 var monthAgendaLength = agenda.length;
                 var dayAgenda = getDayAgenda(32, agenda);
