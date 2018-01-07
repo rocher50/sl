@@ -160,6 +160,9 @@ div.container {
     text-align: right;
     width: 28%;
 }
+.vehicule .reservation .highlighted {
+    color: var(--highlighting-color);
+}
 
 .vehicule .reservation .value {
     border: 1px transparent;
@@ -177,7 +180,7 @@ div.container {
 .vehicule .reservation .value:hover {
     border: 1px dotted;
     border-color: var(--highlighting-color);
-    color: var(--highlighting-color);
+    /*color: var(--highlighting-color);*/
     background-color: #ffffff;
     cursor: pointer;
 }
@@ -217,7 +220,7 @@ div.container {
 .vehicule .reservation input:hover {
     border: 1px dotted;
     border-color: var(--highlighting-color);
-    color: var(--highlighting-color);
+/*    color: var(--highlighting-color);*/
     background-color: #ffffff;
 }
 

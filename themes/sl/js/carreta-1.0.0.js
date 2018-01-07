@@ -111,13 +111,21 @@
 
                 contactsDiv: null,
 
+                firstnameLabel: null,
                 firstnameInput: null,
+                lastnameLabel: null,
                 lastnameInput: null,
+                emailLabel: null,
                 emailInput: null,
+                phoneLabel: null,
                 phoneInput: null,
+                streetLabel: null,
                 streetInput: null,
+                cityLabel: null,
                 cityInput: null,
+                zipLabel: null,
                 zipInput: null,
+                countryLabel: null,
                 countryInput: null,
                 reserveButton: null,
 
@@ -156,43 +164,43 @@
                     this.contactsDiv.style.display = 'none';
 
                     var firstnameContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var firstnameLabel = createDiv(firstnameContainer, 'label');
-                    firstnameLabel.append(voc.labelFirstName + ':');
+                    this.firstnameLabel = createDiv(firstnameContainer, 'label highlighted');
+                    this.firstnameLabel.append(voc.labelFirstName + ':');
                     this.firstnameInput = createInput(firstnameContainer, 'firstname');
 
                     var lastnameContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var lastnameLabel = createDiv(lastnameContainer, 'label');
-                    lastnameLabel.append(voc.labelLastName + ':');
+                    this.lastnameLabel = createDiv(lastnameContainer, 'label highlighted');
+                    this.lastnameLabel.append(voc.labelLastName + ':');
                     this.lastnameInput = createInput(lastnameContainer, 'lastname');
 
                     var emailContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var emailLabel = createDiv(emailContainer, 'label');
-                    emailLabel.append(voc.labelEmail + ':');
+                    this.emailLabel = createDiv(emailContainer, 'label highlighted');
+                    this.emailLabel.append(voc.labelEmail + ':');
                     this.emailInput = createInput(emailContainer, 'email');
 
                     var phoneContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var phoneLabel = createDiv(phoneContainer, 'label');
-                    phoneLabel.append(voc.labelPhone + ':');
+                    this.phoneLabel = createDiv(phoneContainer, 'label highlighted');
+                    this.phoneLabel.append(voc.labelPhone + ':');
                     this.phoneInput = createInput(phoneContainer, 'phone');
 
                     var streetContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var streetLabel = createDiv(streetContainer, 'label');
-                    streetLabel.append(voc.labelStreet + ':');
+                    this.streetLabel = createDiv(streetContainer, 'label highlighted');
+                    this.streetLabel.append(voc.labelStreet + ':');
                     this.streetInput = createInput(streetContainer, 'street');
 
                     var cityContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var cityLabel = createDiv(cityContainer, 'label');
-                    cityLabel.append(voc.labelCity + ':');
+                    this.cityLabel = createDiv(cityContainer, 'label highlighted');
+                    this.cityLabel.append(voc.labelCity + ':');
                     this.cityInput = createInput(cityContainer, 'city');
 
                     var zipContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var zipLabel = createDiv(zipContainer, 'label');
-                    zipLabel.append(voc.labelZip + ':');
+                    this.zipLabel = createDiv(zipContainer, 'label highlighted');
+                    this.zipLabel.append(voc.labelZip + ':');
                     this.zipInput = createInput(zipContainer, 'zip');
 
                     var countryContainer = createDiv(this.contactsDiv, 'labelvalue');
-                    var countryLabel = createDiv(countryContainer, 'label');
-                    countryLabel.append(voc.labelCountry + ':');
+                    this.countryLabel = createDiv(countryContainer, 'label');
+                    this.countryLabel.append(voc.labelCountry + ':');
                     this.countryInput = createInput(countryContainer, 'country');
                     this.countryInput.setAttribute('placeholder', voc.switzerland);
 
@@ -213,13 +221,60 @@
 
                     var onInput = function(event) {
                         if(vcl.isFormComplete()) {
-                            if(vcl.reserveButton.getAttribute('class') != 'button') {
-                                vcl.reserveButton.setAttribute('class', 'button');
-                                vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
+                            ensureClass(vcl.reserveButton, 'button');
+                        } else {
+                            ensureClass(vcl.reserveButton, 'button disabled');
+                        }
+                    };
+                    var labelClassHandler = function(event) {
+                        if(event.target.isSameNode(vcl.firstnameInput)) {
+                            if(vcl.isFirstnameValid()) {
+                                ensureClass(vcl.firstnameLabel, 'label');
+                            } else {
+                                ensureClass(vcl.firstnameLabel, 'label highlighted');
                             }
-                        } else if(vcl.reserveButton.getAttribute('class') === 'button') {
-                            vcl.reserveButton.setAttribute('class', 'button disabled');
-                            vcl.reserveButton.parentElement.replaceChild(vcl.reserveButton, vcl.reserveButton);
+                        } else if(event.target.isSameNode(vcl.lastnameInput)) {
+                            if(vcl.isLastnameValid()) {
+                                ensureClass(vcl.lastnameLabel, 'label');
+                            } else {
+                                ensureClass(vcl.lastnameLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.emailInput)) {
+                            if(vcl.isEmailValid()) {
+                                ensureClass(vcl.emailLabel, 'label');
+                            } else {
+                                ensureClass(vcl.emailLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.phoneInput)) {
+                            if(vcl.isPhoneValid()) {
+                                ensureClass(vcl.phoneLabel, 'label');
+                            } else {
+                                ensureClass(vcl.phoneLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.streetInput)) {
+                            if(vcl.isStreetValid()) {
+                                ensureClass(vcl.streetLabel, 'label');
+                            } else {
+                                ensureClass(vcl.streetLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.cityInput)) {
+                            if(vcl.isCityValid()) {
+                                ensureClass(vcl.cityLabel, 'label');
+                            } else {
+                                ensureClass(vcl.cityLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.zipInput)) {
+                            if(vcl.isZipValid()) {
+                                ensureClass(vcl.zipLabel, 'label');
+                            } else {
+                                ensureClass(vcl.zipLabel, 'label highlighted');
+                            }
+                        } else if(event.target.isSameNode(vcl.countryInput)) {
+                            if(vcl.isCountryValid()) {
+                                ensureClass(vcl.countryLabel, 'label');
+                            } else {
+                                ensureClass(vcl.countryLabel, 'label highlighted');
+                            }
                         }
                     };
                     var onKeypress = function(event) {
@@ -244,19 +299,34 @@
 
                     this.firstnameInput.addEventListener('keypress', onKeypress);
                     this.firstnameInput.addEventListener('input', onInput);
+                    this.firstnameInput.addEventListener('input', labelClassHandler);
+
                     this.lastnameInput.addEventListener('keypress', onKeypress);
                     this.lastnameInput.addEventListener('input', onInput);
+                    this.lastnameInput.addEventListener('input', labelClassHandler);
+
                     this.emailInput.addEventListener('keypress', onKeypress);
                     this.emailInput.addEventListener('input', onInput);
+                    this.emailInput.addEventListener('input', labelClassHandler);
+
                     this.phoneInput.addEventListener('keypress', onKeypress);
                     this.phoneInput.addEventListener('input', onInput);
+                    this.phoneInput.addEventListener('input', labelClassHandler);
+
                     this.streetInput.addEventListener('keypress', onKeypress);
                     this.streetInput.addEventListener('input', onInput);
+                    this.streetInput.addEventListener('input', labelClassHandler);
+
                     this.cityInput.addEventListener('keypress', onKeypress);
                     this.cityInput.addEventListener('input', onInput);
+                    this.cityInput.addEventListener('input', labelClassHandler);
+
                     this.zipInput.addEventListener('keypress', onKeypress);
                     this.zipInput.addEventListener('input', onInput);
+                    this.zipInput.addEventListener('input', labelClassHandler);
+
                     this.countryInput.addEventListener('input', onInput);
+                    this.countryInput.addEventListener('input', labelClassHandler);
 
                     var userSubmRes = createChild(form, 'input');
                     userSubmRes.setAttribute('type', 'hidden');
@@ -1189,6 +1259,13 @@
         div.appendChild(img); 
         return div;
     };
+
+    var ensureClass = function(e, c) {
+        if(e.getAttribute('class') != 'c') {
+            e.setAttribute('class', c);
+            e.parentElement.replaceChild(e, e);
+        }
+    }
   });
 
 })(jQuery);
