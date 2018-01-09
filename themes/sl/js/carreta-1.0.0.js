@@ -673,6 +673,9 @@
                         }
                         if(this.firstAvailableDate.getHours() < lastAvailableHour
                             || this.firstAvailableDate.getHours() == lastAvailableHour && this.firstAvailableDate.getMinutes() <= lastAvailableMin) {
+                            if(this.firstAvailableDate.getHours()*60 + this.firstAvailableDate.getMinutes() + minRentMinutes <= lastAvailableHour*60 + lastAvailableMin) {
+                                return true;
+                            }
                             var nextDay = this.firstAvailableDate.getDate() + 1;
                             if(new Date(this.firstAvailableDate.getFullYear(), this.firstAvailableDate.getMonth(), nextDay, 0, 0, 0).getMonth() != this.firstAvailableDate.getMonth()) {
                                 nextDay = 32;
@@ -775,7 +778,7 @@
                                 available = true;
                             } else {
                                 var nextDay = i + 1;
-                                if(new Date(this.year, this.month - 1, i + 1, 0, 0, 0).getMonth() != this.month - 1) {
+                                if(new Date(this.year, this.month - 1, nextDay, 0, 0, 0).getMonth() != this.month - 1) {
                                     nextDay = 32;
                                 }
                                 var nextDayAgenda = getDayAgenda(nextDay, this.agenda);
@@ -825,7 +828,7 @@
                     return true;
                 }
                 var dayAgenda = getDayAgenda(this.day, this.agenda);
-                if(!isTimeAvailable(hour, mins, dayAgenda)) {
+                if(!this.isTimeAvailable(hour, mins, dayAgenda)) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
                     } else {
@@ -844,6 +847,52 @@
                     departDayTimeRenderer.setTime(parseInt(text.substring(0, colon)), parseInt(text.substring(colon + 1)));
                 });
                 return true;
+            },
+            isTimeAvailable: function(hour, mins, dayAgenda) {
+                var timeInMin = hour*60 + mins;
+                if(dayAgenda != null) {
+                    if(!dayAgenda.available) {
+                        return false;
+                    }
+                    var bookings = dayAgenda.bookings;
+                    var i = 0;
+                    while(i < bookings.length) {
+                        var booking = bookings[i++];
+                        if(!isNaN(booking.sHour)
+                            && timeInMin <= booking.sHour*60 + booking.sMin - minRentMinutes - pauseMinutes) {
+                            return true;
+                        }
+                        if(isNaN(booking.eHour)) {
+                            return false;
+                        }
+                        var bookingEnd = booking.eHour*60 + booking.eMin + pauseMinutes;
+                        if(timeInMin < bookingEnd) {
+                            return false;
+                        }
+                    }
+                }
+                if(timeInMin > lastAvailableHour*60 + lastAvailableMin) {
+                    return false;
+                }
+                if(timeInMin + minRentMinutes <= lastAvailableHour*60 + lastAvailableMin) {
+                    return true;
+                }
+
+                var nextDay = this.day + 1;
+                if(new Date(this.year, this.month - 1, nextDay, 0, 0, 0).getMonth() != this.month - 1) {
+                    nextDay = 32;
+                }
+                var nextDayAgenda = getDayAgenda(nextDay, this.agenda);
+                if(nextDayAgenda == null) {
+                    return true;
+                } else if(nextDayAgenda.available) {
+                    var nextDayBooking = nextDayAgenda.bookings[0];
+                    if(!isNaN(nextDayBooking.sHour)
+                        && nextDayBooking.sHour*60 + nextDayBooking.sMin >= firstAvailableHour*60 + firstAvailableMin + pauseMinutes) {
+                        return true;
+                    }
+                }
+                return false;
             },
             replaceDayTimePicker: function(newDayTimePicker) {
                 this.vcl.replaceDeparturePicker(newDayTimePicker);
@@ -1249,35 +1298,6 @@
             return '0' + i;
         }
         return i;
-    }
-
-
-    function isTimeAvailable(hour, mins, dayAgenda) {
-        if(dayAgenda == null) {
-            return true;
-        }
-        if(!dayAgenda.available) {
-            return false;
-        }
-        var timeInMin = hour*60 + mins;
-        var bookings = dayAgenda.bookings;
-        var i = 0;
-        while(i < bookings.length) {
-            var booking = bookings[i++];
-            if(!isNaN(booking.sHour)) {
-                if(timeInMin <= booking.sHour*60 + booking.sMin - minRentMinutes - pauseMinutes) {
-                    return true;
-                }
-            }
-            if(isNaN(booking.eHour)) {
-                return false;
-            }
-            var bookingEnd = booking.eHour*60 + booking.eMin + pauseMinutes;
-            if(timeInMin < bookingEnd) {
-                return false;
-            }
-        }
-        return true;
     }
 
     var isDayAvailable = function(date) {
