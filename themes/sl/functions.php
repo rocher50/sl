@@ -157,7 +157,7 @@ function vcl_agenda($data) {
     global $wpdb;
     $rows = $wpdb->get_results("
         SELECT day, value
-        FROM wp_sl_cal
+        FROM " . $wpdb->prefix . "sl_cal
         WHERE item=" . $data['vcl'] . " AND day >= '" . date('Y-m-d', $begining) . "' AND day <= '" . date('Y-m-d', $end) . "' ORDER BY day");
 
     $days = [];

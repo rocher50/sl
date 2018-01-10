@@ -104,9 +104,9 @@ class ReservationHandler {
         $dayBooking = $this->toString($startingHour, $startingMin, $endingHour, $endingMin);
 
         global $wpdb;
-        $currentBooking = $wpdb->get_var('SELECT value FROM wp_sl_cal WHERE item=' . $vcl . ' AND day=\'' . $dayStr . '\'');
+        $currentBooking = $wpdb->get_var('SELECT value FROM ' . $wpdb->prefix . 'sl_cal WHERE item=' . $vcl . ' AND day=\'' . $dayStr . '\'');
         if(is_null($currentBooking)) {
-            $result = $wpdb->insert('wp_sl_cal', [
+            $result = $wpdb->insert($wpdb->prefix . 'sl_cal', [
                 'item' => $vcl,
                 'day' => $dayStr,
                 'value' => $dayBooking
@@ -228,7 +228,7 @@ class ReservationHandler {
             $newBooking .= ',' . $currentBookings[$i++];
         }
 
-        $result = $wpdb->update('wp_sl_cal',
+        $result = $wpdb->update($wpdb->prefix .'sl_cal',
             ['value' => $newBooking],
             ['item' => $vcl, 'day' => $dayStr, 'value' => $currentBooking]
         );
