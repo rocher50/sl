@@ -56,9 +56,10 @@ Version: 1.0
     --cal-arrow-hover-color: var(--highlighting-color);
     --cal-arrow-disabled-color: transparent;
 
-    --main-font-size: 16px;
-    --daypicker-font-size: var(--main-font-size);
-    --timepicker-font-size: var(--main-font-size);
+    --main-font-size: 0.75vw;
+    --form-font-size: 0.8vw;
+    --daypicker-font-size: 0.8vw;
+    --timepicker-font-size: 0.75vw;
 }
 
 @font-face {
@@ -95,7 +96,7 @@ body {
     padding: 0;
     margin: 0;
     font-family: Arial, sans-serif;
-    font-size: 14px;
+    font-size: var(--main-font-size);
     color: var(--main-font-color);
     background-color: var(--main-background-color);
 }
@@ -143,7 +144,7 @@ div.container {
 .vehicule .reservation {
     border: 1px transparent;
     width: 100%;
-    font-size: var(--main-font-size);
+    font-size: var(--form-font-size);
 }
 
 .vehicule .reservation .labelvalue {
