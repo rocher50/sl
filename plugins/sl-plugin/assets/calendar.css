@@ -1,16 +1,23 @@
 .daytimepicker {
+
+    --border-radius: 1em;
+    --enabled-arrow-size: 0.7em;
+    --disabled-arrow-size: 0.6em;
+    --scrollbar-width: 0.5em;
+    --scrollbar-radius: 0.25em;
+
     box-sizing: border-box;
     font-size: var(--daypicker-font-size);
     width: 100%;
     border: 1px dotted;
     border-color: var(--highlighting-color);
-    border-radius: 5px;
+    border-radius: var(--border-radius);
 }
 
 .daytimepicker .clicky {
     display: inline-block;
     border: 1px solid transparent;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     box-sizing: border-box;
     background: transparent;
     padding: 1%;
@@ -35,7 +42,7 @@
 .daytimepicker .disabled-clicky {
     display: inline-block;
     border: 1px transparent;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     box-sizing: border-box;
     background: transparent;
     padding: 1%;
@@ -47,7 +54,7 @@
 .daytimepicker .bordered-clicky {
     display: inline-block;
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     box-sizing: border-box;
     background: transparent;
     padding: 1%;
@@ -55,14 +62,15 @@
     text-align: center;
 }
 .daytimepicker .bordered-clicky:hover {
-    background: #eee;
+    background: var(--highlighting-color);
+    color: var(--light-color);
     border: 1px solid transparent;
     cursor: pointer;
 }
 .daytimepicker .selected-clicky {
     display: inline-block;
     border: 1px transparent;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     box-sizing: border-box;
     background: var(--gray-font-color);
     color: var(--light-color);
@@ -188,10 +196,10 @@
 
 .timepicker::-webkit-scrollbar-track {
     background-color: transparent;
-    border-radius: 5px;
+    border-radius: var(--scrollbar-radius);
 }
 .timepicker::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width);
     background-color: transparent;
     visibility: hidden;
 }
@@ -202,7 +210,7 @@
 .timepicker::-webkit-scrollbar-thumb {
     background-color: var(--gray-font-color);
     border: 1px transparent;
-    border-radius: 5px;
+    border-radius: var(--scrollbar-radius);
 }
 .timepicker::-webkit-scrollbar-thumb:hover {
     background-color: var(--highlighting-color);
@@ -217,7 +225,7 @@
     text-align: center;
     border: 1px hidden;
     margin: 0;
-    padding-right: 8px;
+    padding-right: 0.5em;
 }
 
 .daytimepicker .half-width {
@@ -233,23 +241,23 @@
 .daytimepicker .month-arrows .right {
   width: 0;
   height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid var(--cal-arrow-color);
+  border-top: var(--enabled-arrow-size) solid transparent;
+  border-bottom: var(--enabled-arrow-size) solid transparent;
+  border-left: var(--enabled-arrow-size) solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .month-arrows .right:hover {
-    border-left: 10px solid var(--cal-arrow-hover-color);
+    border-left: var(--enabled-arrow-size) solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .month-arrows .disabled-right {
   width: 0;
   height: 0;
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  border-left: 9px solid var(--cal-arrow-disabled-color);
+  border-top: var(--disabled-arrow-size) solid transparent;
+  border-bottom: var(--disabled-arrow-size) solid transparent;
+  border-left: var(--disabled-arrow-size) solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -258,23 +266,23 @@
 .daytimepicker .month-arrows .left {
   width: 0;
   height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 10px solid var(--cal-arrow-color);
+  border-top: var(--enabled-arrow-size) solid transparent;
+  border-bottom: var(--enabled-arrow-size) solid transparent;
+  border-right: var(--enabled-arrow-size) solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .month-arrows .left:hover {
-    border-right: 10px solid var(--cal-arrow-hover-color);
+    border-right: var(--enabled-arrow-size) solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .month-arrows .disabled-left {
   width: 0;
   height: 0;
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  border-right: 9px solid var(--cal-arrow-disabled-color);
+  border-top: var(--disabled-arrow-size) solid transparent;
+  border-bottom: var(--disabled-arrow-size) solid transparent;
+  border-right: var(--disabled-arrow-size) solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -283,23 +291,23 @@
 .daytimepicker .arrows .up {
   width: 0;
   height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid var(--cal-arrow-color);
+  border-left: var(--enabled-arrow-size) solid transparent;
+  border-right: var(--enabled-arrow-size) solid transparent;
+  border-bottom: var(--enabled-arrow-size) solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .arrows .up:hover {
-    border-bottom: 10px solid var(--cal-arrow-hover-color);
+    border-bottom: var(--enabled-arrow-size) solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .arrows .disabled-up {
   width: 0;
   height: 0;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-bottom: 9px solid var(--cal-arrow-disabled-color);
+  border-left: var(--disabled-arrow-size) solid transparent;
+  border-right: var(--disabled-arrow-size) solid transparent;
+  border-bottom: var(--disabled-arrow-size) solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
@@ -308,23 +316,23 @@
 .daytimepicker .arrows .down {
   width: 0;
   height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid var(--cal-arrow-color);
+  border-left: var(--enabled-arrow-size) solid transparent;
+  border-right: var(--enabled-arrow-size) solid transparent;
+  border-top: var(--enabled-arrow-size) solid var(--cal-arrow-color);
   display: inline-block;
   float: center;
   vertical-align: middle;
 }
 .daytimepicker .arrows .down:hover {
-    border-top: 10px solid var(--cal-arrow-hover-color);
+    border-top: var(--enabled-arrow-size) solid var(--cal-arrow-hover-color);
     cursor: pointer;
 }
 .daytimepicker .arrows .disabled-down {
   width: 0;
   height: 0;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 9px solid var(--cal-arrow-disabled-color);
+  border-left: var(--disabled-arrow-size) solid transparent;
+  border-right: var(--disabled-arrow-size) solid transparent;
+  border-top: var(--disabled-arrow-size) solid var(--cal-arrow-disabled-color);
   display: inline-block;
   float: center;
   vertical-align: middle;

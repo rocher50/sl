@@ -58,8 +58,45 @@ Version: 1.0
 
     --main-font-size: 0.75vw;
     --form-font-size: 0.8vw;
-    --daypicker-font-size: 0.8vw;
+    --daypicker-font-size: var(--form-font-size);
     --timepicker-font-size: 0.75vw;
+
+    --form-border-radius: 0.8em;
+    --form-padding: 0.5em;
+
+    --vcl-thumb: 70%;
+    --vcl-form: 30%;
+}
+
+@media (max-width:1600px) {
+    :root {
+        --form-font-size: 1vw;
+        --timepicker-font-size: 0.9vw;
+    }
+}
+@media (max-width:1300px) {
+    :root {
+        --form-font-size: 1.2vw;
+        --timepicker-font-size: 1vw;
+    }
+}
+@media (max-width:1024px) {
+    :root {
+        --form-font-size: 1.5vw;
+        --timepicker-font-size: 1.25vw;
+    }
+}
+@media (max-width:800px) {
+    :root {
+        --form-font-size: 2vw;
+        --timepicker-font-size: 1.7vw;
+    }
+}
+@media (max-width:600px) {
+    :root {
+        --vcl-thumb: 60%;
+        --vcl-form: 40%;
+    }
 }
 
 @font-face {
@@ -121,8 +158,8 @@ div.container {
     border: 1px none;
     max-width: 1024px;
     margin: 0 auto;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 2%;
+    padding-right: 2%;
     margin: 0 auto; /* to center the div */
 }
 
@@ -134,7 +171,7 @@ div.container {
 
 .vehicule {
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: var(--vcl-thumb) var(--vcl-form);
     grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 1em;
     border: 1px none;
@@ -156,7 +193,7 @@ div.container {
     border: 1px transparent;
     display: inline-block;
     padding: 1%;
-    border-radius: 5px;
+    border-radius: var(--form-border-radius);
     color: var(--main-font-color);
     text-align: right;
     width: 28%;
@@ -171,10 +208,10 @@ div.container {
     display: inline-block;
     box-sizing: border-box;
     float: right;
-    padding: 1%;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
     background: transparent;
     color: var(--main-font-color);
-    border-radius: 5px;
+    border-radius: var(--form-border-radius);
     text-align: left;
     width: 70%;
 }
@@ -190,8 +227,8 @@ div.container {
     display: inline-block;
     box-sizing: border-box;
     float: right;
-    padding: 1%;
-    border-radius: 5px;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
+    border-radius: var(--form-border-radius);
     color: var(--gray-font-color);
     width: 70%;
     text-align: left;
@@ -200,13 +237,13 @@ div.container {
 .vehicule .reservation input {
     border: 1px transparent;
     border-color: var(--gray-color);
-    border-radius: 5px;
+    border-radius: var(--form-border-radius);
     display: inline-block;
     box-sizing: border-box;
     float: right;
-    padding: 1%;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
     background-color: transparent;
-    font-size: var(--main-font-size);
+    font-size: var(--form-font-size);
     width: 70%;
     text-align: left;
     color: var(--main-font-color);
@@ -238,7 +275,7 @@ div.container {
     display: inline-block;
     box-sizing: border-box;
     border: transparent;
-    border-radius: 5px;
+    border-radius: var(--form-border-radius);
     background: var(--gray-color);
     color: var(--light-color);
     text-align: center;
@@ -247,8 +284,7 @@ div.container {
     padding-top: 2%;
     padding-bottom: 2%;
     outline: none;
-
-    font-size: var(--main-font-size);
+    font-size: var(--form-font-size);
     cursor: pointer;
     float: left;
 }
@@ -263,8 +299,8 @@ div.container {
 
 .site-header {
     border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
-    padding: 30px 0 0 0;
+    margin-bottom: 2%;
+    padding: 2% 0 0 0;
 }
 
 .site-header h1 {
@@ -302,7 +338,7 @@ div.container {
 
 /* Header Nav Menu */
 .site-header nav {
-    margin-top: 30px;
+    margin-top: 3%;
 }
 
 .site-header nav ul li {
