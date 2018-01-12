@@ -30,12 +30,6 @@ Version: 1.0
     --gray-font-color: #9e786d;
     --highlighting-color: #fc9045;
 */
-/* p6 */
-    --light-color: #ffffff;
-    --dark-color: #4b4f4e;
-    --gray-color: #9bb296;
-    --highlighting-color: #fd932f;
-
 /* p9
     --light-color: #fffae7;
     --dark-color: #46474f;
@@ -47,6 +41,18 @@ Version: 1.0
     --dark-color: #241f19;
     --gray-color: #b8a49a;
     --highlighting-color: #ff8407;
+*/
+/* p6 */
+    --light-color: #ffffff;
+    --dark-color: #4b4f4e;
+    --gray-color: #9bb296;
+    --highlighting-color: #fd932f;
+
+/* purple 2
+    --light-color: #fefefc;
+    --dark-color: #0d0b21;
+    --gray-color: #ada2a8;
+    --highlighting-color: #a77ad9;
 */
     --main-background-color: var(--light-color);
     --main-font-color: var(--dark-color);

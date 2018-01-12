@@ -23,6 +23,9 @@ class Admin extends BaseController {
         $this->callbacks = new AdminCallbacks();
         $this->set_pages();
         $this->set_subpages();
+        $this->setSettings();
+        $this->setSections();
+        $this->setFields();
         $this->settings->add_pages( $this->pages )->with_subpage('Dashboard')->add_subpages($this->subpages)->register();
     }
 
@@ -61,5 +64,57 @@ class Admin extends BaseController {
             'menu_slug' => 'sl_widgets',
             'callback' => [$this->callbacks, 'widget_manager']]
         ];
+    }
+
+    public function setSettings() {
+
+        $args = array(
+            array(
+                'option_group' => 'sl_options_group',
+                'option_name' => 'text_example',
+                'callback' => array($this->callbacks, 'slOptionsGroup')
+            ),
+            array(
+                'option_group' => 'sl_options_group',
+                'option_name' => 'opening_time'
+            ),
+        );
+        $this->settings->setSettings($args);
+    }
+
+    public function setSections() {
+
+        $args = array(
+            array(
+                'id' => 'sl_admin_index',
+                'title' => 'Settings',
+                'callback' => array($this->callbacks, 'slAdminSection'),
+                'page' => 'sl_plugin'
+            )
+        );
+        $this->settings->setSections($args);
+    }
+
+    public function setFields() {
+
+        $args = array(
+            array(
+                'id' => 'text_example',
+                'title' => 'Text Example',
+                'callback' => array($this->callbacks, 'slTextExample'),
+                'page' => 'sl_plugin',
+                'section' => 'sl_admin_index',
+                'args' => ['label_for' => 'text_example', 'class' => 'example-class']
+            ),
+            array(
+                'id' => 'opening_time',
+                'title' => 'Opening time',
+                'callback' => array($this->callbacks, 'slOpeningTime'),
+                'page' => 'sl_plugin',
+                'section' => 'sl_admin_index',
+                'args' => ['label_for' => 'opening_time', 'class' => 'example-class']
+            )
+        );
+        $this->settings->setFields($args);
     }
 }
