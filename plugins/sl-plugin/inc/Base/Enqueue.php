@@ -7,9 +7,10 @@ namespace Inc\Base;
 
 class Enqueue extends BaseController {
 
-    protected $slCssPath = 'assets/sl.css';
-    protected $slCalCssPath = 'assets/calendar.css';
-    protected $slJsPath = 'assets/sl.js';
+    protected $slCssPath = 'assets/admin/sl.min.css';
+    protected $slJsPath = 'assets/admin/sl.min.js';
+    protected $slClientCssPath = 'assets/client/sl-client.min.css';
+    protected $slClientJsPath = 'assets/client/sl-client.min.js';
 
     public function register() {
         add_action( 'admin_enqueue_scripts', [$this, 'enqueue_admin_scripts'] );
@@ -17,10 +18,11 @@ class Enqueue extends BaseController {
     }
 
     public function enqueue_theme_scripts() {
-        wp_enqueue_script('jquery');
-        wp_enqueue_style( 'slcalendar', $this->plugin_url . $this->slCalCssPath );
-        wp_enqueue_script('slcalscript', $this->plugin_url . 'assets/calendar.js');
-        wp_localize_script('slcalscript', 'slCal', [
+        wp_enqueue_style( 'slcalendar', $this->plugin_url . $this->slClientCssPath );
+        wp_enqueue_script('slclient', $this->plugin_url . $this->slClientJsPath);
+        wp_localize_script('slclient', 'screenReaderText', [
+            'adminAjax' => admin_url('admin-ajax.php'),
+            'security' => wp_create_nonce('user-submitted-reservation'),
             'siteURL' => get_site_url()
         ]);
     }

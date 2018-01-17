@@ -328,9 +328,9 @@ div.container {
     margin: 0;
 }
 
-.site-nav ul:before, .site-nav ul:after {content: ""; display: table;}
-.site-nav ul:after {clear: both;}
-.site-nav ul:{*zoom: 1;}
+.site-nav ul:before, .site-nav ul:after { content: ""; display: table; }
+.site-nav ul:after { clear: both; }
+.site-nav ul { *zoom: 1; }
 
 .site-nav ul li {
     list-style: none;

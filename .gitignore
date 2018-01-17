@@ -5,6 +5,7 @@
 /sitemap.*
 /wp-config.php
 *.sql
+/plugins/sl-plugin/node_modules
 
 # Hidden files
 *.DS_Store

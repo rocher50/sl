@@ -385,7 +385,7 @@
 
                 updateAgenda: function(renderer, year, month) {
                     var req = new XMLHttpRequest();
-                    var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + this.id + "/year=" + year + "/month=" + month;
+                    var url = screenReaderText.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + this.id + "/year=" + year + "/month=" + month;
                     req.open('GET', url);
                     req.onload = function() {
                         if(req.status >= 200 && req.status < 400) {
@@ -544,7 +544,7 @@
     function displayFleet(date) {
         date.setSeconds(0);
         var req = new XMLHttpRequest();
-        var url = slCal.siteURL + '/wp-json/slplugin/v1/fleet/year=' + date.getFullYear() + "/month=" + (date.getMonth() + 1);
+        var url = screenReaderText.siteURL + '/wp-json/slplugin/v1/fleet/year=' + date.getFullYear() + "/month=" + (date.getMonth() + 1);
         req.open('GET', url);
         req.onload = function() {
             if(req.status >= 200 && req.status < 400) {
@@ -569,7 +569,7 @@
 
     function refreshDayTimePicker(renderer) {
         var req = new XMLHttpRequest();
-        var url = slCal.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.year + "/month=" + renderer.month;
+        var url = screenReaderText.siteURL + '/wp-json/slplugin/v1/agenda/vcl=' + renderer.vcl.id + "/year=" + renderer.year + "/month=" + renderer.month;
         if(!isNaN(renderer.day)) {
             url += '/day=' + renderer.day;
         }
@@ -1326,7 +1326,7 @@
         var div = document.createElement('div');
         div.setAttribute('class', 'ajax-loader');
         var img = document.createElement('img');
-        img.src = slCal.siteURL + '/wp-content/themes/sl/images/ajax-loader.gif';
+        img.src = screenReaderText.siteURL + '/wp-content/plugins/sl-plugin/assets/client/images/ajax-loader.gif';
         div.appendChild(img); 
         return div;
     };
