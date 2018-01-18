@@ -7,7 +7,7 @@ namespace Inc\Base;
 
 class Enqueue extends BaseController {
 
-    protected $slCssPath = 'assets/admin/sl.min.css';
+    protected $slCssPath = 'assets/admin/sl-admin.min.css';
     protected $slJsPath = 'assets/admin/sl.min.js';
     protected $slClientCssPath = 'assets/client/sl-client.min.css';
     protected $slClientJsPath = 'assets/client/sl-client.min.js';

@@ -1,15 +1,31 @@
 var gulp = require('gulp');
-var rename = require('gulp-rename');
+
+// css
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
-var sourcemaps = require('gulp-sourcemaps');
-var browserify = require('browserify');
+var minifycss    = require( 'gulp-uglifycss' );
+
+// js
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var babelify = require('babelify');
+var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var uglify = require('gulp-uglify');
 var jquery = require('jquery');
-var concat = require('gulp-concat');
+var stripDebug = require('gulp-strip-debug');
+
+// utility
+var rename = require('gulp-rename');
+var sourcemaps = require('gulp-sourcemaps');
+var notify = require('gulp-notify');
+var plumber = require('gulp-plumber');
+var options = require('gulp-options');
+var gulpif = require('gulp-if');
+
+// browers related plugins
+var browserSync = require('browser-sync').create();
+var reload = browserSync.reload;
 
 var adminStyleDir = 'src/scss/admin/';
 var adminStyleDist = './assets/admin/';
@@ -30,22 +46,21 @@ var clientJsDist = './assets/client/';
 var jsWatch = 'src/js/**/*.js';
 
 gulp.task('admin.style', function() {
-    adminStyleFiles.map(function(entry) {
-        return gulp.src(adminStyleDir + entry)
-            .pipe(sourcemaps.init())
-            .pipe(sass({
-                errorLogToConsole: true,
-                outputStyle: 'compressed'
-            }))
-            .on('error', console.error.bind(console))
-            .pipe(autoprefixer({
-                browsers: ['last 2 versions'],
-                cascade: false
-            }))
-            .pipe(rename({suffix: '.min'}))
-            .pipe(sourcemaps.write('./'))
-            .pipe(gulp.dest(adminStyleDist))
-        });
+    gulp.src([
+        'src/scss/admin/**/*.scss'
+    ])
+    .pipe(sourcemaps.init())
+    .pipe(sass({
+        errorLogToConsole: true,
+        outputStyle: 'compressed'
+    }))
+    .on('error', console.error.bind(console))
+    .pipe(autoprefixer({
+        browsers: ['last 2 versions', '> 5%', 'Firefox ESR']
+    }))
+    .pipe(concat('sl-admin.min.css'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(adminStyleDist));
 });
 
 gulp.task('client.style', function() {
@@ -110,6 +125,12 @@ gulp.task('client.fonts', function() {
         ])
         .pipe(gulp.dest('./assets/client/fonts/'));
 });
+
+function triggerPlumber( src, url ) {
+    return gulp.src( src )
+        .pipe( plumber() )
+        .pipe( gulp.dest( url ) );
+}
 
 gulp.task('default', ['admin.style', 'client.style', 'admin.js', 'client.js', 'client.images', 'client.fonts']);
 
