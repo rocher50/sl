@@ -1,0 +1,17 @@
+{
+    "name": "rocher50/sl-plugin",
+    "description": "SL plugin",
+    "type": "project",
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Rocher50",
+            "email": "loubyansky@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {"Inc\\": "./inc"}
+    }
+}

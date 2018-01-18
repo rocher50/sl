@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="calendar.js"></script>
+
+<style>
+
+.daytimepicker {
+    box-sizing: border-box;
+    font-size: 18px;
+    width: 350px;
+    border: 1px solid;
+}
+
+.daytimepicker .clicky {
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+}
+.daytimepicker .clicky:hover {
+    background: #eee;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.daytimepicker .clicky-ph {
+    display: inline-block;
+    border: 1px transparent;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+}
+.daytimepicker .disabled-clicky {
+    display: inline-block;
+    border: 1px transparent;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+    color: #ddd;
+}
+.daytimepicker .bordered-clicky {
+    display: inline-block;
+    border: 1px solid;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+}
+.daytimepicker .bordered-clicky:hover {
+    background: #eee;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.daytimepicker .yearmonth {
+    display: inline-block;
+    border: 1px hidden;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+    width: 70%;
+    vertical-align: middle;
+}
+
+.daypicker {
+    display: inline-block;
+    border: 1px hidden;
+    box-sizing: border-box;
+    vertical-align: top;
+    width: 85%;
+    height: 100%;
+    margin-right: 0px;
+}
+
+.daytimepicker .day-name {
+    display: inline-block;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 1%;
+    margin: 0;
+    text-align: center;
+    width: 14.28%;
+    font-weight: bold;
+}
+
+.daytimepicker .daypicker .clicky {
+    vertical-align: top;
+    width: 14.28%;
+}
+.daytimepicker .daypicker .clicky-ph {
+    vertical-align: top;
+    width: 14.28%;
+}
+.daytimepicker .daypicker .disabled-clicky {
+    vertical-align: top;
+    width: 14.28%;
+}
+.daytimepicker .daypicker .bordered-clicky {
+    vertical-align: top;
+    width: 14.28%;
+}
+
+.daytimepicker .arrows {
+    display: inline-block;
+    border: 1px hidden;
+    box-sizing: border-box;
+    background: transparent;
+    padding: 0%;
+    margin: 0;
+    text-align: center;
+    width: 15%;
+    vertical-align: middle;
+}
+
+.timepicker {
+    display: inline-block;
+    border: 1px hidden;
+    box-sizing: border-box;
+    vertical-align: top;
+    width: 15%;
+    height: 100%;
+    margin-left: 0px;
+    font-size: 16px;
+    overflow-y: scroll;    
+}
+
+.daytimepicker .timepicker .clicky {
+    width: 98%;
+}
+.daytimepicker .timepicker .clicky-ph {
+    width: 98%;
+}
+.daytimepicker .timepicker .disabled-clicky {
+    width: 98%;
+}
+.daytimepicker .timepicker .bordered-clicky {
+    width: 98%;
+}
+
+.timepicker::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 5px;
+}
+.timepicker::-webkit-scrollbar {
+    width: 6px;
+    background-color: #efefef;
+    visibility: hidden;
+}
+.timepicker::-webkit-scrollbar:hover{
+    cursor: pointer;
+    visibility: visible;
+}
+.timepicker::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border: 1px transparent;
+    border-radius: 5px;
+}
+.timepicker::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+    cursor: pointer;
+}
+
+.daytimepicker .half-height {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 50%;
+    text-align: center;
+    border: 1px hidden;
+    margin: 0;
+    padding-right: 8px;
+}
+
+.daytimepicker .half-width {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    border: 1px hidden;
+    margin: 0;
+}
+
+.daytimepicker .arrows .right {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .arrows .right:hover {
+    border-left: 10px solid #999;
+    cursor: pointer;
+}
+
+.daytimepicker .arrows .left {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .arrows .left:hover {
+    border-right: 10px solid #999;
+    cursor: pointer;
+}
+.daytimepicker .arrows .disabled-left {
+  width: 0;
+  height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-right: 9px solid #efefef;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+
+.daytimepicker .arrows .up {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .arrows .up:hover {
+    border-bottom: 10px solid #999;
+    cursor: pointer;
+}
+.daytimepicker .arrows .disabled-up {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #efefef;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+
+.daytimepicker .arrows .down {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ddd;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+.daytimepicker .arrows .down:hover {
+    border-top: 10px solid #999;
+    cursor: pointer;
+}
+.daytimepicker .arrows .disabled-down {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid #efefef;
+  display: inline-block;
+  float: center;
+  vertical-align: middle;
+}
+
+</style>
+
+</head>
+<body>
+<!--
+    <div class="daytimepicker">
+        <div class="daypicker" id="daypicker"
+            ><div class="clicky-ph"></div
+            ><div class="clicky-ph"></div
+            ><div class="clicky-ph"></div
+            ><div class="clicky-ph"></div
+            ><div class="clicky-ph"></div
+            ><div class="clicky" onclick="alert('ok');">1</div
+            ><div class="clicky" onclick="alert('ok');">2</div
+            ><div class="clicky" onclick="alert('ok');">3</div
+            ><div class="clicky" onclick="alert('ok');">4</div
+            ><div class="clicky" onclick="alert('ok');">5</div
+            ><div class="clicky" onclick="alert('ok');">6</div
+            ><div class="clicky" onclick="alert('ok');">7</div
+            ><div class="clicky" onclick="alert('ok');">8</div
+            ><div class="clicky" onclick="alert('ok');">9</div
+            ><div class="clicky" onclick="alert('ok');">10</div
+            ><div class="clicky" onclick="alert('ok');">11</div
+            ><div class="clicky" onclick="alert('ok');">12</div
+            ><div class="clicky" onclick="alert('ok');">13</div
+            ><div class="clicky" onclick="alert('ok');">14</div
+            ><div class="clicky" onclick="alert('ok');">15</div
+            ><div class="clicky" onclick="alert('ok');">16</div
+            ><div class="clicky" onclick="alert('ok');">17</div
+            ><div class="clicky" onclick="alert('ok');">18</div
+            ><div class="clicky" onclick="alert('ok');">19</div
+            ><div class="clicky" onclick="alert('ok');">20</div
+            ><div class="clicky" onclick="alert('ok');">21</div
+            ><div class="clicky" onclick="alert('ok');">22</div
+            ><div class="clicky" onclick="alert('ok');">23</div
+            ><div class="clicky" onclick="alert('ok');">24</div
+            ><div class="clicky" onclick="alert('ok');">25</div
+            ><div class="clicky" onclick="alert('ok');">26</div
+            ><div class="clicky" onclick="alert('ok');">27</div
+            ><div class="clicky" onclick="alert('ok');">28</div
+            ><div class="clicky" onclick="alert('ok');">29</div
+            ><div class="clicky" onclick="alert('ok');">30</div
+            ><div class="clicky" onclick="alert('ok');">31</div
+        ></div
+        ><div class="timepicker" id="timepicker"
+            ><div class="clicky" onclick="alert('ok');">8:30</div
+            ><div class="clicky" onclick="alert('ok');">9:00</div
+            ><div class="clicky" onclick="alert('ok');">9:30</div
+            ><div class="clicky" onclick="alert('ok');">10:00</div
+            ><div class="clicky" onclick="alert('ok');">10:30</div
+            ><div class="clicky" onclick="alert('ok');">11:00</div
+            ><div class="clicky" onclick="alert('ok');">11:30</div
+            ><div class="clicky" onclick="alert('ok');">12:00</div
+            ><div class="clicky" onclick="alert('ok');">12:30</div
+            ><div class="clicky" onclick="alert('ok');">13:00</div
+            ><div class="clicky" onclick="alert('ok');">13:30</div
+            ><div class="clicky" onclick="alert('ok');">14:00</div
+            ><div class="clicky" onclick="alert('ok');">14:30</div
+            ><div class="clicky" onclick="alert('ok');">15:00</div
+            ><div class="clicky" onclick="alert('ok');">15:30</div
+            ><div class="clicky" onclick="alert('ok');">16:00</div
+            ><div class="clicky" onclick="alert('ok');">16:30</div
+            ><div class="clicky" onclick="alert('ok');">17:00</div
+            ><div class="clicky" onclick="alert('ok');">17:30</div
+            ><div class="clicky" onclick="alert('ok');">18:00</div
+            ><div class="clicky" onclick="alert('ok');">18:30</div
+            ><div class="clicky" onclick="alert('ok');">19:00</div
+            ><div class="clicky" onclick="alert('ok');">19:30</div
+        ></div>
+    </div>
+-->
+</body>
+</html>
+

@@ -1,0 +1,420 @@
+/*
+Theme Name: SL
+Author: Rocher50
+Author URI: http://sl.ch
+Version: 1.0
+*/
+
+:root {
+/* p1
+    --main-background-color: #dddddf;
+    --main-font-color: #000000;
+    --gray-font-color: #9f8d77;
+    --highlighting-color: #ea8200;
+*/
+/* p2
+    --main-background-color: #f2e0d4;
+    --main-font-color: #000000;
+    --gray-font-color: #947e69;
+    --highlighting-color: #ffa92b;
+*/
+/* p3
+    --main-background-color: #f1f1f2;
+    --main-font-color: #542c1e;
+    --gray-font-color: #98887a;
+    --highlighting-color: #ee823b;
+*/
+/* p5
+    --main-background-color: #ffdcba;
+    --main-font-color: #040500;
+    --gray-font-color: #9e786d;
+    --highlighting-color: #fc9045;
+*/
+/* p9
+    --light-color: #fffae7;
+    --dark-color: #46474f;
+    --gray-color: #a37e3b;
+    --highlighting-color: #ed6a04;
+*/
+/* p10
+    --light-color: #fef8e2;
+    --dark-color: #241f19;
+    --gray-color: #b8a49a;
+    --highlighting-color: #ff8407;
+*/
+/* p6 */
+    --light-color: #ffffff;
+    --dark-color: #4b4f4e;
+    --gray-color: #9bb296;
+    --highlighting-color: #fd932f;
+
+/* purple 2
+    --light-color: #fefefc;
+    --dark-color: #0d0b21;
+    --gray-color: #ada2a8;
+    --highlighting-color: #a77ad9;
+*/
+    --main-background-color: var(--light-color);
+    --main-font-color: var(--dark-color);
+    --gray-font-color: var(--gray-color);
+
+    --cal-arrow-color: var(--gray-color);
+    --cal-arrow-hover-color: var(--highlighting-color);
+    --cal-arrow-disabled-color: transparent;
+
+    --main-font-size: 0.75vw;
+    --form-font-size: 0.8vw;
+    --daypicker-font-size: var(--form-font-size);
+    --timepicker-font-size: 0.75vw;
+
+    --form-border-radius: 0.8em;
+    --form-padding: 0.5em;
+
+    --vcl-thumb: 70%;
+    --vcl-form: 30%;
+}
+
+@media (max-width:1600px) {
+    :root {
+        --form-font-size: 1vw;
+        --timepicker-font-size: 0.9vw;
+    }
+}
+@media (max-width:1300px) {
+    :root {
+        --form-font-size: 1.2vw;
+        --timepicker-font-size: 1vw;
+    }
+}
+@media (max-width:1024px) {
+    :root {
+        --form-font-size: 1.5vw;
+        --timepicker-font-size: 1.25vw;
+    }
+}
+@media (max-width:800px) {
+    :root {
+        --form-font-size: 2vw;
+        --timepicker-font-size: 1.7vw;
+    }
+}
+@media (max-width:600px) {
+    :root {
+        --vcl-thumb: 60%;
+        --vcl-form: 40%;
+    }
+}
+
+@font-face {
+    font-family: main-font-family;
+    src: url('fonts/open-sans/opensans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: light-font-family;
+    src: url('fonts/open-sans/opensans-light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: typewriter;
+    src: url('fonts/secret-typewriter/veteran_typewriter-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    font-family: main-font-family;
+}
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: var(--main-font-size);
+    color: var(--main-font-color);
+    background-color: var(--main-background-color);
+}
+
+a:link,
+a:visited {
+    color: #006ec3;
+}
+
+p {
+    line-height: 1.65em;
+    margin: 0 0 1em 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 1em 0;
+    font-weight: normal;
+}
+
+/* General Layout */
+div.container {
+    border: 1px none;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding-left: 2%;
+    padding-right: 2%;
+    margin: 0 auto; /* to center the div */
+}
+
+.fleet {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-row-gap: 1em;
+}
+
+.vehicule {
+    display: grid;
+    grid-template-columns: var(--vcl-thumb) var(--vcl-form);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 1em;
+    border: 1px none;
+    padding: 0;
+}
+
+.vehicule .reservation {
+    border: 1px transparent;
+    width: 100%;
+    font-size: var(--form-font-size);
+}
+
+.vehicule .reservation .labelvalue {
+    width: 100%;
+    margin: 1%;
+}
+
+.vehicule .reservation .label {
+    border: 1px transparent;
+    display: inline-block;
+    padding: 1%;
+    border-radius: var(--form-border-radius);
+    color: var(--main-font-color);
+    text-align: right;
+    width: 28%;
+}
+.vehicule .reservation .highlighted {
+    color: var(--highlighting-color);
+}
+
+.vehicule .reservation .value {
+    border: 1px transparent;
+    border-color: var(--gray-color);
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
+    background: transparent;
+    color: var(--main-font-color);
+    border-radius: var(--form-border-radius);
+    text-align: left;
+    width: 70%;
+}
+.vehicule .reservation .value:hover {
+    border: 1px dotted;
+    border-color: var(--highlighting-color);
+    /*color: var(--highlighting-color);*/
+    background-color: #ffffff;
+    cursor: pointer;
+}
+.vehicule .reservation .non-clickable-value {
+    border: 1px transparent;
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
+    border-radius: var(--form-border-radius);
+    color: var(--gray-font-color);
+    width: 70%;
+    text-align: left;
+}
+
+.vehicule .reservation input {
+    border: 1px transparent;
+    border-color: var(--gray-color);
+    border-radius: var(--form-border-radius);
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1% var(--form-padding) 1% var(--form-padding);
+    background-color: transparent;
+    font-size: var(--form-font-size);
+    width: 70%;
+    text-align: left;
+    color: var(--main-font-color);
+    outline: none;
+}
+.vehicule .reservation input:focus {
+    border: 1px dotted;
+    border-color: var(--highlighting-color);
+    color: var(--main-font-color);
+    background-color: #ffffff;
+}
+.vehicule .reservation input:hover {
+    border: 1px dotted;
+    border-color: var(--highlighting-color);
+/*    color: var(--highlighting-color);*/
+    background-color: #ffffff;
+}
+
+.vehicule .reservation .button-container {
+    display: inline-block;
+    box-sizing: border-box;
+    float: right;
+    padding: 1%;
+    background: transparent;
+    width: 70%;
+}
+
+.vehicule .reservation .button {
+    display: inline-block;
+    box-sizing: border-box;
+    border: transparent;
+    border-radius: var(--form-border-radius);
+    background: var(--gray-color);
+    color: var(--light-color);
+    text-align: center;
+    text-decoration: none;
+    margin-top: 2%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    outline: none;
+    font-size: var(--form-font-size);
+    cursor: pointer;
+    float: left;
+}
+.vehicule .reservation .button:hover {
+    background: var(--highlighting-color);
+}
+
+.vehicule .reservation .disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.site-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2%;
+    padding: 2% 0 0 0;
+}
+
+.site-header h1 {
+    margin: 0;
+}
+
+.site-header h1 a:link,
+.site-header h1 a:visited {
+    text-decoration: none;
+}
+
+.site-header h5 {
+    margin: 0;
+}
+
+// Navigation menus
+.site-nav ul {
+    padding: 0;
+    margin: 0;
+}
+
+.site-nav ul:before, .site-nav ul:after { content: ""; display: table; }
+.site-nav ul:after { clear: both; }
+.site-nav ul { *zoom: 1; }
+
+.site-nav ul li {
+    list-style: none;
+    float: left;
+}
+
+.site-nav ul li a:link,
+.site-nav ul li a:visited {
+	display: block;
+}
+
+/* Header Nav Menu */
+.site-header nav {
+    margin-top: 3%;
+}
+
+.site-header nav ul li {
+    margin-right: 5px;
+}
+
+.site-header nav ul li a:link,
+.site-header nav ul li a:visited {
+    padding: 10px 17px;
+    text-decoration: none;
+    border: 1px solid #DDD;
+    border-bottom: none;
+}
+
+.site-header nav ul li a:hover {
+    background-color: #ECECEC;
+}
+
+.site-header nav ul li.current-menu-item a:link,
+.site-header nav ul li.current-menu-item a:visited {
+    font-weight: bold;
+    background-color: #006ec3;
+    color: #FFF;
+}
+
+/* Footer */
+.site-footer {
+    margin-top: 30px;
+    border-top: 1px solid #DDD;
+    font-size: 84%;
+}
+
+/* Footer Nav Menu */
+.site-footer nav {
+    margin: 30px 0 10px 0;
+}
+
+.site-footer nav ul li {
+    margin-right: 10px;
+    padding-right: 10px;
+    border-right: 1px solid #DDD;
+}
+
+.site-footer nav ul li:last-of-type {
+    border-right: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.has-thumbnail {
+    position: relative;
+    padding-left: 740px;
+}
+
+.post-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.ajax-loader {
+    display: inline-block;
+    box-sizing: border-box;
+    visibility: hidden;
+    margin: 2%;
+}
+
+.ajax-loader img {
+    vertical-align: middle;
+}
