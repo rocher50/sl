@@ -11,7 +11,7 @@ var uglify = require('gulp-uglify');
 var jquery = require('jquery');
 var concat = require('gulp-concat');
 
-var adminStyleDir = 'src/admin/scss/';
+var adminStyleDir = 'src/scss/admin/';
 var adminStyleDist = './assets/admin/';
 var adminStyleFiles = ['sl.scss'];
 
