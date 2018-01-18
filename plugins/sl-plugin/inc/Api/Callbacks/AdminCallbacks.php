@@ -23,7 +23,7 @@ class AdminCallbacks extends BaseController {
     public function widget_manager() {
         return require_once("$this->plugin_path/templates/widget-manager.php");
     }
-
+/*
     public function slOptionsGroup($input) {
         return $input;
     }
@@ -31,7 +31,7 @@ class AdminCallbacks extends BaseController {
     public function slAdminSection() {
         echo 'this is sl admin section';
     }
-
+*/
     public function slTextExample() {
         $value = esc_attr(get_option('text_example'));
         echo '<input type="text" class="regular_text" name="text_example" value="' . $value . '" placeholder="write something here">';

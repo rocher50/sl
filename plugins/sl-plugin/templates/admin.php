@@ -12,7 +12,7 @@
         <div id="tab-1" class="tab-pane active">
             <form method="post" action="options.php">
                 <?php
-                   settings_fields('sl_options_group');
+                   settings_fields('sl_plugin_settings');
                    do_settings_sections('sl_plugin');
                    submit_button();
                 ?>
