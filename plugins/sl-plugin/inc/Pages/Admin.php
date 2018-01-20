@@ -71,14 +71,11 @@ class Admin extends BaseController {
 
     public function setSettings() {
 
-        $args = [];
-        foreach($this->managers as $key => $value) {
-            $args[] = array(
-                'option_group' => 'sl_plugin_settings',
-                'option_name' => $key,
-                'callback' => array($this->callbacks_mngr, 'checkboxSanitize')
-            );
-        }
+        $args = [
+            ['option_group' => 'sl_plugin_settings',
+                'option_name' => 'sl_plugin',
+                'callback' => array($this->callbacks_mngr, 'checkboxSanitize')]
+        ];
 
         $this->settings->setSettings($args);
     }
@@ -106,7 +103,7 @@ class Admin extends BaseController {
                 'callback' => array($this->callbacks_mngr, 'checkboxField'),
                 'page' => 'sl_plugin',
                 'section' => 'sl_admin_index',
-                'args' => ['label_for' => $key, 'class' => 'ui-toggle']
+                'args' => ['option_name' => 'sl_plugin', 'label_for' => $key, 'class' => 'ui-toggle']
             );
         }
 
