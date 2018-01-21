@@ -10,7 +10,7 @@ use Inc\Api\Callbacks\ManagerCallbacks;
 use Inc\Api\SettingsApi;
 use Inc\Base\BaseController;
 
-class Admin extends BaseController {
+class Dashboard extends BaseController {
 
     protected $adminTemplatePath = '/templates/admin.php';
 
@@ -18,18 +18,18 @@ class Admin extends BaseController {
     public $callbacks;
     public $callbacks_mngr;
     public $pages;
-    public $subpages;
+//    public $subpages;
 
     public function register() {
         $this->settings = new SettingsApi();
         $this->callbacks = new AdminCallbacks();
         $this->callbacks_mngr = new ManagerCallbacks();
         $this->set_pages();
-        $this->set_subpages();
+        //$this->set_subpages();
         $this->setSettings();
         $this->setSections();
         $this->setFields();
-        $this->settings->add_pages( $this->pages )->with_subpage('Dashboard')->add_subpages($this->subpages)->register();
+        $this->settings->add_pages( $this->pages )->with_subpage('Dashboard')->register();
     }
 
     public function set_pages() {
@@ -43,7 +43,7 @@ class Admin extends BaseController {
             'position' => 110]
         ];
     }
-
+/*
     public function set_subpages() {
         $this->subpages = [
             ['parent_slug' => 'sl_plugin',
@@ -68,7 +68,7 @@ class Admin extends BaseController {
             'callback' => [$this->callbacks, 'widget_manager']]
         ];
     }
-
+*/
     public function setSettings() {
 
         $args = [

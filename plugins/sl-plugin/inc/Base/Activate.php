@@ -12,6 +12,13 @@ class Activate {
     public static function activate() {
         Activate::setup_db();
         flush_rewrite_rules();
+
+        if(get_option('sl_plugin')) {
+            return;
+        }
+
+        $default = [];
+        update_option('sl_plugin', $default);
     }
 
     public static function setup_db() {

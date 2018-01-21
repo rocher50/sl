@@ -8,6 +8,9 @@ final class Init {
 
     public static function get_services() {
         return [
+
+            Pages\Dashboard::class,
+
             Base\Enqueue::class,
             Base\SettingsLink::class,
 
@@ -18,7 +21,15 @@ final class Init {
             Base\Vcl\ReservationCmb::class,
             Base\Vcl\ReservationHandler::class,
 
-            Pages\Admin::class
+            Base\AuthController::class,
+            Base\ChatController::class,
+            Base\CptController::class,
+            Base\GalleryController::class,
+            Base\MembershipController::class,
+            Base\TaxonomyController::class,
+            Base\TemplatesController::class,
+            Base\TestimonialController::class,
+            Base\WidgetController::class
         ];
     }
 
