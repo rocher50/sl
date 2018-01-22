@@ -43,32 +43,7 @@ class Dashboard extends BaseController {
             'position' => 110]
         ];
     }
-/*
-    public function set_subpages() {
-        $this->subpages = [
-            ['parent_slug' => 'sl_plugin',
-            'page_title' => 'Custom Post Types',
-            'menu_title' => 'CPT',
-            'capability' => 'manage_options',
-            'menu_slug' => 'sl_cpt',
-            'callback' => [$this->callbacks, 'cpt_manager']],
 
-            ['parent_slug' => 'sl_plugin',
-            'page_title' => 'Custom Taxonomies',
-            'menu_title' => 'Taxonomies',
-            'capability' => 'manage_options',
-            'menu_slug' => 'sl_taxonomies',
-            'callback' => [$this->callbacks, 'taxonomy_manager']],
-
-            ['parent_slug' => 'sl_plugin',
-            'page_title' => 'Custom Widgets',
-            'menu_title' => 'Widgets',
-            'capability' => 'manage_options',
-            'menu_slug' => 'sl_widgets',
-            'callback' => [$this->callbacks, 'widget_manager']]
-        ];
-    }
-*/
     public function setSettings() {
 
         $args = [
