@@ -49,8 +49,6 @@
                 }
             },
             error: function(xhr, status, error) {
-//                var err = eval('(' + xhr.responseText + ')');
-//                alert(err.Message);
                 vcl.displayReservationMessage('Processing has failed2: ' + xhr.responseText);
             },
             complete: function() {
@@ -605,6 +603,7 @@
             hour: vcl.depDate.getHours(),
             min: vcl.depDate.getMinutes(),
             agenda: null,
+            dayAgenda: null,
             firstAvailableDate: null,
             displayFirstAvailableMonth: true,
 
@@ -827,7 +826,7 @@
                     timeClicky.setAttribute("class", "disabled-clicky");
                     return true;
                 }
-                var dayAgenda = getDayAgenda(this.day, this.agenda);
+                var dayAgenda = this.dayAgenda;//getDayAgenda(this.day, this.agenda);
                 if(!this.isTimeAvailable(hour, mins, dayAgenda)) {
                     if(prevTimeAdded) {
                         timeClicky.setAttribute("class", "disabled-clicky");
@@ -908,6 +907,7 @@
                     this.year = this.firstAvailableDate.getFullYear();
                     this.month = this.firstAvailableDate.getMonth() + 1;
                     this.day = this.firstAvailableDate.getDate();
+                    this.dayAgenda = getDayAgenda(this.day, this.agenda);
                     this.hour = NaN;
                     this.min = NaN;
                     this.vcl.depDate.setFullYear(this.year);
@@ -922,10 +922,12 @@
                 this.month = month;
                 if(this.vcl.depDate.getFullYear() == year && this.vcl.depDate.getMonth() + 1 == this.month) {
                     this.day = this.vcl.depDate.getDate();
+                    this.dayAgenda = getDayAgenda(day, this.agenda);
                     this.hour = this.vcl.depDate.getHours();
                     this.min = this.vcl.depDate.getMinutes();
                 } else {
                     this.day = NaN;
+                    this.dayAgenda = null;
                     this.hour = NaN;
                     this.min = NaN;
                 }
@@ -933,6 +935,7 @@
             },
             setDay: function(day) {
                 this.day = day;
+                this.dayAgenda = getDayAgenda(day, this.agenda);
                 this.hour = NaN;
                 this.min = NaN;
                 replaceDayTimePicker(this);
@@ -1332,7 +1335,7 @@
     };
 
     var ensureClass = function(e, c) {
-        if(e.getAttribute('class') != 'c') {
+        if(e.getAttribute('class') != c) {
             e.setAttribute('class', c);
             e.parentElement.replaceChild(e, e);
         }
